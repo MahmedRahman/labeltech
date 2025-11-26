@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: labeltech_app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - labeltech
+    environment:
+      - DB_HOST=db
+      - DB_DATABASE=labeltech
+      - DB_USERNAME=labeltech
+      - DB_PASSWORD=root
+
+  nginx:
+    image: nginx:alpine
+    container_name: labeltech_nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - labeltech
+    depends_on:
+      - app
+
+  db:
+    image: mysql:8.0
+    container_name: labeltech_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: labeltech
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: root
+      MYSQL_USER: labeltech
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - labeltech
+
+networks:
+  labeltech:
+    driver: bridge
+
+volumes:
+  dbdata:
+    driver: local
