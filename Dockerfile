@@ -16,6 +16,11 @@ RUN apt-get update && apt-get install -y \
     unzip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Install Node.js and npm
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
 # Install PHP extensions (including SQLite support)
 RUN docker-php-ext-install pdo pdo_sqlite mbstring exif pcntl bcmath gd zip
 

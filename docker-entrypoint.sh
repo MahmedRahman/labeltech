@@ -128,6 +128,34 @@ else
     print_success "SQLite database file created"
 fi
 
+# Check if Node.js and npm are available
+if command -v node &> /dev/null && command -v npm &> /dev/null; then
+    print_success "Node.js and npm are available"
+    
+    # Check if package.json exists
+    if [ -f "package.json" ]; then
+        # Check if node_modules exists or if package.json changed
+        if [ ! -d "node_modules" ] || [ "package.json" -nt "node_modules" ]; then
+            print_info "Installing npm dependencies..."
+            npm install --no-audit --no-fund 2>/dev/null && print_success "npm dependencies installed" || print_warning "Failed to install npm dependencies"
+        else
+            print_success "npm dependencies already installed"
+        fi
+        
+        # Check if Vite manifest exists
+        if [ ! -f "public/build/manifest.json" ]; then
+            print_info "Building Vite assets..."
+            npm run build 2>/dev/null && print_success "Vite assets built successfully" || print_warning "Failed to build Vite assets"
+        else
+            print_success "Vite manifest already exists"
+        fi
+    else
+        print_warning "package.json not found, skipping npm steps"
+    fi
+else
+    print_warning "Node.js or npm not found, skipping asset building"
+fi
+
 # Clear Laravel caches
 print_info "Clearing Laravel caches..."
 php artisan config:clear 2>/dev/null && print_success "Config cache cleared" || print_warning "Failed to clear config cache"
