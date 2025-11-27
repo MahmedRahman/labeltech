@@ -38,6 +38,18 @@ echo "Setting permissions..."
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache 2>/dev/null || true
 chmod -R 755 /var/www/html/storage /var/www/html/bootstrap/cache 2>/dev/null || true
 
+# Ensure SQLite database file exists and has proper permissions
+if [ -f "/var/www/html/database/database.sqlite" ]; then
+    chown www-data:www-data /var/www/html/database/database.sqlite 2>/dev/null || true
+    chmod 664 /var/www/html/database/database.sqlite 2>/dev/null || true
+    echo "SQLite database permissions set."
+elif [ ! -f "/var/www/html/database/database.sqlite" ]; then
+    touch /var/www/html/database/database.sqlite 2>/dev/null || true
+    chown www-data:www-data /var/www/html/database/database.sqlite 2>/dev/null || true
+    chmod 664 /var/www/html/database/database.sqlite 2>/dev/null || true
+    echo "SQLite database file created."
+fi
+
 # Verify vendor/autoload.php exists before starting
 if [ ! -f "vendor/autoload.php" ]; then
     echo "ERROR: vendor/autoload.php still not found!"
@@ -45,7 +57,7 @@ if [ ! -f "vendor/autoload.php" ]; then
     exit 1
 fi
 
-echo "Starting php-fpm..."
-# Start php-fpm (php-fpm will handle user switching internally)
-exec php-fpm
+echo "Starting Laravel development server..."
+# Start Laravel's built-in server
+exec php artisan serve --host=0.0.0.0 --port=8000
 
