@@ -151,8 +151,17 @@ echo "=========================================="
 print_success "All checks passed!"
 echo "=========================================="
 print_info "Starting Laravel development server on 0.0.0.0:8000..."
+print_info "Logs will be visible in Docker logs."
+print_info "To view logs, run: docker-compose logs -f app"
+print_info "Or: docker logs -f labeltech_app"
 echo "=========================================="
 
+# Ensure Laravel logs go to stderr for Docker visibility
+export LOG_CHANNEL=${LOG_CHANNEL:-stderr}
+export LOG_LEVEL=${LOG_LEVEL:-debug}
+
 # Start Laravel's built-in server
+# The server will output all requests and errors to stdout/stderr
+# Using exec to replace shell process and ensure logs are visible
 exec php artisan serve --host=0.0.0.0 --port=8000
 

@@ -15,7 +15,13 @@ services:
       # Database Configuration
       - DB_CONNECTION=sqlite
       - DB_DATABASE=/var/www/html/database/database.sqlite
-
+      # Laravel Configuration
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - APP_URL=http://localhost:8000
+      # Logging Configuration (logs will appear in Docker logs)
+      - LOG_CHANNEL=stderr
+      - LOG_LEVEL=debug
     ports:
       - "8000:8000"
 
