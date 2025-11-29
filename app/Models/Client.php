@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Client extends Model
 {
@@ -19,4 +20,12 @@ class Client extends Model
     protected $casts = [
         'opening_balance' => 'decimal:2',
     ];
+
+    /**
+     * Get the work orders for the client.
+     */
+    public function workOrders(): HasMany
+    {
+        return $this->hasMany(WorkOrder::class);
+    }
 }

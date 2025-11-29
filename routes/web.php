@@ -16,10 +16,12 @@ Route::get('/dashboard', function () {
     $clientsCount = \App\Models\Client::count();
     $employeesCount = \App\Models\Employee::count();
     $suppliersCount = \App\Models\Supplier::count();
+    $workOrdersCount = \App\Models\WorkOrder::count();
     $recentClients = \App\Models\Client::latest()->take(5)->get();
     $recentEmployees = \App\Models\Employee::latest()->take(5)->get();
     $recentSuppliers = \App\Models\Supplier::latest()->take(5)->get();
-    return view('dashboard', compact('clientsCount', 'employeesCount', 'suppliersCount', 'recentClients', 'recentEmployees', 'recentSuppliers'));
+    $recentWorkOrders = \App\Models\WorkOrder::with('client')->latest()->take(5)->get();
+    return view('dashboard', compact('clientsCount', 'employeesCount', 'suppliersCount', 'workOrdersCount', 'recentClients', 'recentEmployees', 'recentSuppliers', 'recentWorkOrders'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -41,6 +43,9 @@ Route::middleware('auth')->group(function () {
     
     // طرق السداد
     Route::resource('payment-methods', \App\Http\Controllers\PaymentMethodController::class);
+    
+    // أوامر الشغل
+    Route::resource('work-orders', \App\Http\Controllers\WorkOrderController::class);
 });
 
 require __DIR__.'/auth.php';
