@@ -44,8 +44,18 @@ Route::middleware('auth')->group(function () {
     // طرق السداد
     Route::resource('payment-methods', \App\Http\Controllers\PaymentMethodController::class);
     
+    // الخامات
+    Route::resource('materials', \App\Http\Controllers\MaterialController::class);
+    
+    // المصروفات
+    Route::resource('expenses', \App\Http\Controllers\ExpenseController::class);
+    
     // أوامر الشغل
     Route::resource('work-orders', \App\Http\Controllers\WorkOrderController::class);
+    Route::get('work-orders/{workOrder}/design', [\App\Http\Controllers\WorkOrderController::class, 'showDesignForm'])->name('work-orders.design.show');
+    Route::post('work-orders/{workOrder}/design', [\App\Http\Controllers\WorkOrderController::class, 'storeDesign'])->name('work-orders.design.store');
+    Route::get('work-orders/{workOrder}/production', [\App\Http\Controllers\WorkOrderController::class, 'showProductionForm'])->name('work-orders.production.show');
+    Route::post('work-orders/{workOrder}/production', [\App\Http\Controllers\WorkOrderController::class, 'storeProduction'])->name('work-orders.production.store');
 });
 
 require __DIR__.'/auth.php';

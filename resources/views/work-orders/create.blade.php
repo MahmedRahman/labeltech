@@ -161,47 +161,74 @@
             <form action="{{ route('work-orders.store') }}" method="POST">
                 @csrf
 
-                <!-- Client Selection -->
-                <div class="form-group">
-                    <label for="client_id" class="form-label required">العميل</label>
-                    <select name="client_id" id="client_id" required class="form-select">
-                        <option value="">اختر العميل</option>
-                        @foreach($clients as $client)
-                            <option value="{{ $client->id }}" {{ old('client_id') == $client->id ? 'selected' : '' }}>
-                                {{ $client->name }} @if($client->company) - {{ $client->company }} @endif
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('client_id')
-                        <p class="error-message">{{ $message }}</p>
-                    @enderror
+                <!-- معلومات أساسية -->
+                <div style="margin-bottom: 2rem; padding: 1.5rem; background-color: #f9fafb; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
+                    <h3 style="font-size: 1rem; font-weight: 600; color: #111827; margin-bottom: 1.5rem;">معلومات أساسية</h3>
+                    
+                    <!-- Client Selection -->
+                    <div class="form-group">
+                        <label for="client_id" class="form-label required">العميل</label>
+                        <select name="client_id" id="client_id" required class="form-select">
+                            <option value="">اختر العميل</option>
+                            @foreach($clients as $client)
+                                <option value="{{ $client->id }}" {{ old('client_id') == $client->id ? 'selected' : '' }}>
+                                    {{ $client->name }} @if($client->company) - {{ $client->company }} @endif
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('client_id')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Order Number -->
+                    <div class="form-group">
+                        <label for="order_number" class="form-label">رقم أمر الشغل</label>
+                        <input type="text" 
+                               name="order_number" 
+                               id="order_number" 
+                               value="{{ old('order_number') }}" 
+                               class="form-input"
+                               placeholder="سيتم توليده تلقائياً إذا تركت فارغاً">
+                        @error('order_number')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Status -->
+                    <div class="form-group">
+                        <label for="status" class="form-label">الحالة</label>
+                        <select name="status" id="status" class="form-select">
+                            <option value="pending" {{ old('status', 'pending') == 'pending' ? 'selected' : '' }}>قيد الانتظار</option>
+                            <option value="in_progress" {{ old('status') == 'in_progress' ? 'selected' : '' }}>قيد التنفيذ</option>
+                            <option value="completed" {{ old('status') == 'completed' ? 'selected' : '' }}>مكتمل</option>
+                            <option value="cancelled" {{ old('status') == 'cancelled' ? 'selected' : '' }}>ملغي</option>
+                        </select>
+                        @error('status')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
                 </div>
 
-                <!-- Order Number -->
-                <div class="form-group">
-                    <label for="order_number" class="form-label">رقم أمر الشغل</label>
-                    <input type="text" 
-                           name="order_number" 
-                           id="order_number" 
-                           value="{{ old('order_number') }}" 
-                           class="form-input"
-                           placeholder="سيتم توليده تلقائياً إذا تركت فارغاً">
-                    @error('order_number')
-                        <p class="error-message">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <!-- Material and Number of Colors -->
+                <!-- معلومات المنتج -->
+                <div style="margin-bottom: 2rem; padding: 1.5rem; background-color: #f9fafb; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
+                    <h3 style="font-size: 1rem; font-weight: 600; color: #111827; margin-bottom: 1.5rem;">معلومات المنتج</h3>
+                    
+                    <!-- Material and Number of Colors -->
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="material" class="form-label required">الخامة</label>
-                        <input type="text" 
-                               name="material" 
-                               id="material" 
-                               value="{{ old('material') }}" 
-                               required
-                               class="form-input"
-                               placeholder="نوع الخامة">
+                        <select name="material" 
+                                id="material" 
+                                required
+                                class="form-select">
+                            <option value="">اختر الخامة</option>
+                            @foreach($materials as $material)
+                                <option value="{{ $material->name }}" {{ old('material') == $material->name ? 'selected' : '' }}>
+                                    {{ $material->name }}
+                                </option>
+                            @endforeach
+                        </select>
                         @error('material')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
@@ -209,14 +236,15 @@
 
                     <div class="form-group">
                         <label for="number_of_colors" class="form-label required">عدد الألوان</label>
-                        <input type="number" 
-                               name="number_of_colors" 
-                               id="number_of_colors" 
-                               value="{{ old('number_of_colors', 1) }}" 
-                               required
-                               min="1"
-                               class="form-input"
-                               placeholder="1">
+                        <select name="number_of_colors" 
+                                id="number_of_colors" 
+                                required
+                                class="form-select">
+                            <option value="1" {{ old('number_of_colors', 1) == 1 ? 'selected' : '' }}>1</option>
+                            <option value="2" {{ old('number_of_colors', 1) == 2 ? 'selected' : '' }}>2</option>
+                            <option value="3" {{ old('number_of_colors', 1) == 3 ? 'selected' : '' }}>3</option>
+                            <option value="4" {{ old('number_of_colors', 1) == 4 ? 'selected' : '' }}>4</option>
+                        </select>
                         @error('number_of_colors')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
@@ -272,57 +300,199 @@
                     </div>
                 </div>
 
-                <!-- Final Product Shape -->
-                <div class="form-group">
-                    <label for="final_product_shape" class="form-label">شكل المنتج النهائي</label>
-                    <textarea name="final_product_shape" 
-                              id="final_product_shape" 
-                              rows="3"
-                              class="form-textarea"
-                              placeholder="وصف شكل المنتج النهائي المطلوب">{{ old('final_product_shape') }}</textarea>
-                    @error('final_product_shape')
-                        <p class="error-message">{{ $message }}</p>
-                    @enderror
+                    <!-- Additions -->
+                    <div class="form-group">
+                        <label for="additions" class="form-label">الإضافات المطلوبة</label>
+                        <select name="additions" 
+                                id="additions" 
+                                class="form-select">
+                            <option value="">اختر الإضافة</option>
+                            <option value="لا يوجد" {{ old('additions') == 'لا يوجد' ? 'selected' : '' }}>لا يوجد</option>
+                            <option value="يوفي" {{ old('additions') == 'يوفي' ? 'selected' : '' }}>يوفي</option>
+                            <option value="سلوفان" {{ old('additions') == 'سلوفان' ? 'selected' : '' }}>سلوفان</option>
+                            <option value="سلوفان مط" {{ old('additions') == 'سلوفان مط' ? 'selected' : '' }}>سلوفان مط</option>
+                        </select>
+                        @error('additions')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Fingerprint -->
+                    <div class="form-group">
+                        <label class="form-label">البصمة</label>
+                        <div style="display: flex; gap: 2rem; margin-top: 0.5rem;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('fingerprint', 'no') == 'no' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                                <input type="radio" 
+                                       name="fingerprint" 
+                                       value="no" 
+                                       {{ old('fingerprint', 'no') == 'no' ? 'checked' : '' }}
+                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">لا يوجد</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('fingerprint') == 'yes' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                                <input type="radio" 
+                                       name="fingerprint" 
+                                       value="yes" 
+                                       {{ old('fingerprint') == 'yes' ? 'checked' : '' }}
+                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">موجود</span>
+                            </label>
+                        </div>
+                        @error('fingerprint')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Winding Direction -->
+                    <div class="form-group">
+                        <label class="form-label">اتجاه اللف</label>
+                        <div style="display: flex; gap: 2rem; margin-top: 0.5rem;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('winding_direction', 'no') == 'no' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                                <input type="radio" 
+                                       name="winding_direction" 
+                                       value="no" 
+                                       {{ old('winding_direction', 'no') == 'no' ? 'checked' : '' }}
+                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">لا يوجد</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('winding_direction') == 'yes' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                                <input type="radio" 
+                                       name="winding_direction" 
+                                       value="yes" 
+                                       {{ old('winding_direction') == 'yes' ? 'checked' : '' }}
+                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">يوجد</span>
+                            </label>
+                        </div>
+                        @error('winding_direction')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
                 </div>
 
-                <!-- Additions -->
-                <div class="form-group">
-                    <label for="additions" class="form-label">الإضافات المطلوبة</label>
-                    <textarea name="additions" 
-                              id="additions" 
-                              rows="3"
-                              class="form-textarea"
-                              placeholder="أي إضافات خاصة يطلبها العميل">{{ old('additions') }}</textarea>
-                    @error('additions')
-                        <p class="error-message">{{ $message }}</p>
-                    @enderror
+                <!-- Final Product Shape & Production Method Data -->
+                <div style="margin-top: 2rem; padding: 1.5rem; background-color: #f9fafb; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
+                    <h3 style="font-size: 1rem; font-weight: 600; color: #111827; margin-bottom: 1.5rem;">شكل المنتج النهائي وبيانات طريقة التشغيل</h3>
+                    
+                    <!-- Final Product Shape -->
+                    <div class="form-group">
+                        <label class="form-label">شكل المنتج النهائي</label>
+                        <div style="display: flex; gap: 2rem; margin-top: 0.5rem;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('final_product_shape') == 'بكر' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                                <input type="radio" 
+                                       name="final_product_shape" 
+                                       value="بكر" 
+                                       id="final_product_shape_roll"
+                                       {{ old('final_product_shape') == 'بكر' ? 'checked' : '' }}
+                                       onchange="toggleProductionFields()"
+                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">بكر</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('final_product_shape') == 'شيت' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                                <input type="radio" 
+                                       name="final_product_shape" 
+                                       value="شيت" 
+                                       id="final_product_shape_sheet"
+                                       {{ old('final_product_shape') == 'شيت' ? 'checked' : '' }}
+                                       onchange="toggleProductionFields()"
+                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">شيت</span>
+                            </label>
+                        </div>
+                        @error('final_product_shape')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Production Method Data -->
+                    <div style="margin-top: 1.5rem;">
+                        <h4 style="font-size: 0.875rem; font-weight: 600; color: #6b7280; margin-bottom: 1rem;">بيانات طريقة التشغيل</h4>
+                        
+                        <!-- Roll Fields (بكر) -->
+                        <div id="roll-production-fields" style="display: {{ old('final_product_shape') == 'بكر' ? 'block' : 'none' }};">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="number_of_rolls" class="form-label">عدد البكر</label>
+                                    <input type="number"
+                                           name="number_of_rolls"
+                                           id="number_of_rolls"
+                                           value="{{ old('number_of_rolls') }}"
+                                           min="1"
+                                           class="form-input"
+                                           placeholder="أدخل عدد البكر">
+                                    @error('number_of_rolls')
+                                        <p class="error-message">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="core_size" class="form-label">مقاس الكور</label>
+                                    <input type="number"
+                                           name="core_size"
+                                           id="core_size"
+                                           value="{{ old('core_size') }}"
+                                           step="0.01"
+                                           min="0"
+                                           class="form-input"
+                                           placeholder="أدخل مقاس الكور">
+                                    @error('core_size')
+                                        <p class="error-message">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sheet Fields (شيت) -->
+                        <div id="sheet-production-fields" style="display: {{ old('final_product_shape') == 'شيت' ? 'block' : 'none' }};">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="pieces_per_sheet" class="form-label">عدد التكت في الشيت</label>
+                                    <input type="number"
+                                           name="pieces_per_sheet"
+                                           id="pieces_per_sheet"
+                                           value="{{ old('pieces_per_sheet') }}"
+                                           min="1"
+                                           class="form-input"
+                                           placeholder="أدخل عدد التكت في الشيت">
+                                    @error('pieces_per_sheet')
+                                        <p class="error-message">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="sheets_per_stack" class="form-label">عدد الشيت في الراكوة</label>
+                                    <input type="number"
+                                           name="sheets_per_stack"
+                                           id="sheets_per_stack"
+                                           value="{{ old('sheets_per_stack') }}"
+                                           min="1"
+                                           class="form-input"
+                                           placeholder="أدخل عدد الشيت في الراكوة">
+                                    @error('sheets_per_stack')
+                                        <p class="error-message">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Notes -->
-                <div class="form-group">
-                    <label for="notes" class="form-label">ملاحظات</label>
-                    <textarea name="notes" 
-                              id="notes" 
-                              rows="3"
-                              class="form-textarea"
-                              placeholder="أي ملاحظات إضافية">{{ old('notes') }}</textarea>
-                    @error('notes')
-                        <p class="error-message">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <!-- Status -->
-                <div class="form-group">
-                    <label for="status" class="form-label">الحالة</label>
-                    <select name="status" id="status" class="form-select">
-                        <option value="pending" {{ old('status', 'pending') == 'pending' ? 'selected' : '' }}>قيد الانتظار</option>
-                        <option value="in_progress" {{ old('status') == 'in_progress' ? 'selected' : '' }}>قيد التنفيذ</option>
-                        <option value="completed" {{ old('status') == 'completed' ? 'selected' : '' }}>مكتمل</option>
-                        <option value="cancelled" {{ old('status') == 'cancelled' ? 'selected' : '' }}>ملغي</option>
-                    </select>
-                    @error('status')
-                        <p class="error-message">{{ $message }}</p>
-                    @enderror
+                <!-- معلومات إضافية -->
+                <div style="margin-bottom: 2rem; padding: 1.5rem; background-color: #f9fafb; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
+                    <h3 style="font-size: 1rem; font-weight: 600; color: #111827; margin-bottom: 1.5rem;">معلومات إضافية</h3>
+                    
+                    <!-- Notes -->
+                    <div class="form-group">
+                        <label for="notes" class="form-label">ملاحظات</label>
+                        <textarea name="notes" 
+                                  id="notes" 
+                                  rows="3"
+                                  class="form-textarea"
+                                  placeholder="أي ملاحظات إضافية">{{ old('notes') }}</textarea>
+                        @error('notes')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
                 </div>
 
                 <!-- Form Actions -->
@@ -337,5 +507,87 @@
             </form>
         </div>
     </div>
+
+    <script>
+        // Handle radio button styling for fingerprint, winding_direction and final_product_shape
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle fingerprint radio buttons
+            const fingerprintRadios = document.querySelectorAll('input[name="fingerprint"]');
+            fingerprintRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const labels = document.querySelectorAll('input[name="fingerprint"]').forEach(r => {
+                        const label = r.closest('label');
+                        if (r.checked) {
+                            label.style.borderColor = '#2563eb';
+                            label.style.backgroundColor = '#eff6ff';
+                        } else {
+                            label.style.borderColor = '#d1d5db';
+                            label.style.backgroundColor = 'transparent';
+                        }
+                    });
+                });
+            });
+
+            // Handle winding_direction radio buttons
+            const windingDirectionRadios = document.querySelectorAll('input[name="winding_direction"]');
+            windingDirectionRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const labels = document.querySelectorAll('input[name="winding_direction"]').forEach(r => {
+                        const label = r.closest('label');
+                        if (r.checked) {
+                            label.style.borderColor = '#2563eb';
+                            label.style.backgroundColor = '#eff6ff';
+                        } else {
+                            label.style.borderColor = '#d1d5db';
+                            label.style.backgroundColor = 'transparent';
+                        }
+                    });
+                });
+            });
+
+            // Handle final_product_shape radio buttons
+            const shapeRadios = document.querySelectorAll('input[name="final_product_shape"]');
+            shapeRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const labels = document.querySelectorAll('input[name="final_product_shape"]').forEach(r => {
+                        const label = r.closest('label');
+                        if (r.checked) {
+                            label.style.borderColor = '#2563eb';
+                            label.style.backgroundColor = '#eff6ff';
+                        } else {
+                            label.style.borderColor = '#d1d5db';
+                            label.style.backgroundColor = 'transparent';
+                        }
+                    });
+                    toggleProductionFields();
+                });
+            });
+
+            // Initialize production fields on page load
+            toggleProductionFields();
+        });
+
+        // Toggle production fields based on final_product_shape selection
+        function toggleProductionFields() {
+            const rollRadio = document.getElementById('final_product_shape_roll');
+            const sheetRadio = document.getElementById('final_product_shape_sheet');
+            const rollFields = document.getElementById('roll-production-fields');
+            const sheetFields = document.getElementById('sheet-production-fields');
+
+            if (rollRadio && rollRadio.checked) {
+                if (rollFields) rollFields.style.display = 'block';
+                if (sheetFields) sheetFields.style.display = 'none';
+            } else if (sheetRadio && sheetRadio.checked) {
+                if (rollFields) rollFields.style.display = 'none';
+                if (sheetFields) sheetFields.style.display = 'block';
+            } else {
+                if (rollFields) rollFields.style.display = 'none';
+                if (sheetFields) sheetFields.style.display = 'none';
+            }
+        }
+    </script>
 </x-app-layout>
+
+
+
 
