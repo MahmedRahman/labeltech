@@ -166,68 +166,69 @@
                 <!-- معلومات أساسية -->
                 <div class="form-section">
                     <h3>معلومات أساسية</h3>
+                    <div class="form-group">
+                        <label for="knife_code" class="form-label required">الرقم الكود</label>
+                        <input type="text" 
+                               name="knife_code" 
+                               id="knife_code" 
+                               value="{{ old('knife_code') }}" 
+                               required
+                               class="form-input"
+                               placeholder="أدخل الرقم الكود">
+                        @error('knife_code')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
+
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="knife_code" class="form-label required">كود السكينة</label>
-                            <input type="text" 
-                                   name="knife_code" 
-                                   id="knife_code" 
-                                   value="{{ old('knife_code') }}" 
-                                   required
-                                   class="form-input"
-                                   placeholder="أدخل كود السكينة">
-                            @error('knife_code')
+                            <label for="type" class="form-label">النوع</label>
+                            <select name="type" 
+                                    id="type" 
+                                    class="form-select">
+                                <option value="">اختر النوع</option>
+                                <option value="مستطيل" {{ old('type') == 'مستطيل' ? 'selected' : '' }}>مستطيل</option>
+                                <option value="دائرة" {{ old('type') == 'دائرة' ? 'selected' : '' }}>دائرة</option>
+                                <option value="مربع" {{ old('type') == 'مربع' ? 'selected' : '' }}>مربع</option>
+                                <option value="بيضاوي" {{ old('type') == 'بيضاوي' ? 'selected' : '' }}>بيضاوي</option>
+                                <option value="شكل خاص" {{ old('type') == 'شكل خاص' ? 'selected' : '' }}>شكل خاص</option>
+                            </select>
+                            @error('type')
                                 <p class="error-message">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <div class="form-group">
-                            <label for="knife_name" class="form-label required">اسم السكينة</label>
+                            <label for="gear" class="form-label">تُرس</label>
                             <input type="text" 
-                                   name="knife_name" 
-                                   id="knife_name" 
-                                   value="{{ old('knife_name') }}" 
-                                   required
+                                   name="gear" 
+                                   id="gear" 
+                                   value="{{ old('gear') }}" 
                                    class="form-input"
-                                   placeholder="أدخل اسم السكينة">
-                            @error('knife_name')
+                                   placeholder="أدخل تُرس">
+                            @error('gear')
                                 <p class="error-message">{{ $message }}</p>
                             @enderror
                         </div>
                     </div>
 
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="knife_type" class="form-label">نوع السكينة</label>
-                            <input type="text" 
-                                   name="knife_type" 
-                                   id="knife_type" 
-                                   value="{{ old('knife_type') }}" 
-                                   class="form-input"
-                                   placeholder="أدخل نوع السكينة">
-                            @error('knife_type')
-                                <p class="error-message">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <label for="size" class="form-label">المقاس</label>
-                            <input type="text" 
-                                   name="size" 
-                                   id="size" 
-                                   value="{{ old('size') }}" 
-                                   class="form-input"
-                                   placeholder="أدخل المقاس">
-                            @error('size')
-                                <p class="error-message">{{ $message }}</p>
-                            @enderror
-                        </div>
+                    <div class="form-group">
+                        <label for="dragile_drive" class="form-label">دراغيل</label>
+                        <input type="text" 
+                               name="dragile_drive" 
+                               id="dragile_drive" 
+                               value="{{ old('dragile_drive') }}" 
+                               class="form-input"
+                               placeholder="أدخل دراغيل">
+                        @error('dragile_drive')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
                     </div>
                 </div>
 
-                <!-- المواصفات الفنية -->
+                <!-- المواصفات -->
                 <div class="form-section">
-                    <h3>المواصفات الفنية</h3>
+                    <h3>المواصفات</h3>
                     <div class="form-grid">
                         <div class="form-group">
                             <label for="rows_count" class="form-label">عدد الصفوف</label>
@@ -260,168 +261,53 @@
 
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="flap_size" class="form-label">حجم الجيب</label>
+                            <label for="flap_size" class="form-label">الجيب</label>
                             <input type="text" 
                                    name="flap_size" 
                                    id="flap_size" 
                                    value="{{ old('flap_size') }}" 
                                    class="form-input"
-                                   placeholder="أدخل حجم الجيب">
+                                   placeholder="أدخل الجيب">
                             @error('flap_size')
                                 <p class="error-message">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <div class="form-group">
-                            <label for="grain_direction" class="form-label">اتجاه البحر</label>
-                            <input type="text" 
-                                   name="grain_direction" 
-                                   id="grain_direction" 
-                                   value="{{ old('grain_direction') }}" 
-                                   class="form-input"
-                                   placeholder="أدخل اتجاه البحر">
-                            @error('grain_direction')
-                                <p class="error-message">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="knife_thickness" class="form-label">سُمك السكينة</label>
+                            <label for="length" class="form-label">الطول</label>
                             <input type="number" 
-                                   name="knife_thickness" 
-                                   id="knife_thickness" 
-                                   value="{{ old('knife_thickness') }}" 
+                                   name="length" 
+                                   id="length" 
+                                   value="{{ old('length') }}" 
                                    step="0.01"
                                    min="0"
                                    class="form-input"
-                                   placeholder="أدخل سُمك السكينة">
-                            @error('knife_thickness')
-                                <p class="error-message">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <label for="crease_lines" class="form-label">خطوط التكسير</label>
-                            <input type="number" 
-                                   name="crease_lines" 
-                                   id="crease_lines" 
-                                   value="{{ old('crease_lines') }}" 
-                                   min="0"
-                                   class="form-input"
-                                   placeholder="أدخل عدد خطوط التكسير">
-                            @error('crease_lines')
-                                <p class="error-message">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="punch_holes" class="form-label">عدد الثقوب</label>
-                            <input type="number" 
-                                   name="punch_holes" 
-                                   id="punch_holes" 
-                                   value="{{ old('punch_holes') }}" 
-                                   min="0"
-                                   class="form-input"
-                                   placeholder="أدخل عدد الثقوب">
-                            @error('punch_holes')
-                                <p class="error-message">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <label for="drill_size" class="form-label">مقاس البرّافات</label>
-                            <input type="text" 
-                                   name="drill_size" 
-                                   id="drill_size" 
-                                   value="{{ old('drill_size') }}" 
-                                   class="form-input"
-                                   placeholder="أدخل مقاس البرّافات">
-                            @error('drill_size')
+                                   placeholder="أدخل الطول">
+                            @error('length')
                                 <p class="error-message">{{ $message }}</p>
                             @enderror
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="material_type" class="form-label">نوع المعدن</label>
-                        <input type="text" 
-                               name="material_type" 
-                               id="material_type" 
-                               value="{{ old('material_type') }}" 
+                        <label for="width" class="form-label">العرض</label>
+                        <input type="number" 
+                               name="width" 
+                               id="width" 
+                               value="{{ old('width') }}" 
+                               step="0.01"
+                               min="0"
                                class="form-input"
-                               placeholder="أدخل نوع المعدن">
-                        @error('material_type')
+                               placeholder="أدخل العرض">
+                        @error('width')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
                     </div>
                 </div>
 
-                <!-- معلومات الإدارة -->
+                <!-- ملاحظات -->
                 <div class="form-section">
-                    <h3>معلومات الإدارة</h3>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="purchase_date" class="form-label">تاريخ الشراء</label>
-                            <input type="date" 
-                                   name="purchase_date" 
-                                   id="purchase_date" 
-                                   value="{{ old('purchase_date') }}" 
-                                   class="form-input">
-                            @error('purchase_date')
-                                <p class="error-message">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <label for="knife_status" class="form-label required">حالة السكينة</label>
-                            <select name="knife_status" 
-                                    id="knife_status" 
-                                    required
-                                    class="form-select">
-                                <option value="active" {{ old('knife_status', 'active') == 'active' ? 'selected' : '' }}>نشط</option>
-                                <option value="inactive" {{ old('knife_status') == 'inactive' ? 'selected' : '' }}>غير نشط</option>
-                                <option value="maintenance" {{ old('knife_status') == 'maintenance' ? 'selected' : '' }}>صيانة</option>
-                                <option value="retired" {{ old('knife_status') == 'retired' ? 'selected' : '' }}>متقاعد</option>
-                            </select>
-                            @error('knife_status')
-                                <p class="error-message">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="usage_count" class="form-label">عدد الاستخدام</label>
-                            <input type="number" 
-                                   name="usage_count" 
-                                   id="usage_count" 
-                                   value="{{ old('usage_count', 0) }}" 
-                                   min="0"
-                                   class="form-input"
-                                   placeholder="أدخل عدد الاستخدام">
-                            @error('usage_count')
-                                <p class="error-message">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <label for="storage_location" class="form-label">مكان التخزين</label>
-                            <input type="text" 
-                                   name="storage_location" 
-                                   id="storage_location" 
-                                   value="{{ old('storage_location') }}" 
-                                   class="form-input"
-                                   placeholder="أدخل مكان التخزين">
-                            @error('storage_location')
-                                <p class="error-message">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
-
+                    <h3>ملاحظات</h3>
                     <div class="form-group">
                         <label for="notes" class="form-label">ملاحظات</label>
                         <textarea name="notes" 
@@ -448,4 +334,3 @@
         </div>
     </div>
 </x-app-layout>
-

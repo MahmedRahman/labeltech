@@ -32,11 +32,6 @@
             </div>
 
             <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">عدد الهالك للبكرة الواحدة</dt>
-                <dd style="font-size: 1.5rem; font-weight: 700; color: #dc2626; margin: 0;">{{ number_format($waste->waste_per_roll, 2) }}</dd>
-            </div>
-
-            <div>
                 <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">تاريخ الإنشاء</dt>
                 <dd style="font-size: 0.875rem; color: #111827; margin: 0;">{{ $waste->created_at->format('Y-m-d H:i') }}</dd>
             </div>

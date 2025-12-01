@@ -14,9 +14,8 @@ class KnifeController extends Controller
     {
         $knives = Knife::latest()->paginate(20);
         $totalKnives = Knife::count();
-        $activeKnives = Knife::where('knife_status', 'active')->count();
         
-        return view('knives.index', compact('knives', 'totalKnives', 'activeKnives'));
+        return view('knives.index', compact('knives', 'totalKnives'));
     }
 
     /**
@@ -33,23 +32,15 @@ class KnifeController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'knife_code' => 'required|string|max:255|unique:knives,knife_code',
-            'knife_name' => 'required|string|max:255',
-            'knife_type' => 'nullable|string|max:255',
-            'size' => 'nullable|string|max:255',
+            'type' => 'nullable|in:مستطيل,دائرة,مربع,بيضاوي,شكل خاص',
+            'gear' => 'nullable|string|max:255',
+            'dragile_drive' => 'nullable|string|max:255',
             'rows_count' => 'nullable|integer|min:0',
             'eyes_count' => 'nullable|integer|min:0',
             'flap_size' => 'nullable|string|max:255',
-            'grain_direction' => 'nullable|string|max:255',
-            'knife_thickness' => 'nullable|numeric|min:0',
-            'crease_lines' => 'nullable|integer|min:0',
-            'punch_holes' => 'nullable|integer|min:0',
-            'drill_size' => 'nullable|string|max:255',
-            'material_type' => 'nullable|string|max:255',
-            'purchase_date' => 'nullable|date',
-            'knife_status' => 'required|in:active,inactive,maintenance,retired',
-            'usage_count' => 'nullable|integer|min:0',
-            'storage_location' => 'nullable|string|max:255',
+            'length' => 'nullable|numeric|min:0',
+            'width' => 'nullable|numeric|min:0',
+            'knife_code' => 'required|string|max:255|unique:knives,knife_code',
             'notes' => 'nullable|string',
         ]);
 
@@ -81,23 +72,15 @@ class KnifeController extends Controller
     public function update(Request $request, Knife $knife)
     {
         $validated = $request->validate([
-            'knife_code' => 'required|string|max:255|unique:knives,knife_code,' . $knife->id,
-            'knife_name' => 'required|string|max:255',
-            'knife_type' => 'nullable|string|max:255',
-            'size' => 'nullable|string|max:255',
+            'type' => 'nullable|in:مستطيل,دائرة,مربع,بيضاوي,شكل خاص',
+            'gear' => 'nullable|string|max:255',
+            'dragile_drive' => 'nullable|string|max:255',
             'rows_count' => 'nullable|integer|min:0',
             'eyes_count' => 'nullable|integer|min:0',
             'flap_size' => 'nullable|string|max:255',
-            'grain_direction' => 'nullable|string|max:255',
-            'knife_thickness' => 'nullable|numeric|min:0',
-            'crease_lines' => 'nullable|integer|min:0',
-            'punch_holes' => 'nullable|integer|min:0',
-            'drill_size' => 'nullable|string|max:255',
-            'material_type' => 'nullable|string|max:255',
-            'purchase_date' => 'nullable|date',
-            'knife_status' => 'required|in:active,inactive,maintenance,retired',
-            'usage_count' => 'nullable|integer|min:0',
-            'storage_location' => 'nullable|string|max:255',
+            'length' => 'nullable|numeric|min:0',
+            'width' => 'nullable|numeric|min:0',
+            'knife_code' => 'required|string|max:255|unique:knives,knife_code,' . $knife->id,
             'notes' => 'nullable|string',
         ]);
 

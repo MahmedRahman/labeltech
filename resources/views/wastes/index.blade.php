@@ -33,7 +33,6 @@
                         <tr>
                             <th>عدد الألوان</th>
                             <th>نسبة الهالك (%)</th>
-                            <th>عدد الهالك للبكرة الواحدة</th>
                             <th>تاريخ الإنشاء</th>
                             <th>الإجراءات</th>
                         </tr>
@@ -43,7 +42,6 @@
                             <tr>
                                 <td style="font-weight: 600; color: #2563eb; font-size: 1.125rem;">{{ $waste->number_of_colors }}</td>
                                 <td style="font-weight: 500; color: #111827;">{{ number_format($waste->waste_percentage, 2) }}%</td>
-                                <td style="font-weight: 500; color: #dc2626;">{{ number_format($waste->waste_per_roll, 2) }}</td>
                                 <td style="color: #6b7280;">{{ $waste->created_at->format('Y-m-d') }}</td>
                                 <td>
                                     <div style="display: flex; gap: 0.75rem;">

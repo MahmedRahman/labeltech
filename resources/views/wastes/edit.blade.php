@@ -189,22 +189,6 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="waste_per_roll" class="form-label required">عدد الهالك للبكرة الواحدة</label>
-                    <input type="number" 
-                           name="waste_per_roll" 
-                           id="waste_per_roll" 
-                           value="{{ old('waste_per_roll', $waste->waste_per_roll) }}" 
-                           required
-                           step="0.01"
-                           min="0"
-                           class="form-input"
-                           placeholder="أدخل عدد الهالك للبكرة الواحدة">
-                    @error('waste_per_roll')
-                        <p class="error-message">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div class="form-group">
                     <label for="notes" class="form-label">ملاحظات</label>
                     <textarea name="notes" 
                               id="notes" 

@@ -17,15 +17,11 @@
         </a>
     </div>
 
-    <!-- Statistics Cards -->
+    <!-- Statistics Card -->
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
         <div style="background: white; border-radius: 0.75rem; border: 1px solid #e5e7eb; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);">
             <div style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">إجمالي السكاكين</div>
             <div style="font-size: 2rem; font-weight: 700; color: #111827;">{{ $totalKnives }}</div>
-        </div>
-        <div style="background: white; border-radius: 0.75rem; border: 1px solid #e5e7eb; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);">
-            <div style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">السكاكين النشطة</div>
-            <div style="font-size: 2rem; font-weight: 700; color: #10b981;">{{ $activeKnives }}</div>
         </div>
     </div>
 
@@ -35,13 +31,15 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>كود السكينة</th>
-                            <th>اسم السكينة</th>
-                            <th>نوع السكينة</th>
-                            <th>المقاس</th>
-                            <th>الحالة</th>
-                            <th>عدد الاستخدام</th>
-                            <th>مكان التخزين</th>
+                            <th>الرقم الكود</th>
+                            <th>النوع</th>
+                            <th>تُرس</th>
+                            <th>دراغيل</th>
+                            <th>عدد الصفوف</th>
+                            <th>عدد العيون</th>
+                            <th>الجيب</th>
+                            <th>الطول</th>
+                            <th>العرض</th>
                             <th>الإجراءات</th>
                         </tr>
                     </thead>
@@ -49,25 +47,14 @@
                         @foreach($knives as $knife)
                             <tr>
                                 <td style="font-weight: 600; color: #2563eb;">{{ $knife->knife_code }}</td>
-                                <td style="font-weight: 500; color: #111827;">{{ $knife->knife_name }}</td>
-                                <td style="color: #6b7280;">{{ $knife->knife_type ?? '-' }}</td>
-                                <td style="color: #6b7280;">{{ $knife->size ?? '-' }}</td>
-                                <td>
-                                    @php
-                                        $statusColors = [
-                                            'active' => ['bg' => '#d1fae5', 'text' => '#065f46', 'label' => 'نشط'],
-                                            'inactive' => ['bg' => '#fee2e2', 'text' => '#991b1b', 'label' => 'غير نشط'],
-                                            'maintenance' => ['bg' => '#fef3c7', 'text' => '#92400e', 'label' => 'صيانة'],
-                                            'retired' => ['bg' => '#e5e7eb', 'text' => '#374151', 'label' => 'متقاعد'],
-                                        ];
-                                        $status = $statusColors[$knife->knife_status] ?? $statusColors['inactive'];
-                                    @endphp
-                                    <span style="display: inline-block; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; background-color: {{ $status['bg'] }}; color: {{ $status['text'] }};">
-                                        {{ $status['label'] }}
-                                    </span>
-                                </td>
-                                <td style="color: #6b7280;">{{ $knife->usage_count }}</td>
-                                <td style="color: #6b7280;">{{ $knife->storage_location ?? '-' }}</td>
+                                <td style="color: #6b7280;">{{ $knife->type ?? '-' }}</td>
+                                <td style="color: #6b7280;">{{ $knife->gear ?? '-' }}</td>
+                                <td style="color: #6b7280;">{{ $knife->dragile_drive ?? '-' }}</td>
+                                <td style="color: #6b7280;">{{ $knife->rows_count ?? '-' }}</td>
+                                <td style="color: #6b7280;">{{ $knife->eyes_count ?? '-' }}</td>
+                                <td style="color: #6b7280;">{{ $knife->flap_size ?? '-' }}</td>
+                                <td style="color: #6b7280;">{{ $knife->length ? number_format($knife->length, 2) : '-' }}</td>
+                                <td style="color: #6b7280;">{{ $knife->width ? number_format($knife->width, 2) : '-' }}</td>
                                 <td>
                                     <div style="display: flex; gap: 0.75rem;">
                                         <a href="{{ route('knives.show', $knife) }}" style="color: #2563eb; text-decoration: none; font-size: 0.875rem;">عرض</a>
