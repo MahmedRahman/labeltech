@@ -36,7 +36,7 @@ class WorkOrderController extends Controller
         $validated = $request->validate([
             'client_id' => 'required|exists:clients,id',
             'order_number' => 'nullable|string|max:255|unique:work_orders,order_number',
-            'number_of_colors' => 'required|integer|min:1',
+            'number_of_colors' => 'required|integer|min:0|max:6',
             'material' => 'required|string|max:255',
             'quantity' => 'required|integer|min:1',
             'width' => 'nullable|numeric|min:0',
@@ -46,7 +46,7 @@ class WorkOrderController extends Controller
             'fingerprint' => 'nullable|in:yes,no',
             'winding_direction' => 'nullable|in:yes,no',
             'number_of_rolls' => 'nullable|integer|min:1',
-            'core_size' => 'nullable|numeric|min:0',
+            'core_size' => 'nullable|in:76,40,25',
             'pieces_per_sheet' => 'nullable|integer|min:1',
             'sheets_per_stack' => 'nullable|integer|min:1',
             'notes' => 'nullable|string',
@@ -283,7 +283,7 @@ class WorkOrderController extends Controller
     public function storeDesign(Request $request, WorkOrder $workOrder)
     {
         $validated = $request->validate([
-            'design_shape' => 'nullable|string|max:255',
+            'design_shape' => 'nullable|in:مستطيل,دائرة,مربع,بيضاوي,شكل خاص',
             'design_films' => 'nullable|string|max:255',
             'design_knives' => 'nullable|string|max:255',
             'design_drills' => 'nullable|string|max:255',
@@ -343,7 +343,7 @@ class WorkOrderController extends Controller
             'paper_weight' => 'nullable|numeric|min:0',
             'waste_percentage' => 'nullable|numeric|min:0|max:100',
             'number_of_rolls' => 'nullable|integer|min:1',
-            'core_size' => 'nullable|numeric|min:0',
+            'core_size' => 'nullable|in:76,40,25',
             'pieces_per_sheet' => 'nullable|integer|min:1',
             'sheets_per_stack' => 'nullable|integer|min:1',
             'pieces_per_stack' => 'nullable|integer|min:1',

@@ -164,12 +164,16 @@
                     <!-- Design Shape -->
                     <div class="form-group">
                         <label for="design_shape" class="form-label">الشكل</label>
-                        <input type="text"
-                               name="design_shape"
-                               id="design_shape"
-                               value="{{ old('design_shape', $workOrder->design_shape) }}"
-                               class="form-input"
-                               placeholder="أدخل الشكل">
+                        <select name="design_shape" 
+                                id="design_shape" 
+                                class="form-select">
+                            <option value="">اختر الشكل</option>
+                            <option value="مستطيل" {{ old('design_shape', $workOrder->design_shape) == 'مستطيل' ? 'selected' : '' }}>مستطيل</option>
+                            <option value="دائرة" {{ old('design_shape', $workOrder->design_shape) == 'دائرة' ? 'selected' : '' }}>دائرة</option>
+                            <option value="مربع" {{ old('design_shape', $workOrder->design_shape) == 'مربع' ? 'selected' : '' }}>مربع</option>
+                            <option value="بيضاوي" {{ old('design_shape', $workOrder->design_shape) == 'بيضاوي' ? 'selected' : '' }}>بيضاوي</option>
+                            <option value="شكل خاص" {{ old('design_shape', $workOrder->design_shape) == 'شكل خاص' ? 'selected' : '' }}>شكل خاص</option>
+                        </select>
                         @error('design_shape')
                             <p class="error-message">{{ $message }}</p>
                         @enderror

@@ -228,7 +228,7 @@
                     @endif
                     @if($workOrder->number_of_rolls)
                     <div>
-                        <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.25rem;">عدد البكر</dt>
+                        <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.25rem;">عدد التكت في البكره</dt>
                         <dd style="font-size: 0.875rem; color: #111827; margin: 0;">{{ $workOrder->number_of_rolls }}</dd>
                     </div>
                     @endif

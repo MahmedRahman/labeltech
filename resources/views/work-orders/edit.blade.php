@@ -240,10 +240,13 @@
                                 id="number_of_colors" 
                                 required
                                 class="form-select">
+                            <option value="0" {{ old('number_of_colors', $workOrder->number_of_colors) == 0 ? 'selected' : '' }}>0</option>
                             <option value="1" {{ old('number_of_colors', $workOrder->number_of_colors) == 1 ? 'selected' : '' }}>1</option>
                             <option value="2" {{ old('number_of_colors', $workOrder->number_of_colors) == 2 ? 'selected' : '' }}>2</option>
                             <option value="3" {{ old('number_of_colors', $workOrder->number_of_colors) == 3 ? 'selected' : '' }}>3</option>
                             <option value="4" {{ old('number_of_colors', $workOrder->number_of_colors) == 4 ? 'selected' : '' }}>4</option>
+                            <option value="5" {{ old('number_of_colors', $workOrder->number_of_colors) == 5 ? 'selected' : '' }}>5</option>
+                            <option value="6" {{ old('number_of_colors', $workOrder->number_of_colors) == 6 ? 'selected' : '' }}>6</option>
                         </select>
                         @error('number_of_colors')
                             <p class="error-message">{{ $message }}</p>
@@ -409,14 +412,14 @@
                         <div id="roll-production-fields" style="display: {{ old('final_product_shape', $workOrder->final_product_shape) == 'بكر' ? 'block' : 'none' }};">
                             <div class="form-grid">
                                 <div class="form-group">
-                                    <label for="number_of_rolls" class="form-label">عدد البكر</label>
+                                    <label for="number_of_rolls" class="form-label">عدد التكت في البكره</label>
                                     <input type="number"
                                            name="number_of_rolls"
                                            id="number_of_rolls"
                                            value="{{ old('number_of_rolls', $workOrder->number_of_rolls) }}"
                                            min="1"
                                            class="form-input"
-                                           placeholder="أدخل عدد البكر">
+                                           placeholder="أدخل عدد التكت في البكره">
                                     @error('number_of_rolls')
                                         <p class="error-message">{{ $message }}</p>
                                     @enderror
@@ -424,14 +427,14 @@
 
                                 <div class="form-group">
                                     <label for="core_size" class="form-label">مقاس الكور</label>
-                                    <input type="number"
-                                           name="core_size"
-                                           id="core_size"
-                                           value="{{ old('core_size', $workOrder->core_size) }}"
-                                           step="0.01"
-                                           min="0"
-                                           class="form-input"
-                                           placeholder="أدخل مقاس الكور">
+                                    <select name="core_size" 
+                                            id="core_size" 
+                                            class="form-select">
+                                        <option value="">اختر مقاس الكور</option>
+                                        <option value="76" {{ old('core_size', $workOrder->core_size) == '76' ? 'selected' : '' }}>76</option>
+                                        <option value="40" {{ old('core_size', $workOrder->core_size) == '40' ? 'selected' : '' }}>40</option>
+                                        <option value="25" {{ old('core_size', $workOrder->core_size) == '25' ? 'selected' : '' }}>25</option>
+                                    </select>
                                     @error('core_size')
                                         <p class="error-message">{{ $message }}</p>
                                     @enderror

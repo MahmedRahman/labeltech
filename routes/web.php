@@ -47,6 +47,12 @@ Route::middleware('auth')->group(function () {
     // الخامات
     Route::resource('materials', \App\Http\Controllers\MaterialController::class);
     
+    // السكاكين
+    Route::resource('knives', \App\Http\Controllers\KnifeController::class);
+    
+    // الهالك
+    Route::resource('wastes', \App\Http\Controllers\WasteController::class);
+    
     // المصروفات
     Route::resource('expenses', \App\Http\Controllers\ExpenseController::class);
     
