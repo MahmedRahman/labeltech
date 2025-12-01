@@ -139,6 +139,52 @@
             color: #6b7280;
             margin: 0.25rem 0;
         }
+
+        .knife-info {
+            background-color: #eff6ff;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            border: 1px solid #bfdbfe;
+            display: none;
+        }
+
+        .knife-info.show {
+            display: block;
+        }
+
+        .knife-info h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #111827;
+            margin: 0 0 1rem 0;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #bfdbfe;
+        }
+
+        .knife-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .knife-info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .knife-info-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #6b7280;
+            margin-bottom: 0.25rem;
+        }
+
+        .knife-info-value {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #111827;
+        }
     </style>
 
     <div class="form-container">
@@ -195,6 +241,14 @@
                     </div>
                 </div>
 
+                <!-- Knife Information Display -->
+                <div id="knife-info" class="knife-info">
+                    <h4>معلومات السكينة المختارة</h4>
+                    <div class="knife-info-grid" id="knife-info-content">
+                        <!-- Content will be populated by JavaScript -->
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <!-- Design File -->
                     <label for="design_file" class="form-label">ملف التصميم</label>
@@ -228,6 +282,137 @@
             </form>
         </div>
     </div>
+
+    <script>
+        // Knives data
+        const knivesData = @json($knivesData);
+        const selectedKnifeId = {{ old('design_knife_id', $workOrder->design_knife_id ?? 'null') }};
+
+        // Get DOM elements
+        const knifeSelect = document.getElementById('design_knife_id');
+        const knifeInfo = document.getElementById('knife-info');
+        const knifeInfoContent = document.getElementById('knife-info-content');
+
+        // Function to display knife information
+        function displayKnifeInfo(knifeId) {
+            if (!knifeId) {
+                knifeInfo.classList.remove('show');
+                return;
+            }
+
+            const knife = knivesData.find(k => k.id == knifeId);
+            if (!knife) {
+                knifeInfo.classList.remove('show');
+                return;
+            }
+
+            // Build the HTML content
+            let html = '';
+            
+            if (knife.knife_code) {
+                html += `
+                    <div class="knife-info-item">
+                        <span class="knife-info-label">الرقم الكود</span>
+                        <span class="knife-info-value">${knife.knife_code}</span>
+                    </div>
+                `;
+            }
+
+            if (knife.type) {
+                html += `
+                    <div class="knife-info-item">
+                        <span class="knife-info-label">النوع</span>
+                        <span class="knife-info-value">${knife.type}</span>
+                    </div>
+                `;
+            }
+
+            if (knife.gear) {
+                html += `
+                    <div class="knife-info-item">
+                        <span class="knife-info-label">تُرس</span>
+                        <span class="knife-info-value">${knife.gear}</span>
+                    </div>
+                `;
+            }
+
+            if (knife.dragile_drive) {
+                html += `
+                    <div class="knife-info-item">
+                        <span class="knife-info-label">دراغيل</span>
+                        <span class="knife-info-value">${knife.dragile_drive}</span>
+                    </div>
+                `;
+            }
+
+            if (knife.rows_count !== null) {
+                html += `
+                    <div class="knife-info-item">
+                        <span class="knife-info-label">عدد الصفوف</span>
+                        <span class="knife-info-value">${knife.rows_count}</span>
+                    </div>
+                `;
+            }
+
+            if (knife.eyes_count !== null) {
+                html += `
+                    <div class="knife-info-item">
+                        <span class="knife-info-label">عدد العيون</span>
+                        <span class="knife-info-value">${knife.eyes_count}</span>
+                    </div>
+                `;
+            }
+
+            if (knife.flap_size) {
+                html += `
+                    <div class="knife-info-item">
+                        <span class="knife-info-label">الجيب</span>
+                        <span class="knife-info-value">${knife.flap_size}</span>
+                    </div>
+                `;
+            }
+
+            if (knife.length !== null) {
+                html += `
+                    <div class="knife-info-item">
+                        <span class="knife-info-label">الطول</span>
+                        <span class="knife-info-value">${parseFloat(knife.length).toFixed(2)}</span>
+                    </div>
+                `;
+            }
+
+            if (knife.width !== null) {
+                html += `
+                    <div class="knife-info-item">
+                        <span class="knife-info-label">العرض</span>
+                        <span class="knife-info-value">${parseFloat(knife.width).toFixed(2)}</span>
+                    </div>
+                `;
+            }
+
+            if (knife.notes) {
+                html += `
+                    <div class="knife-info-item" style="grid-column: 1 / -1;">
+                        <span class="knife-info-label">الملاحظات</span>
+                        <span class="knife-info-value">${knife.notes}</span>
+                    </div>
+                `;
+            }
+
+            knifeInfoContent.innerHTML = html;
+            knifeInfo.classList.add('show');
+        }
+
+        // Event listener for knife selection change
+        knifeSelect.addEventListener('change', function() {
+            displayKnifeInfo(this.value);
+        });
+
+        // Display knife info on page load if a knife is already selected
+        if (selectedKnifeId) {
+            displayKnifeInfo(selectedKnifeId);
+        }
+    </script>
 </x-app-layout>
 
 

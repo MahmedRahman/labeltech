@@ -130,9 +130,24 @@ class WorkOrderController extends Controller
      */
     public function showDesignForm(WorkOrder $workOrder)
     {
-        $workOrder->load('client');
+        $workOrder->load('client', 'designKnife');
         $knives = \App\Models\Knife::orderBy('knife_code')->get();
-        return view('work-orders.design', compact('workOrder', 'knives'));
+        $knivesData = $knives->map(function($knife) {
+            return [
+                'id' => $knife->id,
+                'knife_code' => $knife->knife_code,
+                'type' => $knife->type,
+                'gear' => $knife->gear,
+                'dragile_drive' => $knife->dragile_drive,
+                'rows_count' => $knife->rows_count,
+                'eyes_count' => $knife->eyes_count,
+                'flap_size' => $knife->flap_size,
+                'length' => $knife->length,
+                'width' => $knife->width,
+                'notes' => $knife->notes,
+            ];
+        });
+        return view('work-orders.design', compact('workOrder', 'knives', 'knivesData'));
     }
 
     /**
