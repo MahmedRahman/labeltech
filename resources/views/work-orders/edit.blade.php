@@ -302,16 +302,41 @@
 
                     <!-- Additions -->
                     <div class="form-group">
-                        <label for="additions" class="form-label">الإضافات المطلوبة</label>
-                        <select name="additions" 
-                                id="additions" 
-                                class="form-select">
-                            <option value="">اختر الإضافة</option>
-                            <option value="لا يوجد" {{ old('additions', $workOrder->additions) == 'لا يوجد' ? 'selected' : '' }}>لا يوجد</option>
-                            <option value="يوفي" {{ old('additions', $workOrder->additions) == 'يوفي' ? 'selected' : '' }}>يوفي</option>
-                            <option value="سلوفان" {{ old('additions', $workOrder->additions) == 'سلوفان' ? 'selected' : '' }}>سلوفان</option>
-                            <option value="سلوفان مط" {{ old('additions', $workOrder->additions) == 'سلوفان مط' ? 'selected' : '' }}>سلوفان مط</option>
-                        </select>
+                        <label class="form-label">الإضافات المطلوبة</label>
+                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; flex-wrap: wrap;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('additions', $workOrder->additions ?? 'لا يوجد') == 'لا يوجد' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                                <input type="radio" 
+                                       name="additions" 
+                                       value="لا يوجد" 
+                                       {{ old('additions', $workOrder->additions ?? 'لا يوجد') == 'لا يوجد' ? 'checked' : '' }}
+                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">لا يوجد</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('additions', $workOrder->additions ?? '') == 'يوفي' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                                <input type="radio" 
+                                       name="additions" 
+                                       value="يوفي" 
+                                       {{ old('additions', $workOrder->additions ?? '') == 'يوفي' ? 'checked' : '' }}
+                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">يوفي</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('additions', $workOrder->additions ?? '') == 'سلوفان' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                                <input type="radio" 
+                                       name="additions" 
+                                       value="سلوفان" 
+                                       {{ old('additions', $workOrder->additions ?? '') == 'سلوفان' ? 'checked' : '' }}
+                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">سلوفان</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('additions', $workOrder->additions ?? '') == 'سلوفان مط' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                                <input type="radio" 
+                                       name="additions" 
+                                       value="سلوفان مط" 
+                                       {{ old('additions', $workOrder->additions ?? '') == 'سلوفان مط' ? 'checked' : '' }}
+                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">سلوفان مط</span>
+                            </label>
+                        </div>
                         @error('additions')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
@@ -508,8 +533,25 @@
     </div>
 
     <script>
-        // Handle radio button styling for fingerprint, winding_direction and final_product_shape
+        // Handle radio button styling for additions, fingerprint, winding_direction and final_product_shape
         document.addEventListener('DOMContentLoaded', function() {
+            // Handle additions radio buttons
+            const additionsRadios = document.querySelectorAll('input[name="additions"]');
+            additionsRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const labels = document.querySelectorAll('input[name="additions"]').forEach(r => {
+                        const label = r.closest('label');
+                        if (r.checked) {
+                            label.style.borderColor = '#2563eb';
+                            label.style.backgroundColor = '#eff6ff';
+                        } else {
+                            label.style.borderColor = '#d1d5db';
+                            label.style.backgroundColor = 'transparent';
+                        }
+                    });
+                });
+            });
+
             // Handle fingerprint radio buttons
             const fingerprintRadios = document.querySelectorAll('input[name="fingerprint"]');
             fingerprintRadios.forEach(radio => {

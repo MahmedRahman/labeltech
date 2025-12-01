@@ -36,8 +36,8 @@
                     $color = $statusColors[$workOrder->status] ?? '#6b7280';
                     $label = $statusLabels[$workOrder->status] ?? $workOrder->status;
                 @endphp
-                <div style="background: white; border-radius: 0.75rem; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); padding: 1.5rem; transition: all 0.2s ease-in-out; border: 2px solid {{ ($workOrder->has_design ?? false) ? '#8b5cf6' : (($workOrder->has_production ?? false) ? '#10b981' : '#e5e7eb') }}; position: relative; hover:shadow-lg;">
-                    @if($workOrder->has_design ?? false || $workOrder->has_production ?? false)
+                <div style="background: white; border-radius: 0.75rem; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); padding: 1.5rem; transition: all 0.2s ease-in-out; border: 2px solid {{ ($workOrder->has_design ?? false) ? '#8b5cf6' : '#e5e7eb' }}; position: relative; hover:shadow-lg;">
+                    @if($workOrder->has_design ?? false)
                     <!-- Badges Container -->
                     <div style="position: absolute; top: -10px; right: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
                         @if($workOrder->has_design ?? false)
@@ -47,15 +47,6 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
                             </svg>
                             التصميم
-                        </div>
-                        @endif
-                        @if($workOrder->has_production ?? false)
-                        <!-- Production Indicator Badge -->
-                        <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 0.375rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3); display: flex; align-items: center; gap: 0.375rem;">
-                            <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
-                            </svg>
-                            التشغيل
                         </div>
                         @endif
                     </div>
@@ -129,14 +120,6 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
                             </svg>
                             {{ ($workOrder->has_design ?? false) ? 'تعديل التصميم' : 'إضافة التصميم' }}
-                        </a>
-                        
-                        <!-- Production Button -->
-                        <a href="{{ route('work-orders.production.show', $workOrder) }}" style="display: block; width: 100%; text-align: center; padding: 0.75rem; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; text-decoration: none; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.75rem; transition: all 0.2s; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);">
-                            <svg style="width: 18px; height: 18px; display: inline-block; vertical-align: middle; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
-                            </svg>
-                            {{ ($workOrder->has_production ?? false) ? 'تعديل التشغيل' : 'إضافة التشغيل' }}
                         </a>
                         
                         <!-- Other Actions -->

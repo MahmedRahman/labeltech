@@ -181,24 +181,24 @@
                         @enderror
                     </div>
 
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="type" class="form-label">النوع</label>
-                            <select name="type" 
-                                    id="type" 
-                                    class="form-select">
-                                <option value="">اختر النوع</option>
-                                <option value="مستطيل" {{ old('type', $knife->type) == 'مستطيل' ? 'selected' : '' }}>مستطيل</option>
-                                <option value="دائرة" {{ old('type', $knife->type) == 'دائرة' ? 'selected' : '' }}>دائرة</option>
-                                <option value="مربع" {{ old('type', $knife->type) == 'مربع' ? 'selected' : '' }}>مربع</option>
-                                <option value="بيضاوي" {{ old('type', $knife->type) == 'بيضاوي' ? 'selected' : '' }}>بيضاوي</option>
-                                <option value="شكل خاص" {{ old('type', $knife->type) == 'شكل خاص' ? 'selected' : '' }}>شكل خاص</option>
-                            </select>
-                            @error('type')
-                                <p class="error-message">{{ $message }}</p>
-                            @enderror
-                        </div>
+                    <div class="form-group">
+                        <label for="type" class="form-label">النوع</label>
+                        <select name="type" 
+                                id="type" 
+                                class="form-select">
+                            <option value="">اختر النوع</option>
+                            <option value="مستطيل" {{ old('type', $knife->type) == 'مستطيل' ? 'selected' : '' }}>مستطيل</option>
+                            <option value="دائرة" {{ old('type', $knife->type) == 'دائرة' ? 'selected' : '' }}>دائرة</option>
+                            <option value="مربع" {{ old('type', $knife->type) == 'مربع' ? 'selected' : '' }}>مربع</option>
+                            <option value="بيضاوي" {{ old('type', $knife->type) == 'بيضاوي' ? 'selected' : '' }}>بيضاوي</option>
+                            <option value="شكل خاص" {{ old('type', $knife->type) == 'شكل خاص' ? 'selected' : '' }}>شكل خاص</option>
+                        </select>
+                        @error('type')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
 
+                    <div class="form-grid">
                         <div class="form-group">
                             <label for="gear" class="form-label">تُرس</label>
                             <input type="text" 
@@ -211,19 +211,19 @@
                                 <p class="error-message">{{ $message }}</p>
                             @enderror
                         </div>
-                    </div>
 
-                    <div class="form-group">
-                        <label for="dragile_drive" class="form-label">دراغيل</label>
-                        <input type="text" 
-                               name="dragile_drive" 
-                               id="dragile_drive" 
-                               value="{{ old('dragile_drive', $knife->dragile_drive) }}" 
-                               class="form-input"
-                               placeholder="أدخل دراغيل">
-                        @error('dragile_drive')
-                            <p class="error-message">{{ $message }}</p>
-                        @enderror
+                        <div class="form-group">
+                            <label for="dragile_drive" class="form-label">دراغيل</label>
+                            <input type="text" 
+                                   name="dragile_drive" 
+                                   id="dragile_drive" 
+                                   value="{{ old('dragile_drive', $knife->dragile_drive) }}" 
+                                   class="form-input"
+                                   placeholder="أدخل دراغيل">
+                            @error('dragile_drive')
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
                 </div>
 
@@ -262,14 +262,16 @@
 
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="flap_size" class="form-label">الجيب</label>
-                            <input type="text" 
-                                   name="flap_size" 
-                                   id="flap_size" 
-                                   value="{{ old('flap_size', $knife->flap_size) }}" 
+                            <label for="width" class="form-label">العرض</label>
+                            <input type="number" 
+                                   name="width" 
+                                   id="width" 
+                                   value="{{ old('width', $knife->width) }}" 
+                                   step="0.01"
+                                   min="0"
                                    class="form-input"
-                                   placeholder="أدخل الجيب">
-                            @error('flap_size')
+                                   placeholder="أدخل العرض">
+                            @error('width')
                                 <p class="error-message">{{ $message }}</p>
                             @enderror
                         </div>
@@ -291,16 +293,14 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="width" class="form-label">العرض</label>
-                        <input type="number" 
-                               name="width" 
-                               id="width" 
-                               value="{{ old('width', $knife->width) }}" 
-                               step="0.01"
-                               min="0"
+                        <label for="flap_size" class="form-label">الجيب</label>
+                        <input type="text" 
+                               name="flap_size" 
+                               id="flap_size" 
+                               value="{{ old('flap_size', $knife->flap_size) }}" 
                                class="form-input"
-                               placeholder="أدخل العرض">
-                        @error('width')
+                               placeholder="أدخل الجيب">
+                        @error('flap_size')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
                     </div>

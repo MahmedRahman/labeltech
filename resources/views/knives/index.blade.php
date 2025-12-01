@@ -25,6 +25,62 @@
         </div>
     </div>
 
+    <!-- Filters -->
+    <div style="background: white; border-radius: 0.75rem; border: 1px solid #e5e7eb; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);">
+        <form method="GET" action="{{ route('knives.index') }}" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; align-items: end;">
+            <!-- Filter by Type -->
+            <div>
+                <label for="filter_type" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">النوع</label>
+                <select name="filter_type" 
+                        id="filter_type" 
+                        style="width: 100%; padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; color: #111827; background-color: #fff;">
+                    <option value="">جميع الأنواع</option>
+                    @foreach($types as $type)
+                        <option value="{{ $type }}" {{ request('filter_type') == $type ? 'selected' : '' }}>{{ $type }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Filter by Width -->
+            <div>
+                <label for="filter_width" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">العرض</label>
+                <select name="filter_width" 
+                        id="filter_width" 
+                        style="width: 100%; padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; color: #111827; background-color: #fff;">
+                    <option value="">جميع الأعراض</option>
+                    @foreach($widths as $width)
+                        <option value="{{ $width }}" {{ request('filter_width') == $width ? 'selected' : '' }}>{{ number_format($width, 2) }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Filter by Length -->
+            <div>
+                <label for="filter_length" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">الطول</label>
+                <select name="filter_length" 
+                        id="filter_length" 
+                        style="width: 100%; padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; color: #111827; background-color: #fff;">
+                    <option value="">جميع الأطوال</option>
+                    @foreach($lengths as $length)
+                        <option value="{{ $length }}" {{ request('filter_length') == $length ? 'selected' : '' }}>{{ number_format($length, 2) }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Filter Actions -->
+            <div style="display: flex; gap: 0.75rem;">
+                <button type="submit" style="flex: 1; padding: 0.625rem 1rem; background-color: #2563eb; color: white; border: none; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background-color 0.15s;">
+                    تطبيق الفلترة
+                </button>
+                @if(request()->hasAny(['filter_type', 'filter_width', 'filter_length']))
+                    <a href="{{ route('knives.index') }}" style="flex: 1; padding: 0.625rem 1rem; background-color: #6b7280; color: white; text-decoration: none; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; text-align: center; display: flex; align-items: center; justify-content: center;">
+                        إلغاء الفلترة
+                    </a>
+                @endif
+            </div>
+        </form>
+    </div>
+
     <div class="table-container">
         <div class="table-content">
             @if($knives->count() > 0)
@@ -40,6 +96,7 @@
                             <th>الجيب</th>
                             <th>الطول</th>
                             <th>العرض</th>
+                            <th>الملاحظات</th>
                             <th>الإجراءات</th>
                         </tr>
                     </thead>
@@ -55,6 +112,7 @@
                                 <td style="color: #6b7280;">{{ $knife->flap_size ?? '-' }}</td>
                                 <td style="color: #6b7280;">{{ $knife->length ? number_format($knife->length, 2) : '-' }}</td>
                                 <td style="color: #6b7280;">{{ $knife->width ? number_format($knife->width, 2) : '-' }}</td>
+                                <td style="color: #6b7280; max-width: 200px;">{{ $knife->notes ? Str::limit($knife->notes, 50) : '-' }}</td>
                                 <td>
                                     <div style="display: flex; gap: 0.75rem;">
                                         <a href="{{ route('knives.show', $knife) }}" style="color: #2563eb; text-decoration: none; font-size: 0.875rem;">عرض</a>

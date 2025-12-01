@@ -60,8 +60,6 @@ Route::middleware('auth')->group(function () {
     Route::resource('work-orders', \App\Http\Controllers\WorkOrderController::class);
     Route::get('work-orders/{workOrder}/design', [\App\Http\Controllers\WorkOrderController::class, 'showDesignForm'])->name('work-orders.design.show');
     Route::post('work-orders/{workOrder}/design', [\App\Http\Controllers\WorkOrderController::class, 'storeDesign'])->name('work-orders.design.store');
-    Route::get('work-orders/{workOrder}/production', [\App\Http\Controllers\WorkOrderController::class, 'showProductionForm'])->name('work-orders.production.show');
-    Route::post('work-orders/{workOrder}/production', [\App\Http\Controllers\WorkOrderController::class, 'storeProduction'])->name('work-orders.production.store');
 });
 
 require __DIR__.'/auth.php';

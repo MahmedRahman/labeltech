@@ -27,8 +27,9 @@ class WorkOrder extends Model
         'design_drills',
         'design_breaking_gear',
         'design_gab',
-        'design_cliches',
         'design_file',
+        'design_knife_id',
+        'design_rows_count',
         'has_design',
         'paper_width',
         'paper_weight',
@@ -47,6 +48,7 @@ class WorkOrder extends Model
         'width' => 'decimal:2',
         'length' => 'decimal:2',
         'has_design' => 'boolean',
+        'design_rows_count' => 'integer',
         'paper_width' => 'decimal:2',
         'paper_weight' => 'decimal:2',
         'waste_percentage' => 'decimal:2',
@@ -64,5 +66,13 @@ class WorkOrder extends Model
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
+    }
+
+    /**
+     * Get the knife for the design.
+     */
+    public function designKnife(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Knife::class, 'design_knife_id');
     }
 }

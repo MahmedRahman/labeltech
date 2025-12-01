@@ -10,12 +10,34 @@ class KnifeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $knives = Knife::latest()->paginate(20);
+        $query = Knife::query();
+
+        // Filter by type
+        if ($request->filled('filter_type')) {
+            $query->where('type', $request->filter_type);
+        }
+
+        // Filter by width
+        if ($request->filled('filter_width')) {
+            $query->where('width', $request->filter_width);
+        }
+
+        // Filter by length
+        if ($request->filled('filter_length')) {
+            $query->where('length', $request->filter_length);
+        }
+
+        $knives = $query->latest()->paginate(20)->appends($request->query());
         $totalKnives = Knife::count();
         
-        return view('knives.index', compact('knives', 'totalKnives'));
+        // Get unique values for filter dropdowns
+        $types = Knife::distinct()->whereNotNull('type')->pluck('type')->sort()->values();
+        $widths = Knife::distinct()->whereNotNull('width')->pluck('width')->sort()->values();
+        $lengths = Knife::distinct()->whereNotNull('length')->pluck('length')->sort()->values();
+        
+        return view('knives.index', compact('knives', 'totalKnives', 'types', 'widths', 'lengths'));
     }
 
     /**

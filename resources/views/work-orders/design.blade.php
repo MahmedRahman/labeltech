@@ -161,134 +161,59 @@
                 @csrf
 
                 <div class="form-grid">
-                    <!-- Design Shape -->
+                    <!-- Design Knife -->
                     <div class="form-group">
-                        <label for="design_shape" class="form-label">الشكل</label>
-                        <select name="design_shape" 
-                                id="design_shape" 
+                        <label for="design_knife_id" class="form-label">السكاكين</label>
+                        <select name="design_knife_id" 
+                                id="design_knife_id" 
                                 class="form-select">
-                            <option value="">اختر الشكل</option>
-                            <option value="مستطيل" {{ old('design_shape', $workOrder->design_shape) == 'مستطيل' ? 'selected' : '' }}>مستطيل</option>
-                            <option value="دائرة" {{ old('design_shape', $workOrder->design_shape) == 'دائرة' ? 'selected' : '' }}>دائرة</option>
-                            <option value="مربع" {{ old('design_shape', $workOrder->design_shape) == 'مربع' ? 'selected' : '' }}>مربع</option>
-                            <option value="بيضاوي" {{ old('design_shape', $workOrder->design_shape) == 'بيضاوي' ? 'selected' : '' }}>بيضاوي</option>
-                            <option value="شكل خاص" {{ old('design_shape', $workOrder->design_shape) == 'شكل خاص' ? 'selected' : '' }}>شكل خاص</option>
+                            <option value="">اختر السكينة</option>
+                            @foreach($knives as $knife)
+                                <option value="{{ $knife->id }}" {{ old('design_knife_id', $workOrder->design_knife_id) == $knife->id ? 'selected' : '' }}>
+                                    {{ $knife->knife_code }} - {{ $knife->type ?? 'N/A' }}
+                                </option>
+                            @endforeach
                         </select>
-                        @error('design_shape')
+                        @error('design_knife_id')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
                     </div>
 
-                    <!-- Design Films -->
+                    <!-- Design Rows Count -->
                     <div class="form-group">
-                        <label for="design_films" class="form-label">أفلام</label>
-                        <input type="text"
-                               name="design_films"
-                               id="design_films"
-                               value="{{ old('design_films', $workOrder->design_films) }}"
+                        <label for="design_rows_count" class="form-label">عدد الصفوف</label>
+                        <input type="number"
+                               name="design_rows_count"
+                               id="design_rows_count"
+                               value="{{ old('design_rows_count', $workOrder->design_rows_count) }}"
                                class="form-input"
-                               placeholder="أدخل الأفلام">
-                        @error('design_films')
+                               min="1"
+                               placeholder="أدخل عدد الصفوف">
+                        @error('design_rows_count')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
                     </div>
                 </div>
 
-                <div class="form-grid">
-                    <!-- Design Knives -->
-                    <div class="form-group">
-                        <label for="design_knives" class="form-label">سكاكين</label>
-                        <input type="text"
-                               name="design_knives"
-                               id="design_knives"
-                               value="{{ old('design_knives', $workOrder->design_knives) }}"
-                               class="form-input"
-                               placeholder="أدخل السكاكين">
-                        @error('design_knives')
-                            <p class="error-message">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Design Drills -->
-                    <div class="form-group">
-                        <label for="design_drills" class="form-label">الدرافيل</label>
-                        <input type="text"
-                               name="design_drills"
-                               id="design_drills"
-                               value="{{ old('design_drills', $workOrder->design_drills) }}"
-                               class="form-input"
-                               placeholder="أدخل الدرافيل">
-                        @error('design_drills')
-                            <p class="error-message">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
-
-                <div class="form-grid">
-                    <!-- Design Breaking Gear -->
-                    <div class="form-group">
-                        <label for="design_breaking_gear" class="form-label">ترس التكسير</label>
-                        <input type="text"
-                               name="design_breaking_gear"
-                               id="design_breaking_gear"
-                               value="{{ old('design_breaking_gear', $workOrder->design_breaking_gear) }}"
-                               class="form-input"
-                               placeholder="أدخل ترس التكسير">
-                        @error('design_breaking_gear')
-                            <p class="error-message">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Design Gab -->
-                    <div class="form-group">
-                        <label for="design_gab" class="form-label">الجاب</label>
-                        <input type="text"
-                               name="design_gab"
-                               id="design_gab"
-                               value="{{ old('design_gab', $workOrder->design_gab) }}"
-                               class="form-input"
-                               placeholder="أدخل الجاب">
-                        @error('design_gab')
-                            <p class="error-message">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
-
-                <div class="form-grid">
-                    <!-- Design Cliches -->
-                    <div class="form-group">
-                        <label for="design_cliches" class="form-label">الكلاشيهات المعده</label>
-                        <input type="text"
-                               name="design_cliches"
-                               id="design_cliches"
-                               value="{{ old('design_cliches', $workOrder->design_cliches) }}"
-                               class="form-input"
-                               placeholder="أدخل الكلاشيهات المعده">
-                        @error('design_cliches')
-                            <p class="error-message">{{ $message }}</p>
-                        @enderror
-                    </div>
-
+                <div class="form-group">
                     <!-- Design File -->
-                    <div class="form-group">
-                        <label for="design_file" class="form-label">ملف التصميم</label>
-                        <input type="file"
-                               name="design_file"
-                               id="design_file"
-                               class="form-input"
-                               accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.ai,.psd">
-                        @if($workOrder->design_file)
-                            <p style="font-size: 0.875rem; color: #059669; margin-top: 0.5rem;">
-                                <svg style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; margin-left: 0.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                ملف موجود: <a href="{{ asset('storage/designs/' . $workOrder->design_file) }}" target="_blank" style="color: #2563eb; text-decoration: underline;">عرض الملف</a>
-                            </p>
-                        @endif
-                        @error('design_file')
-                            <p class="error-message">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    <label for="design_file" class="form-label">ملف التصميم</label>
+                    <input type="file"
+                           name="design_file"
+                           id="design_file"
+                           class="form-input"
+                           accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.ai,.psd">
+                    @if($workOrder->design_file)
+                        <p style="font-size: 0.875rem; color: #059669; margin-top: 0.5rem;">
+                            <svg style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; margin-left: 0.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            ملف موجود: <a href="{{ asset('storage/designs/' . $workOrder->design_file) }}" target="_blank" style="color: #2563eb; text-decoration: underline;">عرض الملف</a>
+                        </p>
+                    @endif
+                    @error('design_file')
+                        <p class="error-message">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <!-- Form Actions -->

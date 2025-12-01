@@ -305,16 +305,41 @@
 
                     <!-- Additions -->
                     <div class="form-group">
-                        <label for="additions" class="form-label">الإضافات المطلوبة</label>
-                        <select name="additions" 
-                                id="additions" 
-                                class="form-select">
-                            <option value="">اختر الإضافة</option>
-                            <option value="لا يوجد" {{ old('additions') == 'لا يوجد' ? 'selected' : '' }}>لا يوجد</option>
-                            <option value="يوفي" {{ old('additions') == 'يوفي' ? 'selected' : '' }}>يوفي</option>
-                            <option value="سلوفان" {{ old('additions') == 'سلوفان' ? 'selected' : '' }}>سلوفان</option>
-                            <option value="سلوفان مط" {{ old('additions') == 'سلوفان مط' ? 'selected' : '' }}>سلوفان مط</option>
-                        </select>
+                        <label class="form-label">الإضافات المطلوبة</label>
+                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; flex-wrap: wrap;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('additions', 'لا يوجد') == 'لا يوجد' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                                <input type="radio" 
+                                       name="additions" 
+                                       value="لا يوجد" 
+                                       {{ old('additions', 'لا يوجد') == 'لا يوجد' ? 'checked' : '' }}
+                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">لا يوجد</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('additions') == 'يوفي' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                                <input type="radio" 
+                                       name="additions" 
+                                       value="يوفي" 
+                                       {{ old('additions') == 'يوفي' ? 'checked' : '' }}
+                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">يوفي</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('additions') == 'سلوفان' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                                <input type="radio" 
+                                       name="additions" 
+                                       value="سلوفان" 
+                                       {{ old('additions') == 'سلوفان' ? 'checked' : '' }}
+                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">سلوفان</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('additions') == 'سلوفان مط' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                                <input type="radio" 
+                                       name="additions" 
+                                       value="سلوفان مط" 
+                                       {{ old('additions') == 'سلوفان مط' ? 'checked' : '' }}
+                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">سلوفان مط</span>
+                            </label>
+                        </div>
                         @error('additions')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
@@ -381,22 +406,22 @@
                     <div class="form-group">
                         <label class="form-label">شكل المنتج النهائي</label>
                         <div style="display: flex; gap: 2rem; margin-top: 0.5rem;">
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('final_product_shape') == 'بكر' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('final_product_shape', 'بكر') == 'بكر' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
                                 <input type="radio" 
                                        name="final_product_shape" 
                                        value="بكر" 
                                        id="final_product_shape_roll"
-                                       {{ old('final_product_shape') == 'بكر' ? 'checked' : '' }}
+                                       {{ old('final_product_shape', 'بكر') == 'بكر' ? 'checked' : '' }}
                                        onchange="toggleProductionFields()"
                                        style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
                                 <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">بكر</span>
                             </label>
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('final_product_shape') == 'شيت' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('final_product_shape', 'بكر') == 'شيت' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
                                 <input type="radio" 
                                        name="final_product_shape" 
                                        value="شيت" 
                                        id="final_product_shape_sheet"
-                                       {{ old('final_product_shape') == 'شيت' ? 'checked' : '' }}
+                                       {{ old('final_product_shape', 'بكر') == 'شيت' ? 'checked' : '' }}
                                        onchange="toggleProductionFields()"
                                        style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
                                 <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">شيت</span>
@@ -412,7 +437,7 @@
                         <h4 style="font-size: 0.875rem; font-weight: 600; color: #6b7280; margin-bottom: 1rem;">بيانات طريقة التشغيل</h4>
                         
                         <!-- Roll Fields (بكر) -->
-                        <div id="roll-production-fields" style="display: {{ old('final_product_shape') == 'بكر' ? 'block' : 'none' }};">
+                        <div id="roll-production-fields" style="display: {{ old('final_product_shape', 'بكر') == 'بكر' ? 'block' : 'none' }};">
                             <div class="form-grid">
                                 <div class="form-group">
                                     <label for="number_of_rolls" class="form-label">عدد التكت في البكره</label>
@@ -446,7 +471,7 @@
                         </div>
 
                         <!-- Sheet Fields (شيت) -->
-                        <div id="sheet-production-fields" style="display: {{ old('final_product_shape') == 'شيت' ? 'block' : 'none' }};">
+                        <div id="sheet-production-fields" style="display: {{ old('final_product_shape', 'بكر') == 'شيت' ? 'block' : 'none' }};">
                             <div class="form-grid">
                                 <div class="form-group">
                                     <label for="pieces_per_sheet" class="form-label">عدد التكت في الشيت</label>
@@ -512,8 +537,25 @@
     </div>
 
     <script>
-        // Handle radio button styling for fingerprint, winding_direction and final_product_shape
+        // Handle radio button styling for additions, fingerprint, winding_direction and final_product_shape
         document.addEventListener('DOMContentLoaded', function() {
+            // Handle additions radio buttons
+            const additionsRadios = document.querySelectorAll('input[name="additions"]');
+            additionsRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const labels = document.querySelectorAll('input[name="additions"]').forEach(r => {
+                        const label = r.closest('label');
+                        if (r.checked) {
+                            label.style.borderColor = '#2563eb';
+                            label.style.backgroundColor = '#eff6ff';
+                        } else {
+                            label.style.borderColor = '#d1d5db';
+                            label.style.backgroundColor = 'transparent';
+                        }
+                    });
+                });
+            });
+
             // Handle fingerprint radio buttons
             const fingerprintRadios = document.querySelectorAll('input[name="fingerprint"]');
             fingerprintRadios.forEach(radio => {
