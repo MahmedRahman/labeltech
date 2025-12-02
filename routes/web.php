@@ -48,6 +48,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('materials', \App\Http\Controllers\MaterialController::class);
     
     // السكاكين
+    Route::get('knives/export', [\App\Http\Controllers\KnifeController::class, 'export'])->name('knives.export');
+    Route::post('knives/import', [\App\Http\Controllers\KnifeController::class, 'import'])->name('knives.import');
+    Route::get('knives/get-next-code', [\App\Http\Controllers\KnifeController::class, 'getNextKnifeCode'])->name('knives.get-next-code');
     Route::resource('knives', \App\Http\Controllers\KnifeController::class);
     
     // الهالك
@@ -57,9 +60,11 @@ Route::middleware('auth')->group(function () {
     Route::resource('expenses', \App\Http\Controllers\ExpenseController::class);
     
     // أوامر الشغل
-    Route::resource('work-orders', \App\Http\Controllers\WorkOrderController::class);
+    Route::get('work-orders/archive', [\App\Http\Controllers\WorkOrderController::class, 'archive'])->name('work-orders.archive');
     Route::get('work-orders/{workOrder}/design', [\App\Http\Controllers\WorkOrderController::class, 'showDesignForm'])->name('work-orders.design.show');
     Route::post('work-orders/{workOrder}/design', [\App\Http\Controllers\WorkOrderController::class, 'storeDesign'])->name('work-orders.design.store');
+    Route::post('work-orders/{workOrder}/production-status', [\App\Http\Controllers\WorkOrderController::class, 'updateProductionStatus'])->name('work-orders.production-status.update');
+    Route::resource('work-orders', \App\Http\Controllers\WorkOrderController::class);
 });
 
 require __DIR__.'/auth.php';

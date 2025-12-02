@@ -167,24 +167,11 @@
                 <div class="form-section">
                     <h3>معلومات أساسية</h3>
                     <div class="form-group">
-                        <label for="knife_code" class="form-label required">الرقم الكود</label>
-                        <input type="text" 
-                               name="knife_code" 
-                               id="knife_code" 
-                               value="{{ old('knife_code') }}" 
-                               required
-                               class="form-input"
-                               placeholder="أدخل الرقم الكود">
-                        @error('knife_code')
-                            <p class="error-message">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div class="form-group">
-                        <label for="type" class="form-label">النوع</label>
+                        <label for="type" class="form-label required">النوع</label>
                         <select name="type" 
                                 id="type" 
-                                class="form-select">
+                                class="form-select"
+                                required>
                             <option value="">اختر النوع</option>
                             <option value="مستطيل" {{ old('type') == 'مستطيل' ? 'selected' : '' }}>مستطيل</option>
                             <option value="دائرة" {{ old('type') == 'دائرة' ? 'selected' : '' }}>دائرة</option>
@@ -193,6 +180,24 @@
                             <option value="شكل خاص" {{ old('type') == 'شكل خاص' ? 'selected' : '' }}>شكل خاص</option>
                         </select>
                         @error('type')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label for="knife_code" class="form-label">الرقم الكود</label>
+                        <input type="text" 
+                               name="knife_code" 
+                               id="knife_code" 
+                               value="{{ old('knife_code') }}" 
+                               class="form-input"
+                               readonly
+                               style="background-color: #f3f4f6; cursor: not-allowed;"
+                               placeholder="سيتم توليد الكود تلقائياً عند اختيار النوع">
+                        <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
+                            سيتم توليد الرقم الكود تلقائياً بناءً على النوع المختار
+                        </small>
+                        @error('knife_code')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
                     </div>
@@ -333,4 +338,36 @@
             </form>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const typeSelect = document.getElementById('type');
+            const knifeCodeInput = document.getElementById('knife_code');
+
+            typeSelect.addEventListener('change', function() {
+                const type = this.value;
+                
+                if (type) {
+                    // Fetch next knife code from server
+                    fetch(`{{ route('knives.get-next-code') }}?type=${encodeURIComponent(type)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.knife_code) {
+                                knifeCodeInput.value = data.knife_code;
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching knife code:', error);
+                        });
+                } else {
+                    knifeCodeInput.value = '';
+                }
+            });
+
+            // Trigger on page load if type is already selected
+            if (typeSelect.value) {
+                typeSelect.dispatchEvent(new Event('change'));
+            }
+        });
+    </script>
 </x-app-layout>

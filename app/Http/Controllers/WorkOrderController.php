@@ -14,8 +14,39 @@ class WorkOrderController extends Controller
      */
     public function index()
     {
-        $workOrders = WorkOrder::with('client')->latest()->paginate(10);
-        return view('work-orders.index', compact('workOrders'));
+        $workOrders = WorkOrder::with('client')
+            ->where(function($query) {
+                $query->whereNull('production_status')
+                      ->orWhere('production_status', 'بدون حالة')
+                      ->orWhereIn('production_status', ['طباعة', 'قص', 'تقفيل']);
+            })
+            ->latest()
+            ->get();
+        
+        // Group work orders by production status
+        $groupedOrders = [
+            'بدون حالة' => $workOrders->filter(function($order) {
+                return is_null($order->production_status) || $order->production_status === 'بدون حالة';
+            })->values(),
+            'طباعة' => $workOrders->where('production_status', 'طباعة')->values(),
+            'قص' => $workOrders->where('production_status', 'قص')->values(),
+            'تقفيل' => $workOrders->where('production_status', 'تقفيل')->values(),
+        ];
+        
+        return view('work-orders.index', compact('groupedOrders', 'workOrders'));
+    }
+
+    /**
+     * Display archived work orders.
+     */
+    public function archive()
+    {
+        $workOrders = WorkOrder::with('client')
+            ->where('production_status', 'أرشيف')
+            ->latest()
+            ->paginate(20);
+        
+        return view('work-orders.archive', compact('workOrders'));
     }
 
     /**
@@ -185,6 +216,29 @@ class WorkOrderController extends Controller
 
         return redirect()->route('work-orders.index')
             ->with('success', 'تم إضافة بيانات التصميم بنجاح');
+    }
+
+    /**
+     * Update production status for a work order.
+     */
+    public function updateProductionStatus(Request $request, WorkOrder $workOrder)
+    {
+        $validated = $request->validate([
+            'production_status' => 'nullable|in:بدون حالة,طباعة,قص,تقفيل,أرشيف',
+        ]);
+
+        // Convert empty string to null for "بدون حالة"
+        if (empty($validated['production_status']) || $validated['production_status'] === '') {
+            $validated['production_status'] = 'بدون حالة';
+        }
+
+        $workOrder->update($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'تم تحديث حالة الإنتاج بنجاح',
+            'production_status' => $workOrder->production_status,
+        ]);
     }
 
 }

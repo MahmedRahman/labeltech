@@ -4,17 +4,31 @@
     @endphp
 
     <!-- Header Actions -->
-    <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+    <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
         <div>
             <h2 style="font-size: 1.5rem; font-weight: 600; color: #111827; margin: 0 0 0.25rem 0;">قائمة السكاكين</h2>
             <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">إدارة جميع السكاكين في المطبعة</p>
         </div>
-        <a href="{{ route('knives.create') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #2563eb; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
-            <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-            إضافة سكينة جديدة
-        </a>
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <a href="{{ route('knives.export') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #10b981; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
+                <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                تصدير CSV
+            </a>
+            <button type="button" onclick="document.getElementById('importModal').style.display='block'" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #f59e0b; color: white; text-decoration: none; border: none; border-radius: 0.375rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); cursor: pointer;">
+                <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                </svg>
+                استيراد CSV
+            </button>
+            <a href="{{ route('knives.create') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #2563eb; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
+                <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                إضافة سكينة جديدة
+            </a>
+        </div>
     </div>
 
     <!-- Statistics Card -->
@@ -148,5 +162,77 @@
             @endif
         </div>
     </div>
+
+    <!-- Import Modal -->
+    <div id="importModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5);">
+        <div style="background-color: white; margin: 5% auto; padding: 2rem; border-radius: 0.5rem; width: 90%; max-width: 500px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0;">استيراد السكاكين من CSV</h3>
+                <button onclick="document.getElementById('importModal').style.display='none'" style="background: none; border: none; font-size: 1.5rem; color: #6b7280; cursor: pointer; padding: 0; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;">&times;</button>
+            </div>
+            
+            <form action="{{ route('knives.import') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div style="margin-bottom: 1.5rem;">
+                    <label for="csv_file" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">اختر ملف CSV</label>
+                    <input type="file" 
+                           name="csv_file" 
+                           id="csv_file" 
+                           accept=".csv,.txt"
+                           required
+                           style="width: 100%; padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem;">
+                    @error('csv_file')
+                        <p style="color: #dc2626; font-size: 0.875rem; margin-top: 0.5rem;">{{ $message }}</p>
+                    @enderror
+                </div>
+                
+                <div style="background-color: #f3f4f6; padding: 1rem; border-radius: 0.375rem; margin-bottom: 1.5rem;">
+                    <p style="font-size: 0.875rem; color: #374151; margin: 0 0 0.5rem 0; font-weight: 500;">ملاحظات:</p>
+                    <ul style="font-size: 0.875rem; color: #6b7280; margin: 0; padding-right: 1.25rem;">
+                        <li>يجب أن يحتوي الملف على رأس الأعمدة في السطر الأول</li>
+                        <li>الرقم الكود مطلوب لكل سكينة</li>
+                        <li>إذا كان الرقم الكود موجوداً، سيتم تحديث البيانات</li>
+                        <li>إذا كان الرقم الكود غير موجود، سيتم إنشاء سكينة جديدة</li>
+                    </ul>
+                </div>
+
+                <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+                    <button type="button" 
+                            onclick="document.getElementById('importModal').style.display='none'" 
+                            style="padding: 0.625rem 1.5rem; background-color: #6b7280; color: white; border: none; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; cursor: pointer;">
+                        إلغاء
+                    </button>
+                    <button type="submit" 
+                            style="padding: 0.625rem 1.5rem; background-color: #2563eb; color: white; border: none; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; cursor: pointer;">
+                        استيراد
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if(session('import_errors') && count(session('import_errors')) > 0)
+        <div style="position: fixed; bottom: 20px; left: 20px; right: 20px; max-width: 500px; margin: 0 auto; background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 0.5rem; padding: 1rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); z-index: 1001;">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                <h4 style="font-size: 0.875rem; font-weight: 600; color: #991b1b; margin: 0;">أخطاء في الاستيراد:</h4>
+                <button onclick="this.parentElement.parentElement.style.display='none'" style="background: none; border: none; color: #991b1b; cursor: pointer; font-size: 1.25rem; padding: 0;">&times;</button>
+            </div>
+            <ul style="font-size: 0.875rem; color: #7f1d1d; margin: 0; padding-right: 1.25rem; max-height: 200px; overflow-y: auto;">
+                @foreach(session('import_errors') as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <script>
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('importModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
 </x-app-layout>
 

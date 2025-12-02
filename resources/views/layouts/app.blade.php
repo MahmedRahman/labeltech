@@ -321,11 +321,18 @@
                         الموردين
                     </a>
 
-                    <a href="{{ route('work-orders.index') }}" class="nav-link {{ request()->routeIs('work-orders.*') ? 'active' : '' }}">
+                    <a href="{{ route('work-orders.index') }}" class="nav-link {{ request()->routeIs('work-orders.index') || request()->routeIs('work-orders.create') || request()->routeIs('work-orders.edit') || request()->routeIs('work-orders.show') || request()->routeIs('work-orders.design.*') ? 'active' : '' }}">
                         <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
                         أمر الشغل
+                    </a>
+
+                    <a href="{{ route('work-orders.archive') }}" class="nav-link {{ request()->routeIs('work-orders.archive') ? 'active' : '' }}">
+                        <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+                        </svg>
+                        الأرشيف
                     </a>
 
                     <!-- الإعدادات -->

@@ -31,6 +31,7 @@ class WorkOrder extends Model
         'design_knife_id',
         'design_rows_count',
         'has_design',
+        'production_status',
         'paper_width',
         'paper_weight',
         'waste_percentage',
