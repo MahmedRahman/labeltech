@@ -23,8 +23,8 @@ class DatabaseSeeder extends Seeder
         // Password: password
         User::factory()->create([
             'name' => 'Admin',
-            'email' => 'admin@labeltech.com',
-            'password' => Hash::make('password'),
+            'email' => 'admin@admin.com',
+            'password' => Hash::make('admin'),
         ]);
     }
 }

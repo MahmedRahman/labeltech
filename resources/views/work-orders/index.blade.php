@@ -272,6 +272,14 @@
                                     </select>
                                 </div>
 
+                                <!-- Design Button -->
+                                <a href="{{ route('work-orders.design.show', $workOrder) }}" style="display: block; width: 100%; text-align: center; padding: 0.625rem; background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); color: white; text-decoration: none; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 600; margin-bottom: 0.5rem; box-shadow: 0 2px 4px rgba(139, 92, 246, 0.3);">
+                                    <svg style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-left: 0.375rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
+                                    </svg>
+                                    {{ ($workOrder->has_design ?? false) ? 'تعديل التصميم' : 'إضافة التصميم' }}
+                                </a>
+
                                 <div style="display: flex; gap: 0.5rem; padding-top: 0.75rem; border-top: 1px solid #e5e7eb;">
                                     <a href="{{ route('work-orders.show', $workOrder) }}" style="flex: 1; text-align: center; padding: 0.5rem; background-color: #eff6ff; color: #2563eb; text-decoration: none; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 500;">
                                         عرض

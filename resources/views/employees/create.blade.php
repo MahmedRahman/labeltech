@@ -140,6 +140,48 @@
             gap: 1.5rem;
         }
         
+        .form-section {
+            margin-bottom: 2.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .form-section:last-of-type {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .section-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #2563eb;
+        }
+        
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #111827;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background-color: #2563eb;
+            border-radius: 2px;
+        }
+        
+        .section-description {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin: 0.5rem 0 0 0;
+        }
+        
         @media (max-width: 768px) {
             .form-grid {
                 grid-template-columns: 1fr;
@@ -161,133 +203,336 @@
             <form action="{{ route('employees.store') }}" method="POST">
                 @csrf
 
-                <!-- Name -->
-                <div class="form-group">
-                    <label for="name" class="form-label required">الاسم</label>
-                    <input type="text" 
-                           name="name" 
-                           id="name" 
-                           value="{{ old('name') }}" 
-                           required
-                           class="form-input"
-                           placeholder="أدخل اسم الموظف">
-                    @error('name')
-                        <p class="error-message">{{ $message }}</p>
-                    @enderror
+                <!-- البيانات الأساسية -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <h3 class="section-title">البيانات الأساسية</h3>
+                        <p class="section-description">المعلومات الشخصية الأساسية للموظف</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="name" class="form-label required">الاسم</label>
+                        <input type="text" 
+                               name="name" 
+                               id="name" 
+                               value="{{ old('name') }}" 
+                               required
+                               class="form-input"
+                               placeholder="أدخل اسم الموظف">
+                        @error('name')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="national_id" class="form-label">الرقم القومي</label>
+                            <input type="text" 
+                                   name="national_id" 
+                                   id="national_id" 
+                                   value="{{ old('national_id') }}"
+                                   class="form-input"
+                                   placeholder="أدخل الرقم القومي">
+                            @error('national_id')
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label for="employee_code" class="form-label">كود الموظف</label>
+                            <input type="text" 
+                                   name="employee_code" 
+                                   id="employee_code" 
+                                   value="{{ old('employee_code') }}"
+                                   class="form-input"
+                                   placeholder="أدخل كود الموظف">
+                            @error('employee_code')
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="birth_date" class="form-label">تاريخ الميلاد</label>
+                            <input type="date" 
+                                   name="birth_date" 
+                                   id="birth_date" 
+                                   value="{{ old('birth_date') }}"
+                                   class="form-input">
+                            @error('birth_date')
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label for="years_of_experience" class="form-label">عدد سنوات الخبرة</label>
+                            <input type="number" 
+                                   name="years_of_experience" 
+                                   id="years_of_experience" 
+                                   value="{{ old('years_of_experience') }}"
+                                   min="0"
+                                   class="form-input"
+                                   placeholder="0">
+                            @error('years_of_experience')
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Email and Phone -->
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="email" class="form-label">البريد الإلكتروني</label>
-                        <input type="email" 
-                               name="email" 
-                               id="email" 
-                               value="{{ old('email') }}"
-                               class="form-input"
-                               placeholder="example@email.com">
-                        @error('email')
-                            <p class="error-message">{{ $message }}</p>
-                        @enderror
+                <!-- بيانات الاتصال -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <h3 class="section-title">بيانات الاتصال</h3>
+                        <p class="section-description">معلومات التواصل مع الموظف</p>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="email" class="form-label">البريد الإلكتروني</label>
+                            <input type="email" 
+                                   name="email" 
+                                   id="email" 
+                                   value="{{ old('email') }}"
+                                   class="form-input"
+                                   placeholder="example@email.com">
+                            @error('email')
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone" class="form-label">الهاتف</label>
+                            <input type="text" 
+                                   name="phone" 
+                                   id="phone" 
+                                   value="{{ old('phone') }}"
+                                   class="form-input"
+                                   placeholder="01234567890">
+                            @error('phone')
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="phone" class="form-label">الهاتف</label>
-                        <input type="text" 
-                               name="phone" 
-                               id="phone" 
-                               value="{{ old('phone') }}"
-                               class="form-input"
-                               placeholder="01234567890">
-                        @error('phone')
-                            <p class="error-message">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
-
-                <!-- Position and Department -->
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="position" class="form-label">المنصب</label>
-                        <input type="text" 
-                               name="position" 
-                               id="position" 
-                               value="{{ old('position') }}"
-                               class="form-input"
-                               placeholder="مثال: مطور برمجيات">
-                        @error('position')
-                            <p class="error-message">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div class="form-group">
-                        <label for="department" class="form-label">القسم</label>
-                        <input type="text" 
-                               name="department" 
-                               id="department" 
-                               value="{{ old('department') }}"
-                               class="form-input"
-                               placeholder="مثال: قسم التطوير">
-                        @error('department')
+                        <label for="address" class="form-label">العنوان</label>
+                        <textarea name="address" 
+                                  id="address" 
+                                  rows="3"
+                                  class="form-textarea"
+                                  placeholder="أدخل عنوان الموظف">{{ old('address') }}</textarea>
+                        @error('address')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
                     </div>
                 </div>
 
-                <!-- Salary and Hire Date -->
-                <div class="form-grid">
+                <!-- بيانات الحساب -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <h3 class="section-title">بيانات الحساب</h3>
+                        <p class="section-description">معلومات تسجيل الدخول والصلاحيات</p>
+                    </div>
+
                     <div class="form-group">
-                        <label for="salary" class="form-label">الراتب</label>
-                        <input type="number" 
-                               name="salary" 
-                               id="salary" 
-                               value="{{ old('salary') }}"
-                               step="0.01"
-                               min="0"
+                        <label for="password" class="form-label">كلمة المرور</label>
+                        <input type="password" 
+                               name="password" 
+                               id="password" 
                                class="form-input"
-                               placeholder="0.00">
-                        @error('salary')
+                               placeholder="أدخل كلمة المرور (الحد الأدنى 6 أحرف)">
+                        @error('password')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
                     </div>
 
                     <div class="form-group">
-                        <label for="hire_date" class="form-label">تاريخ التوظيف</label>
+                        <label for="account_type" class="form-label">نوع الحساب</label>
+                        <select name="account_type" 
+                                id="account_type" 
+                                class="form-input">
+                            <option value="">اختر نوع الحساب</option>
+                            <option value="مبيعات" {{ old('account_type') == 'مبيعات' ? 'selected' : '' }}>مبيعات</option>
+                            <option value="تصميم" {{ old('account_type') == 'تصميم' ? 'selected' : '' }}>تصميم</option>
+                            <option value="تشغيل" {{ old('account_type') == 'تشغيل' ? 'selected' : '' }}>تشغيل</option>
+                            <option value="حسابات" {{ old('account_type') == 'حسابات' ? 'selected' : '' }}>حسابات</option>
+                            <option value="مدير" {{ old('account_type') == 'مدير' ? 'selected' : '' }}>مدير</option>
+                        </select>
+                        @error('account_type')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
+                <!-- البيانات الوظيفية -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <h3 class="section-title">البيانات الوظيفية</h3>
+                        <p class="section-description">معلومات الوظيفة والراتب</p>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="position" class="form-label">المنصب</label>
+                            <input type="text" 
+                                   name="position" 
+                                   id="position" 
+                                   value="{{ old('position') }}"
+                                   class="form-input"
+                                   placeholder="مثال: مطور برمجيات">
+                            @error('position')
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label for="department" class="form-label">القسم</label>
+                            <input type="text" 
+                                   name="department" 
+                                   id="department" 
+                                   value="{{ old('department') }}"
+                                   class="form-input"
+                                   placeholder="مثال: قسم التطوير">
+                            @error('department')
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="salary" class="form-label">الراتب</label>
+                            <input type="number" 
+                                   name="salary" 
+                                   id="salary" 
+                                   value="{{ old('salary') }}"
+                                   step="0.01"
+                                   min="0"
+                                   class="form-input"
+                                   placeholder="0.00">
+                            @error('salary')
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label for="hire_date" class="form-label">تاريخ التعيين</label>
+                            <input type="date" 
+                                   name="hire_date" 
+                                   id="hire_date" 
+                                   value="{{ old('hire_date') }}"
+                                   class="form-input">
+                            @error('hire_date')
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+
+                <!-- بيانات التأمين -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <h3 class="section-title">بيانات التأمين</h3>
+                        <p class="section-description">معلومات التأمين الاجتماعي</p>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="insurance_date" class="form-label">تاريخ التأمين</label>
+                            <input type="date" 
+                                   name="insurance_date" 
+                                   id="insurance_date" 
+                                   value="{{ old('insurance_date') }}"
+                                   class="form-input">
+                            @error('insurance_date')
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label for="insurance_number" class="form-label">الرقم التأميني</label>
+                            <input type="text" 
+                                   name="insurance_number" 
+                                   id="insurance_number" 
+                                   value="{{ old('insurance_number') }}"
+                                   class="form-input"
+                                   placeholder="أدخل الرقم التأميني">
+                            @error('insurance_number')
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+
+                <!-- بيانات الشركة والحالة -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <h3 class="section-title">بيانات الشركة والحالة</h3>
+                        <p class="section-description">معلومات الشركة وحالة الموظف</p>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="company_name" class="form-label">اسم الشركة</label>
+                            <input type="text" 
+                                   name="company_name" 
+                                   id="company_name" 
+                                   value="{{ old('company_name') }}"
+                                   class="form-input"
+                                   placeholder="أدخل اسم الشركة">
+                            @error('company_name')
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label for="status" class="form-label">الحالة</label>
+                            <select name="status" 
+                                    id="status" 
+                                    class="form-input">
+                                <option value="نشط" {{ old('status') == 'نشط' ? 'selected' : '' }}>نشط</option>
+                                <option value="استقال" {{ old('status') == 'استقال' ? 'selected' : '' }}>استقال</option>
+                                <option value="معطل" {{ old('status') == 'معطل' ? 'selected' : '' }}>معطل</option>
+                            </select>
+                            @error('status')
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="resignation_date" class="form-label">تاريخ الاستقالة</label>
                         <input type="date" 
-                               name="hire_date" 
-                               id="hire_date" 
-                               value="{{ old('hire_date') }}"
+                               name="resignation_date" 
+                               id="resignation_date" 
+                               value="{{ old('resignation_date') }}"
                                class="form-input">
-                        @error('hire_date')
+                        @error('resignation_date')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
                     </div>
                 </div>
 
-                <!-- Address -->
-                <div class="form-group">
-                    <label for="address" class="form-label">العنوان</label>
-                    <textarea name="address" 
-                              id="address" 
-                              rows="3"
-                              class="form-textarea"
-                              placeholder="أدخل عنوان الموظف">{{ old('address') }}</textarea>
-                    @error('address')
-                        <p class="error-message">{{ $message }}</p>
-                    @enderror
-                </div>
+                <!-- بيانات إضافية -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <h3 class="section-title">بيانات إضافية</h3>
+                        <p class="section-description">ملاحظات ومعلومات إضافية</p>
+                    </div>
 
-                <!-- Notes -->
-                <div class="form-group">
-                    <label for="notes" class="form-label">ملاحظات</label>
-                    <textarea name="notes" 
-                              id="notes" 
-                              rows="3"
-                              class="form-textarea"
-                              placeholder="أي ملاحظات إضافية عن الموظف">{{ old('notes') }}</textarea>
-                    @error('notes')
-                        <p class="error-message">{{ $message }}</p>
-                    @enderror
+                    <div class="form-group">
+                        <label for="notes" class="form-label">ملاحظات</label>
+                        <textarea name="notes" 
+                                  id="notes" 
+                                  rows="3"
+                                  class="form-textarea"
+                                  placeholder="أي ملاحظات إضافية عن الموظف">{{ old('notes') }}</textarea>
+                        @error('notes')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
                 </div>
 
                 <!-- Form Actions -->

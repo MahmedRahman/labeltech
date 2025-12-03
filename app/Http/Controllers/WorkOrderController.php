@@ -100,8 +100,78 @@ class WorkOrderController extends Controller
      */
     public function show(WorkOrder $workOrder)
     {
-        $workOrder->load('client');
+        $workOrder->load('client', 'designKnife');
         return view('work-orders.show', compact('workOrder'));
+    }
+
+    /**
+     * Print work order.
+     */
+    public function print(WorkOrder $workOrder)
+    {
+        $workOrder->load('client', 'designKnife');
+        
+        // Calculate values for printing
+        $calculations = $this->calculatePrintValues($workOrder);
+        
+        return view('work-orders.print', compact('workOrder', 'calculations'));
+    }
+
+    /**
+     * Calculate print values for work order.
+     */
+    private function calculatePrintValues(WorkOrder $workOrder)
+    {
+        $calculations = [];
+        
+        // Net Linear Meter calculation
+        // Formula: (Quantity / Pieces per roll) * (Length in cm / 100)
+        if ($workOrder->number_of_rolls && $workOrder->length) {
+            $piecesPerRoll = $workOrder->number_of_rolls > 0 ? ($workOrder->quantity / $workOrder->number_of_rolls) : 0;
+            $calculations['net_linear_meter'] = $piecesPerRoll * ($workOrder->length / 100);
+        } elseif ($workOrder->quantity && $workOrder->length) {
+            // Fallback calculation
+            $calculations['net_linear_meter'] = ($workOrder->quantity * $workOrder->length) / 100;
+        } else {
+            $calculations['net_linear_meter'] = 0;
+        }
+        
+        // Linear Meter + Waste Percentage
+        if ($workOrder->waste_percentage && $calculations['net_linear_meter'] > 0) {
+            $calculations['linear_meter_with_waste'] = $calculations['net_linear_meter'] * (1 + ($workOrder->waste_percentage / 100));
+        } else {
+            $calculations['linear_meter_with_waste'] = $calculations['net_linear_meter'];
+        }
+        
+        // Square Meter = (Paper Width in cm / 100) * (Linear Meter)
+        if ($workOrder->paper_width && $calculations['net_linear_meter'] > 0) {
+            $calculations['square_meter'] = ($workOrder->paper_width / 100) * $calculations['net_linear_meter'];
+        } else {
+            $calculations['square_meter'] = 0;
+        }
+        
+        // Weight calculation (if paper weight is available)
+        if ($workOrder->paper_weight && $calculations['square_meter'] > 0) {
+            $calculations['weight'] = $calculations['square_meter'] * $workOrder->paper_weight;
+        } else {
+            $calculations['weight'] = $workOrder->paper_weight ?? 0;
+        }
+        
+        // Number of turns/wraps for rolls (approximate calculation)
+        if ($workOrder->number_of_rolls && $workOrder->core_size && $workOrder->paper_width) {
+            // Approximate: based on roll diameter and paper width
+            $rollDiameter = $workOrder->core_size; // Starting diameter
+            $calculations['number_of_turns'] = 0; // Complex calculation, placeholder
+        }
+        
+        // Pieces per roll
+        if ($workOrder->number_of_rolls && $workOrder->number_of_rolls > 0) {
+            $calculations['pieces_per_roll'] = $workOrder->quantity / $workOrder->number_of_rolls;
+        } else {
+            $calculations['pieces_per_roll'] = $workOrder->quantity;
+        }
+        
+        return $calculations;
     }
 
     /**

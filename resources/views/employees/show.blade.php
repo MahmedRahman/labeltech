@@ -54,6 +54,13 @@
             </div>
             @endif
 
+            @if($employee->account_type)
+            <div>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">نوع الحساب</dt>
+                <dd style="font-size: 0.875rem; color: #111827; margin: 0;">{{ $employee->account_type }}</dd>
+            </div>
+            @endif
+
             @if($employee->salary)
             <div>
                 <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">الراتب</dt>
@@ -61,10 +68,73 @@
             </div>
             @endif
 
+            @if($employee->national_id)
+            <div>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">الرقم القومي</dt>
+                <dd style="font-size: 0.875rem; color: #111827; margin: 0;">{{ $employee->national_id }}</dd>
+            </div>
+            @endif
+
+            @if($employee->employee_code)
+            <div>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">كود الموظف</dt>
+                <dd style="font-size: 0.875rem; color: #111827; margin: 0;">{{ $employee->employee_code }}</dd>
+            </div>
+            @endif
+
+            @if($employee->birth_date)
+            <div>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">تاريخ الميلاد</dt>
+                <dd style="font-size: 0.875rem; color: #111827; margin: 0;">{{ $employee->birth_date->format('Y-m-d') }}</dd>
+            </div>
+            @endif
+
+            @if($employee->years_of_experience !== null)
+            <div>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">عدد سنوات الخبرة</dt>
+                <dd style="font-size: 0.875rem; color: #111827; margin: 0;">{{ $employee->years_of_experience }} سنة</dd>
+            </div>
+            @endif
+
             @if($employee->hire_date)
             <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">تاريخ التوظيف</dt>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">تاريخ التعيين</dt>
                 <dd style="font-size: 0.875rem; color: #111827; margin: 0;">{{ $employee->hire_date->format('Y-m-d') }}</dd>
+            </div>
+            @endif
+
+            @if($employee->insurance_date)
+            <div>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">تاريخ التأمين</dt>
+                <dd style="font-size: 0.875rem; color: #111827; margin: 0;">{{ $employee->insurance_date->format('Y-m-d') }}</dd>
+            </div>
+            @endif
+
+            @if($employee->insurance_number)
+            <div>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">الرقم التأميني</dt>
+                <dd style="font-size: 0.875rem; color: #111827; margin: 0;">{{ $employee->insurance_number }}</dd>
+            </div>
+            @endif
+
+            @if($employee->company_name)
+            <div>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">اسم الشركة</dt>
+                <dd style="font-size: 0.875rem; color: #111827; margin: 0;">{{ $employee->company_name }}</dd>
+            </div>
+            @endif
+
+            @if($employee->status)
+            <div>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">الحالة</dt>
+                <dd style="font-size: 0.875rem; color: #111827; margin: 0;">{{ $employee->status }}</dd>
+            </div>
+            @endif
+
+            @if($employee->resignation_date)
+            <div>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">تاريخ الاستقالة</dt>
+                <dd style="font-size: 0.875rem; color: #111827; margin: 0;">{{ $employee->resignation_date->format('Y-m-d') }}</dd>
             </div>
             @endif
 
