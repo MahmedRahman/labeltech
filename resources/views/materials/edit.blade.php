@@ -161,6 +161,22 @@
                     @enderror
                 </div>
 
+                <!-- Price -->
+                <div class="form-group">
+                    <label for="price" class="form-label">السعر</label>
+                    <input type="number" 
+                           name="price" 
+                           id="price" 
+                           value="{{ old('price', $material->price) }}"
+                           step="0.01"
+                           min="0"
+                           class="form-input"
+                           placeholder="0.00">
+                    @error('price')
+                        <p class="error-message">{{ $message }}</p>
+                    @enderror
+                </div>
+
                 <!-- Is Active -->
                 <div class="form-group">
                     <label for="is_active" class="form-label">الحالة</label>
@@ -186,6 +202,10 @@
         </div>
     </div>
 </x-app-layout>
+
+
+
+
 
 
 

@@ -1,6 +1,6 @@
 <x-app-layout>
     @php
-        $title = 'تعديل بيانات الهالك';
+        $title = 'تعديل بيانات الطباعة';
     @endphp
 
     <style>
@@ -141,8 +141,8 @@
     <div class="form-container">
         <div class="form-card">
             <div class="form-header">
-                <h2>تعديل بيانات الهالك</h2>
-                <p>تعديل بيانات الهالك لعدد {{ $waste->number_of_colors }} ألوان</p>
+                <h2>تعديل بيانات الطباعة</h2>
+                <p>تعديل بيانات الطباعة لعدد {{ $waste->number_of_colors }} ألوان</p>
             </div>
 
             <form action="{{ route('wastes.update', $waste) }}" method="POST">
@@ -171,7 +171,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="waste_percentage" class="form-label required">نسبة الهالك (%)</label>
+                        <label for="waste_percentage" class="form-label required">نسبة الطباعة (%)</label>
                         <input type="number" 
                                name="waste_percentage" 
                                id="waste_percentage" 
@@ -181,11 +181,26 @@
                                min="0"
                                max="100"
                                class="form-input"
-                               placeholder="أدخل نسبة الهالك">
+                               placeholder="أدخل نسبة الطباعة">
                         @error('waste_percentage')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
                     </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="price" class="form-label">السعر</label>
+                    <input type="number" 
+                           name="price" 
+                           id="price" 
+                           value="{{ old('price', $waste->price) }}"
+                           step="0.01"
+                           min="0"
+                           class="form-input"
+                           placeholder="0.00">
+                    @error('price')
+                        <p class="error-message">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="form-group">

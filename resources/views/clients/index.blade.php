@@ -17,6 +17,34 @@
         </a>
     </div>
 
+    <!-- Search Filter -->
+    <div style="background: white; border-radius: 0.75rem; border: 1px solid #e5e7eb; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);">
+        <form method="GET" action="{{ route('clients.index') }}" style="display: flex; gap: 1rem; align-items: end;">
+            <div style="flex: 1;">
+                <label for="search_name" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">البحث بالاسم</label>
+                <input type="text" 
+                       name="search_name" 
+                       id="search_name" 
+                       value="{{ request('search_name') }}"
+                       placeholder="ابحث عن عميل بالاسم..."
+                       style="width: 100%; padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; color: #111827; background-color: #fff;">
+            </div>
+            <div style="display: flex; gap: 0.75rem;">
+                <button type="submit" style="padding: 0.625rem 1.5rem; background-color: #2563eb; color: white; border: none; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background-color 0.15s;">
+                    <svg style="width: 18px; height: 18px; display: inline-block; vertical-align: middle; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    بحث
+                </button>
+                @if(request()->has('search_name'))
+                    <a href="{{ route('clients.index') }}" style="padding: 0.625rem 1.5rem; background-color: #6b7280; color: white; text-decoration: none; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; text-align: center; display: flex; align-items: center; justify-content: center;">
+                        إلغاء
+                    </a>
+                @endif
+            </div>
+        </form>
+    </div>
+
     <div class="table-container">
         <div class="table-content">
             @if($clients->count() > 0)

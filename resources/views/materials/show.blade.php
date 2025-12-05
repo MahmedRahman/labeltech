@@ -27,6 +27,11 @@
             </div>
 
             <div>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">السعر</dt>
+                <dd style="font-size: 0.875rem; color: #111827; margin: 0; font-weight: 600;">{{ $material->price ? number_format($material->price, 2) . ' ج.م' : '-' }}</dd>
+            </div>
+
+            <div>
                 <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">الحالة</dt>
                 <dd style="margin: 0;">
                     <span style="display: inline-block; padding: 0.375rem 0.875rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; background-color: {{ $material->is_active ? '#d1fae5' : '#fee2e2' }}; color: {{ $material->is_active ? '#065f46' : '#991b1b' }};">
@@ -54,6 +59,10 @@
         @endif
     </div>
 </x-app-layout>
+
+
+
+
 
 
 

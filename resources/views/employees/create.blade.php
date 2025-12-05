@@ -245,7 +245,8 @@
                                    id="employee_code" 
                                    value="{{ old('employee_code') }}"
                                    class="form-input"
-                                   placeholder="أدخل كود الموظف">
+                                   placeholder="اتركه فارغاً ليتم توليده تلقائياً (LA-الرقم)">
+                            <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.5rem;">سيتم توليد كود تلقائي بصيغة LA-الرقم إذا تركت الحقل فارغاً</p>
                             @error('employee_code')
                                 <p class="error-message">{{ $message }}</p>
                             @enderror
@@ -375,31 +376,79 @@
 
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="position" class="form-label">المنصب</label>
-                            <input type="text" 
-                                   name="position" 
-                                   id="position" 
-                                   value="{{ old('position') }}"
-                                   class="form-input"
-                                   placeholder="مثال: مطور برمجيات">
-                            @error('position')
+                            <label for="department_id" class="form-label">القسم</label>
+                            <select name="department_id" 
+                                    id="department_id" 
+                                    class="form-input"
+                                    onchange="updatePositions(this.value)">
+                                <option value="">اختر القسم</option>
+                                @foreach($departments as $department)
+                                    <option value="{{ $department->id }}" {{ old('department_id') == $department->id ? 'selected' : '' }}>
+                                        {{ $department->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('department_id')
                                 <p class="error-message">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <div class="form-group">
-                            <label for="department" class="form-label">القسم</label>
-                            <input type="text" 
-                                   name="department" 
-                                   id="department" 
-                                   value="{{ old('department') }}"
-                                   class="form-input"
-                                   placeholder="مثال: قسم التطوير">
-                            @error('department')
+                            <label for="position_id" class="form-label">المنصب</label>
+                            <select name="position_id" 
+                                    id="position_id" 
+                                    class="form-input">
+                                <option value="">اختر المنصب</option>
+                                @foreach($positions as $position)
+                                    <option value="{{ $position->id }}" 
+                                            data-department="{{ $position->department_id }}"
+                                            {{ old('position_id') == $position->id ? 'selected' : '' }}
+                                            style="display: {{ old('department_id') && old('department_id') == $position->department_id ? 'block' : 'none' }};">
+                                        {{ $position->name }} ({{ $position->department->name }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('position_id')
                                 <p class="error-message">{{ $message }}</p>
                             @enderror
                         </div>
                     </div>
+
+                    <script>
+                        function updatePositions(departmentId) {
+                            const positionSelect = document.getElementById('position_id');
+                            const options = positionSelect.querySelectorAll('option');
+                            
+                            options.forEach(option => {
+                                if (option.value === '') {
+                                    option.style.display = 'block';
+                                } else {
+                                    const optionDepartment = option.getAttribute('data-department');
+                                    if (departmentId && optionDepartment == departmentId) {
+                                        option.style.display = 'block';
+                                    } else {
+                                        option.style.display = 'none';
+                                    }
+                                }
+                            });
+                            
+                            // Reset position selection if department changed
+                            if (positionSelect.value) {
+                                const selectedOption = positionSelect.options[positionSelect.selectedIndex];
+                                if (selectedOption.getAttribute('data-department') != departmentId) {
+                                    positionSelect.value = '';
+                                }
+                            }
+                        }
+
+                        // Initialize on page load
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const departmentSelect = document.getElementById('department_id');
+                            if (departmentSelect.value) {
+                                updatePositions(departmentSelect.value);
+                            }
+                        });
+                    </script>
 
                     <div class="form-grid">
                         <div class="form-group">
@@ -476,12 +525,13 @@
                     <div class="form-grid">
                         <div class="form-group">
                             <label for="company_name" class="form-label">اسم الشركة</label>
-                            <input type="text" 
-                                   name="company_name" 
-                                   id="company_name" 
-                                   value="{{ old('company_name') }}"
-                                   class="form-input"
-                                   placeholder="أدخل اسم الشركة">
+                            <select name="company_name" 
+                                    id="company_name" 
+                                    class="form-input">
+                                <option value="">اختر اسم الشركة</option>
+                                <option value="Main Company" {{ old('company_name') == 'Main Company' ? 'selected' : '' }}>Main Company</option>
+                                <option value="2nd Company" {{ old('company_name') == '2nd Company' ? 'selected' : '' }}>2nd Company</option>
+                            </select>
                             @error('company_name')
                                 <p class="error-message">{{ $message }}</p>
                             @enderror

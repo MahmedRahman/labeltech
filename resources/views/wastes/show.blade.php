@@ -1,12 +1,12 @@
 <x-app-layout>
     @php
-        $title = 'تفاصيل بيانات الهالك';
+        $title = 'تفاصيل بيانات الطباعة';
     @endphp
 
     <!-- Header Actions -->
     <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
         <div>
-            <h2 style="font-size: 1.5rem; font-weight: 600; color: #111827; margin: 0 0 0.25rem 0;">تفاصيل بيانات الهالك</h2>
+            <h2 style="font-size: 1.5rem; font-weight: 600; color: #111827; margin: 0 0 0.25rem 0;">تفاصيل بيانات الطباعة</h2>
             <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">لعدد {{ $waste->number_of_colors }} ألوان</p>
         </div>
         <div style="display: flex; gap: 0.75rem;">
@@ -27,7 +27,7 @@
             </div>
 
             <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">نسبة الهالك</dt>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">نسبة الطباعة</dt>
                 <dd style="font-size: 1.5rem; font-weight: 700; color: #111827; margin: 0;">{{ number_format($waste->waste_percentage, 2) }}%</dd>
             </div>
 

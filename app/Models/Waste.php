@@ -10,6 +10,7 @@ class Waste extends Model
         'number_of_colors',
         'waste_percentage',
         'waste_per_roll',
+        'price',
         'notes',
     ];
 
@@ -17,5 +18,6 @@ class Waste extends Model
         'number_of_colors' => 'integer',
         'waste_percentage' => 'decimal:2',
         'waste_per_roll' => 'decimal:2',
+        'price' => 'decimal:2',
     ];
 }

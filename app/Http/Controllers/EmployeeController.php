@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employee;
+use App\Models\Department;
+use App\Models\Position;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -15,35 +17,19 @@ class EmployeeController extends Controller
     {
         $query = Employee::query();
 
-        // Filter by account_type
-        if ($request->filled('filter_account_type')) {
-            $query->where('account_type', $request->filter_account_type);
+        // Filter by name
+        if ($request->filled('search_name')) {
+            $query->where('name', 'like', '%' . $request->search_name . '%');
         }
 
-        // Filter by department
-        if ($request->filled('filter_department')) {
-            $query->where('department', $request->filter_department);
+        // Filter by employee code
+        if ($request->filled('search_code')) {
+            $query->where('employee_code', 'like', '%' . $request->search_code . '%');
         }
 
-        // Filter by status
-        if ($request->filled('filter_status')) {
-            $query->where('status', $request->filter_status);
-        }
+        $employees = $query->with('department', 'position')->latest()->paginate(10)->withQueryString();
 
-        // Filter by position
-        if ($request->filled('filter_position')) {
-            $query->where('position', $request->filter_position);
-        }
-
-        $employees = $query->latest()->paginate(10);
-
-        // Get unique values for filters
-        $accountTypes = Employee::whereNotNull('account_type')->distinct()->pluck('account_type')->sort()->values();
-        $departments = Employee::whereNotNull('department')->distinct()->pluck('department')->sort()->values();
-        $statuses = Employee::whereNotNull('status')->distinct()->pluck('status')->sort()->values();
-        $positions = Employee::whereNotNull('position')->distinct()->pluck('position')->sort()->values();
-
-        return view('employees.index', compact('employees', 'accountTypes', 'departments', 'statuses', 'positions'));
+        return view('employees.index', compact('employees'));
     }
 
     /**
@@ -51,7 +37,9 @@ class EmployeeController extends Controller
      */
     public function create()
     {
-        return view('employees.create');
+        $departments = Department::orderBy('name')->get();
+        $positions = Position::with('department')->orderBy('name')->get();
+        return view('employees.create', compact('departments', 'positions'));
     }
 
     /**
@@ -66,8 +54,8 @@ class EmployeeController extends Controller
             'password' => 'nullable|string|min:6',
             'national_id' => 'nullable|string|max:255',
             'years_of_experience' => 'nullable|integer|min:0',
-            'position' => 'nullable|string|max:255',
-            'department' => 'nullable|string|max:255',
+            'department_id' => 'nullable|exists:departments,id',
+            'position_id' => 'nullable|exists:positions,id',
             'account_type' => 'nullable|string|in:مبيعات,تصميم,تشغيل,حسابات,مدير',
             'salary' => 'nullable|numeric|min:0',
             'hire_date' => 'nullable|date',
@@ -89,6 +77,11 @@ class EmployeeController extends Controller
             unset($validated['password']);
         }
 
+        // Generate employee code if empty
+        if (empty($validated['employee_code'])) {
+            $validated['employee_code'] = $this->generateEmployeeCode();
+        }
+
         Employee::create($validated);
 
         return redirect()->route('employees.index')
@@ -100,6 +93,7 @@ class EmployeeController extends Controller
      */
     public function show(Employee $employee)
     {
+        $employee->load('department', 'position');
         return view('employees.show', compact('employee'));
     }
 
@@ -108,7 +102,9 @@ class EmployeeController extends Controller
      */
     public function edit(Employee $employee)
     {
-        return view('employees.edit', compact('employee'));
+        $departments = Department::orderBy('name')->get();
+        $positions = Position::with('department')->orderBy('name')->get();
+        return view('employees.edit', compact('employee', 'departments', 'positions'));
     }
 
     /**
@@ -123,8 +119,8 @@ class EmployeeController extends Controller
             'password' => 'nullable|string|min:6',
             'national_id' => 'nullable|string|max:255',
             'years_of_experience' => 'nullable|integer|min:0',
-            'position' => 'nullable|string|max:255',
-            'department' => 'nullable|string|max:255',
+            'department_id' => 'nullable|exists:departments,id',
+            'position_id' => 'nullable|exists:positions,id',
             'account_type' => 'nullable|string|in:مبيعات,تصميم,تشغيل,حسابات,مدير',
             'salary' => 'nullable|numeric|min:0',
             'hire_date' => 'nullable|date',
@@ -168,7 +164,7 @@ class EmployeeController extends Controller
      */
     public function export()
     {
-        $employees = Employee::orderBy('name')->get();
+        $employees = Employee::with('department', 'position')->orderBy('name')->get();
 
         $filename = 'employees_export_' . date('Y-m-d_His') . '.csv';
         
@@ -216,8 +212,8 @@ class EmployeeController extends Controller
                     $employee->employee_code ?? '',
                     $employee->birth_date ? $employee->birth_date->format('Y-m-d') : '',
                     $employee->years_of_experience ?? '',
-                    $employee->position ?? '',
-                    $employee->department ?? '',
+                    $employee->position->name ?? '',
+                    $employee->department->name ?? '',
                     $employee->account_type ?? '',
                     $employee->salary ?? '',
                     $employee->hire_date ? $employee->hire_date->format('Y-m-d') : '',
@@ -278,8 +274,8 @@ class EmployeeController extends Controller
                 'employee_code' => isset($row[4]) && !empty(trim($row[4])) ? trim($row[4]) : null,
                 'birth_date' => isset($row[5]) && !empty(trim($row[5])) ? trim($row[5]) : null,
                 'years_of_experience' => isset($row[6]) && $row[6] !== '' ? (int)$row[6] : null,
-                'position' => isset($row[7]) && !empty(trim($row[7])) ? trim($row[7]) : null,
-                'department' => isset($row[8]) && !empty(trim($row[8])) ? trim($row[8]) : null,
+                'position_id' => isset($row[7]) && !empty(trim($row[7])) ? Position::where('name', trim($row[7]))->first()?->id : null,
+                'department_id' => isset($row[8]) && !empty(trim($row[8])) ? Department::where('name', trim($row[8]))->first()?->id : null,
                 'account_type' => isset($row[9]) && !empty(trim($row[9])) ? trim($row[9]) : null,
                 'salary' => isset($row[10]) && $row[10] !== '' ? (float)$row[10] : null,
                 'hire_date' => isset($row[11]) && !empty(trim($row[11])) ? trim($row[11]) : null,
@@ -297,6 +293,11 @@ class EmployeeController extends Controller
                 $skipped++;
                 $errors[] = "السطر " . ($index + 2) . ": الاسم مطلوب";
                 continue;
+            }
+
+            // Generate employee code if empty
+            if (empty($employeeData['employee_code'])) {
+                $employeeData['employee_code'] = $this->generateEmployeeCode();
             }
 
             // Check if employee_code already exists (if provided)
@@ -334,5 +335,33 @@ class EmployeeController extends Controller
         return redirect()->route('employees.index')
             ->with('success', $message)
             ->with('import_errors', $errors);
+    }
+
+    /**
+     * Generate automatic employee code in format LA-{number}
+     */
+    private function generateEmployeeCode(): string
+    {
+        // Get all employee codes that start with LA-
+        $employees = Employee::where('employee_code', 'like', 'LA-%')
+            ->get()
+            ->map(function ($employee) {
+                if (preg_match('/LA-(\d+)/', $employee->employee_code, $matches)) {
+                    return (int)$matches[1];
+                }
+                return 0;
+            })
+            ->filter()
+            ->sort()
+            ->values();
+
+        // Get the highest number
+        if ($employees->isNotEmpty()) {
+            $nextNumber = $employees->last() + 1;
+        } else {
+            $nextNumber = 1;
+        }
+
+        return 'LA-' . $nextNumber;
     }
 }

@@ -41,15 +41,47 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
-            RateLimiter::hit($this->throttleKey());
+        $email = $this->input('email');
+        $password = $this->input('password');
+        $remember = $this->boolean('remember');
 
-            throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
-            ]);
+        // Try to authenticate as User first
+        if (Auth::guard('web')->attempt(['email' => $email, 'password' => $password], $remember)) {
+            RateLimiter::clear($this->throttleKey());
+            return;
         }
 
-        RateLimiter::clear($this->throttleKey());
+        // Try to authenticate as Employee
+        if (Auth::guard('employee')->attempt(['email' => $email, 'password' => $password], $remember)) {
+            $employee = Auth::guard('employee')->user();
+            
+            // Check if employee is sales and active
+            if ($employee->account_type !== 'مبيعات') {
+                Auth::guard('employee')->logout();
+                RateLimiter::hit($this->throttleKey());
+                throw ValidationException::withMessages([
+                    'email' => 'ليس لديك صلاحية للدخول. يجب أن يكون نوع حسابك "مبيعات".',
+                ]);
+            }
+
+            if ($employee->status !== 'نشط') {
+                Auth::guard('employee')->logout();
+                RateLimiter::hit($this->throttleKey());
+                throw ValidationException::withMessages([
+                    'email' => 'حسابك غير نشط. يرجى الاتصال بالإدارة.',
+                ]);
+            }
+
+            RateLimiter::clear($this->throttleKey());
+            return;
+        }
+
+        // If both attempts failed
+        RateLimiter::hit($this->throttleKey());
+
+        throw ValidationException::withMessages([
+            'email' => trans('auth.failed'),
+        ]);
     }
 
     /**

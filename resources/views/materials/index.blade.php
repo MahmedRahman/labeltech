@@ -25,6 +25,7 @@
                         <tr>
                             <th>اسم الخامة</th>
                             <th>الوصف</th>
+                            <th>السعر</th>
                             <th>الحالة</th>
                             <th>تاريخ الإنشاء</th>
                             <th>الإجراءات</th>
@@ -35,6 +36,7 @@
                             <tr>
                                 <td style="font-weight: 500; color: #111827;">{{ $material->name }}</td>
                                 <td style="color: #6b7280;">{{ $material->description ? Str::limit($material->description, 50) : '-' }}</td>
+                                <td style="color: #111827; font-weight: 500;">{{ $material->price ? number_format($material->price, 2) . ' ج.م' : '-' }}</td>
                                 <td>
                                     <span style="display: inline-block; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; background-color: {{ $material->is_active ? '#d1fae5' : '#fee2e2' }}; color: {{ $material->is_active ? '#065f46' : '#991b1b' }};">
                                         {{ $material->is_active ? 'نشط' : 'غير نشط' }}
@@ -77,6 +79,10 @@
         </div>
     </div>
 </x-app-layout>
+
+
+
+
 
 
 

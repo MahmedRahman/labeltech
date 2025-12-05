@@ -1,7 +1,14 @@
-<x-app-layout>
-    @php
-        $title = 'قائمة أوامر الشغل';
-    @endphp
+@if(auth('employee')->check())
+    <x-employee-layout>
+        @php
+            $title = 'قائمة أوامر الشغل';
+        @endphp
+@else
+    <x-app-layout>
+        @php
+            $title = 'قائمة أوامر الشغل';
+        @endphp
+@endif
 
     <style>
         .kanban-board {
@@ -166,12 +173,14 @@
             <h2 style="font-size: 1.5rem; font-weight: 600; color: #111827; margin: 0 0 0.25rem 0;">قائمة أوامر الشغل</h2>
             <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">إدارة جميع أوامر الشغل من مكان واحد</p>
         </div>
-        <a href="{{ route('work-orders.create') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #2563eb; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
-            <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-            إضافة أمر شغل جديد
-        </a>
+        @if(!auth('employee')->check())
+            <a href="{{ route('work-orders.create') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #2563eb; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
+                <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                إضافة أمر شغل جديد
+            </a>
+        @endif
     </div>
 
     @if($workOrders->count() > 0)
@@ -273,7 +282,7 @@
                                 </div>
 
                                 <!-- Design Button -->
-                                <a href="{{ route('work-orders.design.show', $workOrder) }}" style="display: block; width: 100%; text-align: center; padding: 0.625rem; background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); color: white; text-decoration: none; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 600; margin-bottom: 0.5rem; box-shadow: 0 2px 4px rgba(139, 92, 246, 0.3);">
+                                <a href="{{ auth('employee')->check() ? route('employee.work-orders.design.show', $workOrder) : route('work-orders.design.show', $workOrder) }}" style="display: block; width: 100%; text-align: center; padding: 0.625rem; background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); color: white; text-decoration: none; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 600; margin-bottom: 0.5rem; box-shadow: 0 2px 4px rgba(139, 92, 246, 0.3);">
                                     <svg style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-left: 0.375rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
                                     </svg>
@@ -302,7 +311,8 @@
             </svg>
             <h3 style="font-size: 1.125rem; font-weight: 600; color: #111827; margin-bottom: 0.5rem;">لا توجد أوامر شغل</h3>
             <p style="font-size: 0.875rem; color: #6b7280; margin-bottom: 2rem;">ابدأ بإضافة أمر شغل جديد</p>
-            <a href="{{ route('work-orders.create') }}" style="display: inline-flex; align-items: center; padding: 0.75rem 1.5rem; background-color: #2563eb; color: white; text-decoration: none; border-radius: 0.5rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
+            @if(!auth('employee')->check())
+                <a href="{{ route('work-orders.create') }}" style="display: inline-flex; align-items: center; padding: 0.75rem 1.5rem; background-color: #2563eb; color: white; text-decoration: none; border-radius: 0.5rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
                 <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
@@ -361,7 +371,8 @@
             formData.append('production_status', status || 'بدون حالة');
             formData.append('_token', csrfToken);
             
-            fetch(`/work-orders/${workOrderId}/production-status`, {
+            const routePrefix = @json(auth('employee')->check() ? '/employee' : '');
+            fetch(`${routePrefix}/work-orders/${workOrderId}/production-status`, {
                 method: 'POST',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
@@ -453,7 +464,8 @@
             formData.append('production_status', status || 'بدون حالة');
             formData.append('_token', csrfToken);
             
-            fetch(`/work-orders/${workOrderId}/production-status`, {
+            const routePrefix = @json(auth('employee')->check() ? '/employee' : '');
+            fetch(`${routePrefix}/work-orders/${workOrderId}/production-status`, {
                 method: 'POST',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
@@ -523,4 +535,8 @@
             });
         }
     </script>
-</x-app-layout>
+@if(auth('employee')->check())
+    </x-employee-layout>
+@else
+    </x-app-layout>
+@endif

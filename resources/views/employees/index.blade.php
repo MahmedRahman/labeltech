@@ -34,66 +34,39 @@
     <!-- Filters -->
     <div style="background: white; border-radius: 0.75rem; border: 1px solid #e5e7eb; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);">
         <form method="GET" action="{{ route('employees.index') }}" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; align-items: end;">
-            <!-- Filter by Account Type -->
+            <!-- Search by Name -->
             <div>
-                <label for="filter_account_type" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">نوع الحساب</label>
-                <select name="filter_account_type" 
-                        id="filter_account_type" 
-                        style="width: 100%; padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; color: #111827; background-color: #fff;">
-                    <option value="">جميع أنواع الحسابات</option>
-                    @foreach($accountTypes as $accountType)
-                        <option value="{{ $accountType }}" {{ request('filter_account_type') == $accountType ? 'selected' : '' }}>{{ $accountType }}</option>
-                    @endforeach
-                </select>
+                <label for="search_name" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">البحث بالاسم</label>
+                <input type="text" 
+                       name="search_name" 
+                       id="search_name" 
+                       value="{{ request('search_name') }}"
+                       placeholder="ابحث بالاسم..."
+                       style="width: 100%; padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; color: #111827; background-color: #fff;">
             </div>
 
-            <!-- Filter by Department -->
+            <!-- Search by Code -->
             <div>
-                <label for="filter_department" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">القسم</label>
-                <select name="filter_department" 
-                        id="filter_department" 
-                        style="width: 100%; padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; color: #111827; background-color: #fff;">
-                    <option value="">جميع الأقسام</option>
-                    @foreach($departments as $department)
-                        <option value="{{ $department }}" {{ request('filter_department') == $department ? 'selected' : '' }}>{{ $department }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <!-- Filter by Status -->
-            <div>
-                <label for="filter_status" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">الحالة</label>
-                <select name="filter_status" 
-                        id="filter_status" 
-                        style="width: 100%; padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; color: #111827; background-color: #fff;">
-                    <option value="">جميع الحالات</option>
-                    @foreach($statuses as $status)
-                        <option value="{{ $status }}" {{ request('filter_status') == $status ? 'selected' : '' }}>{{ $status }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <!-- Filter by Position -->
-            <div>
-                <label for="filter_position" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">المنصب</label>
-                <select name="filter_position" 
-                        id="filter_position" 
-                        style="width: 100%; padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; color: #111827; background-color: #fff;">
-                    <option value="">جميع المناصب</option>
-                    @foreach($positions as $position)
-                        <option value="{{ $position }}" {{ request('filter_position') == $position ? 'selected' : '' }}>{{ $position }}</option>
-                    @endforeach
-                </select>
+                <label for="search_code" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">البحث بالكود</label>
+                <input type="text" 
+                       name="search_code" 
+                       id="search_code" 
+                       value="{{ request('search_code') }}"
+                       placeholder="ابحث بالكود..."
+                       style="width: 100%; padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; color: #111827; background-color: #fff;">
             </div>
 
             <!-- Filter Actions -->
             <div style="display: flex; gap: 0.75rem;">
                 <button type="submit" style="flex: 1; padding: 0.625rem 1rem; background-color: #2563eb; color: white; border: none; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background-color 0.15s;">
-                    تطبيق الفلترة
+                    <svg style="width: 18px; height: 18px; display: inline-block; vertical-align: middle; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    بحث
                 </button>
-                @if(request()->hasAny(['filter_account_type', 'filter_department', 'filter_status', 'filter_position']))
+                @if(request()->hasAny(['search_name', 'search_code']))
                     <a href="{{ route('employees.index') }}" style="flex: 1; padding: 0.625rem 1rem; background-color: #6b7280; color: white; text-decoration: none; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; text-align: center; display: flex; align-items: center; justify-content: center;">
-                        إلغاء الفلترة
+                        إلغاء
                     </a>
                 @endif
             </div>
@@ -123,8 +96,8 @@
                                 <td style="font-weight: 500; color: #111827;">{{ $employee->name }}</td>
                                 <td style="color: #6b7280;">{{ $employee->email ?? '-' }}</td>
                                 <td style="color: #6b7280;">{{ $employee->phone ?? '-' }}</td>
-                                <td style="color: #6b7280;">{{ $employee->position ?? '-' }}</td>
-                                <td style="color: #6b7280;">{{ $employee->department ?? '-' }}</td>
+                                <td style="color: #6b7280;">{{ $employee->position->name ?? '-' }}</td>
+                                <td style="color: #6b7280;">{{ $employee->department->name ?? '-' }}</td>
                                 <td style="color: #6b7280;">{{ $employee->account_type ?? '-' }}</td>
                                 <td style="color: #6b7280;">{{ $employee->salary ? number_format($employee->salary, 2) . ' جنيه' : '-' }}</td>
                                 <td style="color: #6b7280;">{{ $employee->hire_date ? $employee->hire_date->format('Y-m-d') : '-' }}</td>

@@ -232,23 +232,6 @@
                     @enderror
                 </div>
 
-                <!-- Opening Balance -->
-                <div class="form-group">
-                    <label for="opening_balance" class="form-label">رصيد أول المدة</label>
-                    <input type="number" 
-                           name="opening_balance" 
-                           id="opening_balance" 
-                           value="{{ old('opening_balance', 0) }}"
-                           step="0.01"
-                           min="0"
-                           class="form-input"
-                           placeholder="0.00">
-                    <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.5rem;">الرصيد الابتدائي للعميل عند بداية الفترة</p>
-                    @error('opening_balance')
-                        <p class="error-message">{{ $message }}</p>
-                    @enderror
-                </div>
-
                 <!-- Notes -->
                 <div class="form-group">
                     <label for="notes" class="form-label">ملاحظات</label>

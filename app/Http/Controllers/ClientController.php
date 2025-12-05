@@ -10,9 +10,17 @@ class ClientController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $clients = Client::latest()->paginate(10);
+        $query = Client::query();
+
+        // Filter by name
+        if ($request->filled('search_name')) {
+            $query->where('name', 'like', '%' . $request->search_name . '%');
+        }
+
+        $clients = $query->latest()->paginate(10)->withQueryString();
+
         return view('clients.index', compact('clients'));
     }
 

@@ -26,5 +26,14 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@admin.com',
             'password' => Hash::make('admin'),
         ]);
+
+        // Seed Departments and Positions
+        $this->call(DepartmentPositionSeeder::class);
+        
+        // Seed Clients
+        $this->call(ClientSeeder::class);
+        
+        // Seed Employees
+        $this->call(EmployeeDataSeeder::class);
     }
 }

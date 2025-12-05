@@ -32,6 +32,7 @@ class MaterialController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:materials,name',
             'description' => 'nullable|string',
+            'price' => 'nullable|numeric|min:0',
             'is_active' => 'nullable|boolean',
         ]);
 
@@ -65,6 +66,7 @@ class MaterialController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:materials,name,' . $material->id,
             'description' => 'nullable|string',
+            'price' => 'nullable|numeric|min:0',
             'is_active' => 'nullable|boolean',
         ]);
 

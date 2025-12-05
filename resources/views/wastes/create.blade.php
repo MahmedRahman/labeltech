@@ -1,6 +1,6 @@
 <x-app-layout>
     @php
-        $title = 'إضافة بيانات هالك جديدة';
+        $title = 'إضافة بيانات طباعة جديدة';
     @endphp
 
     <style>
@@ -141,8 +141,8 @@
     <div class="form-container">
         <div class="form-card">
             <div class="form-header">
-                <h2>إضافة بيانات هالك جديدة</h2>
-                <p>املأ البيانات التالية لإضافة بيانات هالك جديدة</p>
+                <h2>إضافة بيانات طباعة جديدة</h2>
+                <p>املأ البيانات التالية لإضافة بيانات طباعة جديدة</p>
             </div>
 
             <form action="{{ route('wastes.store') }}" method="POST">
@@ -170,7 +170,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="waste_percentage" class="form-label required">نسبة الهالك (%)</label>
+                        <label for="waste_percentage" class="form-label required">نسبة الطباعة (%)</label>
                         <input type="number" 
                                name="waste_percentage" 
                                id="waste_percentage" 
@@ -180,11 +180,26 @@
                                min="0"
                                max="100"
                                class="form-input"
-                               placeholder="أدخل نسبة الهالك">
+                               placeholder="أدخل نسبة الطباعة">
                         @error('waste_percentage')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
                     </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="price" class="form-label">السعر</label>
+                    <input type="number" 
+                           name="price" 
+                           id="price" 
+                           value="{{ old('price') }}"
+                           step="0.01"
+                           min="0"
+                           class="form-input"
+                           placeholder="0.00">
+                    @error('price')
+                        <p class="error-message">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="form-group">

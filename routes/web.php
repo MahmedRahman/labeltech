@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Route;
 
 // الصفحة الرئيسية - تسجيل الدخول
 Route::get('/', function () {
+    if (auth('employee')->check()) {
+        return redirect()->route('employee.dashboard');
+    }
     if (auth()->check()) {
         return redirect()->route('dashboard');
     }
@@ -49,13 +52,20 @@ Route::middleware('auth')->group(function () {
     // الخامات
     Route::resource('materials', \App\Http\Controllers\MaterialController::class);
     
+    // الاضافات
+    Route::resource('additions', \App\Http\Controllers\AdditionController::class);
+    
+    // أقسام الشركة
+    Route::resource('departments', \App\Http\Controllers\DepartmentController::class);
+    Route::resource('positions', \App\Http\Controllers\PositionController::class);
+    
     // السكاكين
     Route::get('knives/export', [\App\Http\Controllers\KnifeController::class, 'export'])->name('knives.export');
     Route::post('knives/import', [\App\Http\Controllers\KnifeController::class, 'import'])->name('knives.import');
     Route::get('knives/get-next-code', [\App\Http\Controllers\KnifeController::class, 'getNextKnifeCode'])->name('knives.get-next-code');
     Route::resource('knives', \App\Http\Controllers\KnifeController::class);
     
-    // الهالك
+    // الطباعة
     Route::resource('wastes', \App\Http\Controllers\WasteController::class);
     
     // المصروفات
@@ -71,3 +81,33 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+// Employee Authentication Routes - Redirect to main login
+Route::middleware('guest')->group(function () {
+    Route::get('employee/login', function () {
+        return redirect()->route('login');
+    })->name('employee.login');
+});
+
+// Employee Routes (Sales Employees Only)
+Route::middleware(['auth:employee', 'employee.sales'])->prefix('employee')->name('employee.')->group(function () {
+    Route::get('/dashboard', function () {
+        $workOrdersCount = \App\Models\WorkOrder::where('production_status', '!=', 'أرشيف')->count();
+        $recentWorkOrders = \App\Models\WorkOrder::with('client')
+            ->where('production_status', '!=', 'أرشيف')
+            ->latest()
+            ->take(5)
+            ->get();
+        return view('employee.dashboard', compact('workOrdersCount', 'recentWorkOrders'));
+    })->name('dashboard');
+    
+    // Logout is handled by the main auth routes
+    
+    // Work Orders Routes
+    Route::get('work-orders', [\App\Http\Controllers\WorkOrderController::class, 'index'])->name('work-orders.index');
+    Route::get('work-orders/{workOrder}', [\App\Http\Controllers\WorkOrderController::class, 'show'])->name('work-orders.show');
+    Route::get('work-orders/{workOrder}/design', [\App\Http\Controllers\WorkOrderController::class, 'showDesignForm'])->name('work-orders.design.show');
+    Route::post('work-orders/{workOrder}/design', [\App\Http\Controllers\WorkOrderController::class, 'storeDesign'])->name('work-orders.design.store');
+    Route::post('work-orders/{workOrder}/production-status', [\App\Http\Controllers\WorkOrderController::class, 'updateProductionStatus'])->name('work-orders.production-status.update');
+    Route::get('work-orders/{workOrder}/print', [\App\Http\Controllers\WorkOrderController::class, 'print'])->name('work-orders.print');
+});
