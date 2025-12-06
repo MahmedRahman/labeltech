@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('expense_types', function (Blueprint $table) {
+        Schema::create('positions', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->foreignId('parent_id')->nullable()->constrained('expense_types')->onDelete('cascade');
-            $table->text('description')->nullable();
+            $table->foreignId('department_id')->constrained('departments')->onDelete('cascade')->comment('القسم');
+            $table->string('name')->comment('اسم المنصب');
+            $table->text('description')->nullable()->comment('وصف المنصب');
             $table->timestamps();
         });
     }
@@ -25,6 +25,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('expense_types');
+        Schema::dropIfExists('positions');
     }
 };
+

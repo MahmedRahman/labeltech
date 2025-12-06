@@ -14,25 +14,48 @@ class WorkOrderController extends Controller
      */
     public function index()
     {
-        $workOrders = WorkOrder::with('client')
-            ->where(function($query) {
-                $query->whereNull('production_status')
-                      ->orWhere('production_status', 'بدون حالة')
-                      ->orWhereIn('production_status', ['طباعة', 'قص', 'تقفيل']);
-            })
-            ->latest()
-            ->get();
+        $query = WorkOrder::with('client')
+            ->where(function($q) {
+                $q->whereNull('production_status')
+                  ->orWhere('production_status', 'بدون حالة')
+                  ->orWhereIn('production_status', ['طباعة', 'قص', 'تقفيل']);
+            });
+
+        // Filter work orders based on user type:
+        // - Employees: show only work orders they created
+        // - Admin (web guard): show all work orders (no filter)
+        if (auth('employee')->check()) {
+            $employeeName = auth('employee')->user()->name;
+            $query->where('created_by', $employeeName);
+        }
+        // Admin users (auth('web')->check()) will see all work orders
+        // No additional filter is applied for admin users
+
+        $workOrders = $query->latest()->get();
         
         // Group work orders by production status
+        // Filter out any orders without an ID (shouldn't happen, but safety check)
+        $workOrders = $workOrders->filter(function($order) {
+            return !is_null($order->id);
+        });
+        
         $groupedOrders = [
             'بدون حالة' => $workOrders->filter(function($order) {
                 return is_null($order->production_status) || $order->production_status === 'بدون حالة';
             })->values(),
-            'طباعة' => $workOrders->where('production_status', 'طباعة')->values(),
-            'قص' => $workOrders->where('production_status', 'قص')->values(),
-            'تقفيل' => $workOrders->where('production_status', 'تقفيل')->values(),
+            'طباعة' => $workOrders->filter(function($order) {
+                return $order->production_status === 'طباعة';
+            })->values(),
+            'قص' => $workOrders->filter(function($order) {
+                return $order->production_status === 'قص';
+            })->values(),
+            'تقفيل' => $workOrders->filter(function($order) {
+                return $order->production_status === 'تقفيل';
+            })->values(),
         ];
-        
+
+    
+
         return view('work-orders.index', compact('groupedOrders', 'workOrders'));
     }
 
@@ -67,7 +90,9 @@ class WorkOrderController extends Controller
         $validated = $request->validate([
             'client_id' => 'required|exists:clients,id',
             'order_number' => 'nullable|string|max:255|unique:work_orders,order_number',
+            'job_name' => 'nullable|string|max:255',
             'number_of_colors' => 'required|integer|min:0|max:6',
+            'rows_count' => 'nullable|integer|min:1',
             'material' => 'required|string|max:255',
             'quantity' => 'required|integer|min:1',
             'width' => 'nullable|numeric|min:0',
@@ -75,7 +100,11 @@ class WorkOrderController extends Controller
             'final_product_shape' => 'nullable|string',
             'additions' => 'nullable|string',
             'fingerprint' => 'nullable|in:yes,no',
-            'winding_direction' => 'nullable|in:yes,no',
+            'winding_direction' => 'nullable|in:no,clockwise,counterclockwise',
+            'knife_exists' => 'nullable|in:yes,no',
+            'film_price' => 'nullable|numeric|min:0',
+            'film_count' => 'nullable|integer|min:1',
+            'sales_percentage' => 'nullable|numeric|min:0|max:100',
             'number_of_rolls' => 'nullable|integer|min:1',
             'core_size' => 'nullable|in:76,40,25',
             'pieces_per_sheet' => 'nullable|integer|min:1',
@@ -87,6 +116,13 @@ class WorkOrderController extends Controller
         // Generate order number if not provided
         if (empty($validated['order_number'])) {
             $validated['order_number'] = 'WO-' . str_pad(WorkOrder::count() + 1, 6, '0', STR_PAD_LEFT);
+        }
+
+        // Get the current authenticated user (admin or employee)
+        if (auth('employee')->check()) {
+            $validated['created_by'] = auth('employee')->user()->name;
+        } elseif (auth('web')->check()) {
+            $validated['created_by'] = auth('web')->user()->name;
         }
 
         WorkOrder::create($validated);

@@ -195,6 +195,20 @@
                         @enderror
                     </div>
 
+                    <!-- Job Name -->
+                    <div class="form-group">
+                        <label for="job_name" class="form-label">اسم الشغلانه</label>
+                        <input type="text" 
+                               name="job_name" 
+                               id="job_name" 
+                               value="{{ old('job_name') }}" 
+                               class="form-input"
+                               placeholder="أدخل اسم الشغلانه">
+                        @error('job_name')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
+
                     <!-- Status -->
                     <div class="form-group">
                         <label for="status" class="form-label">الحالة</label>
@@ -252,6 +266,21 @@
                             <p class="error-message">{{ $message }}</p>
                         @enderror
                     </div>
+                </div>
+
+                <!-- Rows Count -->
+                <div class="form-group">
+                    <label for="rows_count" class="form-label">عدد الصفوف</label>
+                    <input type="number" 
+                           name="rows_count" 
+                           id="rows_count" 
+                           value="{{ old('rows_count') }}" 
+                           min="1"
+                           class="form-input"
+                           placeholder="أدخل عدد الصفوف">
+                    @error('rows_count')
+                        <p class="error-message">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <!-- Quantity -->
@@ -374,25 +403,132 @@
                     <!-- Winding Direction -->
                     <div class="form-group">
                         <label class="form-label">اتجاه اللف</label>
-                        <div style="display: flex; gap: 2rem; margin-top: 0.5rem;">
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('winding_direction', 'no') == 'no' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                        <div style="display: flex; gap: 2rem; margin-top: 0.5rem; flex-wrap: wrap;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ !in_array(old('winding_direction'), ['clockwise', 'counterclockwise']) ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
                                 <input type="radio" 
                                        name="winding_direction" 
                                        value="no" 
-                                       {{ old('winding_direction', 'no') == 'no' ? 'checked' : '' }}
+                                       id="winding_direction_no"
+                                       {{ !in_array(old('winding_direction'), ['clockwise', 'counterclockwise']) ? 'checked' : '' }}
+                                       onchange="toggleWindingDirectionOptions()"
                                        style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
                                 <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">لا يوجد</span>
                             </label>
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('winding_direction') == 'yes' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ in_array(old('winding_direction'), ['clockwise', 'counterclockwise']) ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
                                 <input type="radio" 
                                        name="winding_direction" 
                                        value="yes" 
-                                       {{ old('winding_direction') == 'yes' ? 'checked' : '' }}
+                                       id="winding_direction_yes"
+                                       {{ in_array(old('winding_direction'), ['clockwise', 'counterclockwise']) ? 'checked' : '' }}
+                                       onchange="toggleWindingDirectionOptions()"
                                        style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
                                 <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">يوجد</span>
                             </label>
                         </div>
+                        
+                        <!-- Winding Direction Options (shown when "يوجد" is selected) -->
+                        <div id="winding_direction_options" style="display: {{ in_array(old('winding_direction'), ['clockwise', 'counterclockwise']) ? 'flex' : 'none' }}; gap: 2rem; margin-top: 1rem; padding-right: 1.5rem;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('winding_direction') == 'clockwise' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                                <input type="radio" 
+                                       name="winding_direction" 
+                                       value="clockwise" 
+                                       id="winding_direction_clockwise"
+                                       {{ old('winding_direction') == 'clockwise' ? 'checked' : '' }}
+                                       onchange="handleWindingDirectionChange()"
+                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">في اتجاه عقارب الساعة</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('winding_direction') == 'counterclockwise' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                                <input type="radio" 
+                                       name="winding_direction" 
+                                       value="counterclockwise" 
+                                       id="winding_direction_counterclockwise"
+                                       {{ old('winding_direction') == 'counterclockwise' ? 'checked' : '' }}
+                                       onchange="handleWindingDirectionChange()"
+                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">عكس عقارب الساعة</span>
+                            </label>
+                        </div>
                         @error('winding_direction')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Knife Exists -->
+                    <div class="form-group">
+                        <label class="form-label">السكينة</label>
+                        <div style="display: flex; gap: 2rem; margin-top: 0.5rem;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('knife_exists', 'no') == 'no' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                                <input type="radio" 
+                                       name="knife_exists" 
+                                       value="no" 
+                                       {{ old('knife_exists', 'no') == 'no' ? 'checked' : '' }}
+                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">لا يوجد</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('knife_exists') == 'yes' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                                <input type="radio" 
+                                       name="knife_exists" 
+                                       value="yes" 
+                                       {{ old('knife_exists') == 'yes' ? 'checked' : '' }}
+                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">يوجد</span>
+                            </label>
+                        </div>
+                        @error('knife_exists')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
+                <!-- التجهيزات -->
+                <div style="margin-bottom: 2rem; padding: 1.5rem; background-color: #f9fafb; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
+                    <h3 style="font-size: 1rem; font-weight: 600; color: #111827; margin-bottom: 1.5rem;">التجهيزات</h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="film_price" class="form-label">سعر الفيلم الواحد</label>
+                            <input type="number" 
+                                   name="film_price" 
+                                   id="film_price" 
+                                   value="{{ old('film_price') }}" 
+                                   step="0.01"
+                                   min="0"
+                                   class="form-input"
+                                   placeholder="0.00">
+                            @error('film_price')
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label for="film_count" class="form-label">العدد</label>
+                            <input type="number" 
+                                   name="film_count" 
+                                   id="film_count" 
+                                   value="{{ old('film_count') }}" 
+                                   min="1"
+                                   class="form-input"
+                                   placeholder="أدخل العدد">
+                            @error('film_count')
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Sales Percentage -->
+                    <div class="form-group">
+                        <label for="sales_percentage" class="form-label">نسبة المبيعات</label>
+                        <input type="number" 
+                               name="sales_percentage" 
+                               id="sales_percentage" 
+                               value="{{ old('sales_percentage') }}" 
+                               step="0.01"
+                               min="0"
+                               max="100"
+                               class="form-input"
+                               placeholder="0.00">
+                        @error('sales_percentage')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
                     </div>
@@ -543,8 +679,27 @@
             const additionsRadios = document.querySelectorAll('input[name="additions"]');
             additionsRadios.forEach(radio => {
                 radio.addEventListener('change', function() {
-                    const labels = document.querySelectorAll('input[name="additions"]').forEach(r => {
-                        const label = r.closest('label');
+                    updateAdditionsStyle();
+                });
+                
+                // Also listen to click on the label
+                const label = radio.closest('label');
+                if (label) {
+                    label.addEventListener('click', function(e) {
+                        // Prevent double triggering
+                        if (e.target !== radio) {
+                            radio.checked = true;
+                            updateAdditionsStyle();
+                        }
+                    });
+                }
+            });
+            
+            // Function to update additions styling
+            function updateAdditionsStyle() {
+                document.querySelectorAll('input[name="additions"]').forEach(r => {
+                    const label = r.closest('label');
+                    if (label) {
                         if (r.checked) {
                             label.style.borderColor = '#2563eb';
                             label.style.backgroundColor = '#eff6ff';
@@ -552,16 +707,38 @@
                             label.style.borderColor = '#d1d5db';
                             label.style.backgroundColor = 'transparent';
                         }
-                    });
+                    }
                 });
-            });
+            }
+            
+            // Initialize additions styling
+            updateAdditionsStyle();
 
             // Handle fingerprint radio buttons
             const fingerprintRadios = document.querySelectorAll('input[name="fingerprint"]');
             fingerprintRadios.forEach(radio => {
                 radio.addEventListener('change', function() {
-                    const labels = document.querySelectorAll('input[name="fingerprint"]').forEach(r => {
-                        const label = r.closest('label');
+                    updateFingerprintStyle();
+                });
+                
+                // Also listen to click on the label
+                const label = radio.closest('label');
+                if (label) {
+                    label.addEventListener('click', function(e) {
+                        // Prevent double triggering
+                        if (e.target !== radio) {
+                            radio.checked = true;
+                            updateFingerprintStyle();
+                        }
+                    });
+                }
+            });
+            
+            // Function to update fingerprint styling
+            function updateFingerprintStyle() {
+                document.querySelectorAll('input[name="fingerprint"]').forEach(r => {
+                    const label = r.closest('label');
+                    if (label) {
                         if (r.checked) {
                             label.style.borderColor = '#2563eb';
                             label.style.backgroundColor = '#eff6ff';
@@ -569,33 +746,42 @@
                             label.style.borderColor = '#d1d5db';
                             label.style.backgroundColor = 'transparent';
                         }
-                    });
+                    }
                 });
-            });
+            }
+            
+            // Initialize fingerprint styling
+            updateFingerprintStyle();
 
-            // Handle winding_direction radio buttons
-            const windingDirectionRadios = document.querySelectorAll('input[name="winding_direction"]');
-            windingDirectionRadios.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    const labels = document.querySelectorAll('input[name="winding_direction"]').forEach(r => {
-                        const label = r.closest('label');
-                        if (r.checked) {
-                            label.style.borderColor = '#2563eb';
-                            label.style.backgroundColor = '#eff6ff';
-                        } else {
-                            label.style.borderColor = '#d1d5db';
-                            label.style.backgroundColor = 'transparent';
-                        }
-                    });
-                });
-            });
+            // Handle winding_direction radio buttons (handled by updateWindingDirectionStyle function below)
 
             // Handle final_product_shape radio buttons
             const shapeRadios = document.querySelectorAll('input[name="final_product_shape"]');
             shapeRadios.forEach(radio => {
                 radio.addEventListener('change', function() {
-                    const labels = document.querySelectorAll('input[name="final_product_shape"]').forEach(r => {
-                        const label = r.closest('label');
+                    updateFinalProductShapeStyle();
+                    toggleProductionFields();
+                });
+                
+                // Also listen to click on the label
+                const label = radio.closest('label');
+                if (label) {
+                    label.addEventListener('click', function(e) {
+                        // Prevent double triggering
+                        if (e.target !== radio) {
+                            radio.checked = true;
+                            updateFinalProductShapeStyle();
+                            toggleProductionFields();
+                        }
+                    });
+                }
+            });
+            
+            // Function to update final_product_shape styling
+            function updateFinalProductShapeStyle() {
+                document.querySelectorAll('input[name="final_product_shape"]').forEach(r => {
+                    const label = r.closest('label');
+                    if (label) {
                         if (r.checked) {
                             label.style.borderColor = '#2563eb';
                             label.style.backgroundColor = '#eff6ff';
@@ -603,13 +789,113 @@
                             label.style.borderColor = '#d1d5db';
                             label.style.backgroundColor = 'transparent';
                         }
-                    });
-                    toggleProductionFields();
+                    }
                 });
+            }
+            
+            // Initialize final_product_shape styling
+            updateFinalProductShapeStyle();
+
+            // Handle knife_exists radio buttons
+            const knifeExistsRadios = document.querySelectorAll('input[name="knife_exists"]');
+            knifeExistsRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    updateKnifeExistsStyle();
+                });
+                
+                // Also listen to click on the label
+                const label = radio.closest('label');
+                if (label) {
+                    label.addEventListener('click', function(e) {
+                        // Prevent double triggering
+                        if (e.target !== radio) {
+                            radio.checked = true;
+                            updateKnifeExistsStyle();
+                        }
+                    });
+                }
             });
+            
+            // Function to update knife_exists styling
+            function updateKnifeExistsStyle() {
+                document.querySelectorAll('input[name="knife_exists"]').forEach(r => {
+                    const label = r.closest('label');
+                    if (label) {
+                        if (r.checked) {
+                            label.style.borderColor = '#2563eb';
+                            label.style.backgroundColor = '#eff6ff';
+                        } else {
+                            label.style.borderColor = '#d1d5db';
+                            label.style.backgroundColor = 'transparent';
+                        }
+                    }
+                });
+            }
+            
+            // Initialize knife_exists styling
+            updateKnifeExistsStyle();
+
+            // Handle winding_direction radio buttons
+            const windingDirectionRadios = document.querySelectorAll('input[name="winding_direction"]');
+            windingDirectionRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    updateWindingDirectionStyle();
+                    toggleWindingDirectionOptions();
+                });
+                
+                // Also listen to click on the label
+                const label = radio.closest('label');
+                if (label) {
+                    label.addEventListener('click', function(e) {
+                        // Prevent double triggering
+                        if (e.target !== radio) {
+                            radio.checked = true;
+                            updateWindingDirectionStyle();
+                            toggleWindingDirectionOptions();
+                        }
+                    });
+                }
+            });
+
+            // Initialize on page load
+            toggleWindingDirectionOptions();
+            updateWindingDirectionStyle();
 
             // Initialize production fields on page load
             toggleProductionFields();
+            
+            // Handle select dropdowns styling and feedback
+            const selects = document.querySelectorAll('.form-select');
+            selects.forEach(select => {
+                // Add visual feedback when select changes
+                select.addEventListener('change', function() {
+                    // Highlight the select briefly
+                    const originalBorder = this.style.borderColor;
+                    const originalBg = this.style.backgroundColor;
+                    
+                    this.style.borderColor = '#10b981';
+                    this.style.backgroundColor = '#f0fdf4';
+                    
+                    // Reset after a short delay
+                    setTimeout(() => {
+                        this.style.borderColor = originalBorder || '';
+                        this.style.backgroundColor = originalBg || '';
+                    }, 500);
+                });
+                
+                // Add focus styling
+                select.addEventListener('focus', function() {
+                    this.style.borderColor = '#2563eb';
+                    this.style.boxShadow = '0 0 0 3px rgba(37, 99, 235, 0.1)';
+                });
+                
+                select.addEventListener('blur', function() {
+                    if (!this.value) {
+                        this.style.borderColor = '';
+                    }
+                    this.style.boxShadow = '';
+                });
+            });
         });
 
         // Toggle production fields based on final_product_shape selection
@@ -629,6 +915,61 @@
                 if (rollFields) rollFields.style.display = 'none';
                 if (sheetFields) sheetFields.style.display = 'none';
             }
+        }
+
+        // Toggle winding direction options based on selection
+        function toggleWindingDirectionOptions() {
+            const noRadio = document.getElementById('winding_direction_no');
+            const yesRadio = document.getElementById('winding_direction_yes');
+            const optionsDiv = document.getElementById('winding_direction_options');
+            const clockwiseRadio = document.getElementById('winding_direction_clockwise');
+            const counterclockwiseRadio = document.getElementById('winding_direction_counterclockwise');
+
+            if (yesRadio && yesRadio.checked) {
+                if (optionsDiv) optionsDiv.style.display = 'flex';
+                // If no detailed option is selected, select clockwise by default
+                if (clockwiseRadio && counterclockwiseRadio && !clockwiseRadio.checked && !counterclockwiseRadio.checked) {
+                    clockwiseRadio.checked = true;
+                    handleWindingDirectionChange();
+                }
+            } else if (noRadio && noRadio.checked) {
+                if (optionsDiv) optionsDiv.style.display = 'none';
+                // Uncheck the detailed options if "no" is selected
+                if (clockwiseRadio) clockwiseRadio.checked = false;
+                if (counterclockwiseRadio) counterclockwiseRadio.checked = false;
+                updateWindingDirectionStyle();
+            }
+        }
+
+        // Handle winding direction change (when detailed option is selected)
+        function handleWindingDirectionChange() {
+            const clockwiseRadio = document.getElementById('winding_direction_clockwise');
+            const counterclockwiseRadio = document.getElementById('winding_direction_counterclockwise');
+            const yesRadio = document.getElementById('winding_direction_yes');
+            
+            // Uncheck "yes" radio when a detailed option is selected
+            if (yesRadio && (clockwiseRadio?.checked || counterclockwiseRadio?.checked)) {
+                yesRadio.checked = false;
+            }
+            
+            updateWindingDirectionStyle();
+        }
+
+        // Update winding direction style
+        function updateWindingDirectionStyle() {
+            const allRadios = document.querySelectorAll('input[name="winding_direction"]');
+            allRadios.forEach(radio => {
+                const label = radio.closest('label');
+                if (label) {
+                    if (radio.checked) {
+                        label.style.borderColor = '#2563eb';
+                        label.style.backgroundColor = '#eff6ff';
+                    } else {
+                        label.style.borderColor = '#d1d5db';
+                        label.style.backgroundColor = 'transparent';
+                    }
+                }
+            });
         }
     </script>
 </x-app-layout>

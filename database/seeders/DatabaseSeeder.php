@@ -18,22 +18,25 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        // Create default admin user
-        // Email: admin@labeltech.com
-        // Password: password
-        User::factory()->create([
-            'name' => 'Admin',
-            'email' => 'admin@admin.com',
-            'password' => Hash::make('admin'),
-        ]);
-
-        // Seed Departments and Positions
+        // Seed Departments and Positions first
         $this->call(DepartmentPositionSeeder::class);
+        
+        // Seed Test Accounts (Admin, Sales, Designer, Production)
+        $this->call(TestAccountsSeeder::class);
         
         // Seed Clients
         $this->call(ClientSeeder::class);
         
         // Seed Employees
         $this->call(EmployeeDataSeeder::class);
+        
+        // Seed Materials
+        $this->call(MaterialSeeder::class);
+        
+        // Seed Additions
+        $this->call(AdditionSeeder::class);
+        
+        // Seed Wastes (Printing)
+        $this->call(WasteSeeder::class);
     }
 }

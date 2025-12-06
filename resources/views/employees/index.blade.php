@@ -56,6 +56,19 @@
                        style="width: 100%; padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; color: #111827; background-color: #fff;">
             </div>
 
+            <!-- Filter by Department -->
+            <div>
+                <label for="filter_department" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">القسم</label>
+                <select name="filter_department" 
+                        id="filter_department" 
+                        style="width: 100%; padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; color: #111827; background-color: #fff;">
+                    <option value="">جميع الأقسام</option>
+                    @foreach($departments as $department)
+                        <option value="{{ $department->id }}" {{ request('filter_department') == $department->id ? 'selected' : '' }}>{{ $department->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
             <!-- Filter Actions -->
             <div style="display: flex; gap: 0.75rem;">
                 <button type="submit" style="flex: 1; padding: 0.625rem 1rem; background-color: #2563eb; color: white; border: none; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background-color 0.15s;">
@@ -64,7 +77,7 @@
                     </svg>
                     بحث
                 </button>
-                @if(request()->hasAny(['search_name', 'search_code']))
+                @if(request()->hasAny(['search_name', 'search_code', 'filter_department']))
                     <a href="{{ route('employees.index') }}" style="flex: 1; padding: 0.625rem 1rem; background-color: #6b7280; color: white; text-decoration: none; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; text-align: center; display: flex; align-items: center; justify-content: center;">
                         إلغاء
                     </a>

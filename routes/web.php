@@ -31,10 +31,23 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    
-    // العملاء
+});
+
+// Routes accessible by both admin and sales employees
+Route::middleware('auth.any')->group(function () {
+    // العملاء - متاح للمبيعات والادمن
     Route::resource('clients', \App\Http\Controllers\ClientController::class);
     
+    // أوامر الشغل - متاح للمبيعات والادمن
+    Route::get('work-orders/{workOrder}/print', [\App\Http\Controllers\WorkOrderController::class, 'print'])->name('work-orders.print');
+    Route::get('work-orders/{workOrder}/design', [\App\Http\Controllers\WorkOrderController::class, 'showDesignForm'])->name('work-orders.design.show');
+    Route::post('work-orders/{workOrder}/design', [\App\Http\Controllers\WorkOrderController::class, 'storeDesign'])->name('work-orders.design.store');
+    Route::post('work-orders/{workOrder}/production-status', [\App\Http\Controllers\WorkOrderController::class, 'updateProductionStatus'])->name('work-orders.production-status.update');
+    Route::resource('work-orders', \App\Http\Controllers\WorkOrderController::class);
+});
+
+// Routes accessible by admin only
+Route::middleware('auth')->group(function () {
     // الموظفين
     Route::get('employees/export', [\App\Http\Controllers\EmployeeController::class, 'export'])->name('employees.export');
     Route::post('employees/import', [\App\Http\Controllers\EmployeeController::class, 'import'])->name('employees.import');
@@ -71,13 +84,8 @@ Route::middleware('auth')->group(function () {
     // المصروفات
     Route::resource('expenses', \App\Http\Controllers\ExpenseController::class);
     
-    // أوامر الشغل
+    // أوامر الشغل - الأرشيف (Admin only)
     Route::get('work-orders/archive', [\App\Http\Controllers\WorkOrderController::class, 'archive'])->name('work-orders.archive');
-    Route::get('work-orders/{workOrder}/print', [\App\Http\Controllers\WorkOrderController::class, 'print'])->name('work-orders.print');
-    Route::get('work-orders/{workOrder}/design', [\App\Http\Controllers\WorkOrderController::class, 'showDesignForm'])->name('work-orders.design.show');
-    Route::post('work-orders/{workOrder}/design', [\App\Http\Controllers\WorkOrderController::class, 'storeDesign'])->name('work-orders.design.store');
-    Route::post('work-orders/{workOrder}/production-status', [\App\Http\Controllers\WorkOrderController::class, 'updateProductionStatus'])->name('work-orders.production-status.update');
-    Route::resource('work-orders', \App\Http\Controllers\WorkOrderController::class);
 });
 
 require __DIR__.'/auth.php';
@@ -89,7 +97,7 @@ Route::middleware('guest')->group(function () {
     })->name('employee.login');
 });
 
-// Employee Routes (Sales Employees Only)
+// Employee Routes (Sales Employees Only) - Dashboard only
 Route::middleware(['auth:employee', 'employee.sales'])->prefix('employee')->name('employee.')->group(function () {
     Route::get('/dashboard', function () {
         $workOrdersCount = \App\Models\WorkOrder::where('production_status', '!=', 'أرشيف')->count();
@@ -98,16 +106,11 @@ Route::middleware(['auth:employee', 'employee.sales'])->prefix('employee')->name
             ->latest()
             ->take(5)
             ->get();
-        return view('employee.dashboard', compact('workOrdersCount', 'recentWorkOrders'));
+        $clientsCount = \App\Models\Client::count();
+        $recentClients = \App\Models\Client::latest()->take(5)->get();
+        return view('employee.dashboard', compact('workOrdersCount', 'recentWorkOrders', 'clientsCount', 'recentClients'));
     })->name('dashboard');
     
     // Logout is handled by the main auth routes
-    
-    // Work Orders Routes
-    Route::get('work-orders', [\App\Http\Controllers\WorkOrderController::class, 'index'])->name('work-orders.index');
-    Route::get('work-orders/{workOrder}', [\App\Http\Controllers\WorkOrderController::class, 'show'])->name('work-orders.show');
-    Route::get('work-orders/{workOrder}/design', [\App\Http\Controllers\WorkOrderController::class, 'showDesignForm'])->name('work-orders.design.show');
-    Route::post('work-orders/{workOrder}/design', [\App\Http\Controllers\WorkOrderController::class, 'storeDesign'])->name('work-orders.design.store');
-    Route::post('work-orders/{workOrder}/production-status', [\App\Http\Controllers\WorkOrderController::class, 'updateProductionStatus'])->name('work-orders.production-status.update');
-    Route::get('work-orders/{workOrder}/print', [\App\Http\Controllers\WorkOrderController::class, 'print'])->name('work-orders.print');
+    // Work Orders routes are now handled by auth.any middleware above
 });

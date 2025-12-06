@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('materials', function (Blueprint $table) {
-            $table->decimal('price', 10, 2)->nullable()->after('description');
+        Schema::create('additions', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->comment('اسم الاضافة');
+            $table->decimal('price', 10, 2)->comment('السعر');
+            $table->timestamps();
         });
     }
 
@@ -21,8 +24,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('materials', function (Blueprint $table) {
-            $table->dropColumn('price');
-        });
+        Schema::dropIfExists('additions');
     }
 };
+

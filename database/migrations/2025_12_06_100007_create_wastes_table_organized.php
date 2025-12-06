@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->integer('number_of_colors')->comment('عدد الألوان');
             $table->decimal('waste_percentage', 5, 2)->comment('نسبة الهالك');
-            $table->decimal('waste_per_roll', 10, 2)->comment('عدد الهالك للبكرة الواحدة');
+            $table->decimal('waste_per_roll', 10, 2)->default(0)->comment('عدد الهالك للبكرة الواحدة');
+            $table->decimal('price', 10, 2)->nullable()->comment('السعر');
             $table->text('notes')->nullable()->comment('ملاحظات');
             $table->timestamps();
         });
@@ -29,3 +30,4 @@ return new class extends Migration
         Schema::dropIfExists('wastes');
     }
 };
+

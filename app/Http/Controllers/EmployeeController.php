@@ -27,9 +27,17 @@ class EmployeeController extends Controller
             $query->where('employee_code', 'like', '%' . $request->search_code . '%');
         }
 
+        // Filter by department
+        if ($request->filled('filter_department')) {
+            $query->where('department_id', $request->filter_department);
+        }
+
         $employees = $query->with('department', 'position')->latest()->paginate(10)->withQueryString();
 
-        return view('employees.index', compact('employees'));
+        // Get departments for filter
+        $departments = Department::orderBy('name')->get();
+
+        return view('employees.index', compact('employees', 'departments'));
     }
 
     /**

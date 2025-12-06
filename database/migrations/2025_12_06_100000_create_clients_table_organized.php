@@ -19,6 +19,7 @@ return new class extends Migration
             $table->text('address')->nullable();
             $table->string('company')->nullable();
             $table->text('notes')->nullable();
+            // Note: opening_balance was removed per user request
             $table->timestamps();
         });
     }
@@ -31,3 +32,4 @@ return new class extends Migration
         Schema::dropIfExists('clients');
     }
 };
+

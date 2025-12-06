@@ -55,15 +55,7 @@ class LoginRequest extends FormRequest
         if (Auth::guard('employee')->attempt(['email' => $email, 'password' => $password], $remember)) {
             $employee = Auth::guard('employee')->user();
             
-            // Check if employee is sales and active
-            if ($employee->account_type !== 'مبيعات') {
-                Auth::guard('employee')->logout();
-                RateLimiter::hit($this->throttleKey());
-                throw ValidationException::withMessages([
-                    'email' => 'ليس لديك صلاحية للدخول. يجب أن يكون نوع حسابك "مبيعات".',
-                ]);
-            }
-
+            // Check if employee is active
             if ($employee->status !== 'نشط') {
                 Auth::guard('employee')->logout();
                 RateLimiter::hit($this->throttleKey());

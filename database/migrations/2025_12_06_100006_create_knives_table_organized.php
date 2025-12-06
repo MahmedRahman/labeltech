@@ -11,12 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Drop old table if exists
-        Schema::dropIfExists('knives');
-        
-        // Create new table with new structure
         Schema::create('knives', function (Blueprint $table) {
             $table->id();
+            $table->string('knife_code')->unique()->comment('الرقم الكود');
             $table->string('type')->nullable()->comment('النوع');
             $table->string('gear')->nullable()->comment('تُرس');
             $table->string('dragile_drive')->nullable()->comment('دراغيل');
@@ -25,7 +22,6 @@ return new class extends Migration
             $table->string('flap_size')->nullable()->comment('الجيب');
             $table->decimal('length', 10, 2)->nullable()->comment('الطول');
             $table->decimal('width', 10, 2)->nullable()->comment('العرض');
-            $table->string('knife_code')->unique()->comment('الرقم الكود');
             $table->text('notes')->nullable()->comment('ملاحظات');
             $table->timestamps();
         });
@@ -39,3 +35,4 @@ return new class extends Migration
         Schema::dropIfExists('knives');
     }
 };
+

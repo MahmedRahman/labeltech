@@ -1,14 +1,7 @@
-@if(auth('employee')->check())
-    <x-employee-layout>
-        @php
-            $title = 'قائمة أوامر الشغل';
-        @endphp
-@else
-    <x-app-layout>
-        @php
-            $title = 'قائمة أوامر الشغل';
-        @endphp
-@endif
+<x-app-layout>
+    @php
+        $title = 'قائمة أوامر الشغل';
+    @endphp
 
     <style>
         .kanban-board {
@@ -53,10 +46,6 @@
 
         .kanban-row-header.تقفيل {
             background: #8b5cf6;
-        }
-
-        .kanban-row-header.أرشيف {
-            background: #f59e0b;
         }
 
         .kanban-row-header[class*="بدون"] {
@@ -164,7 +153,6 @@
             background-color: #fee2e2;
             color: #991b1b;
         }
-
     </style>
 
     <!-- Header Actions -->
@@ -173,14 +161,12 @@
             <h2 style="font-size: 1.5rem; font-weight: 600; color: #111827; margin: 0 0 0.25rem 0;">قائمة أوامر الشغل</h2>
             <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">إدارة جميع أوامر الشغل من مكان واحد</p>
         </div>
-        @if(!auth('employee')->check())
-            <a href="{{ route('work-orders.create') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #2563eb; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
-                <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                </svg>
-                إضافة أمر شغل جديد
-            </a>
-        @endif
+        <a href="{{ route('work-orders.create') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #2563eb; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
+            <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            إضافة أمر شغل جديد
+        </a>
     </div>
 
     @if($workOrders->count() > 0)
@@ -203,6 +189,7 @@
                     <div class="kanban-row-content">
                         <div class="kanban-cards">
                         @foreach($orders as $workOrder)
+                            @if(isset($workOrder->id) && !is_null($workOrder->id))
                             @php
                                 $statusColors = [
                                     'pending' => '#f59e0b',
@@ -236,9 +223,19 @@
                                     <h3 style="font-size: 1rem; font-weight: 600; color: #111827; margin: 0 0 0.25rem 0;">
                                         {{ $workOrder->order_number ?? 'بدون رقم' }}
                                     </h3>
-                                    <p style="font-size: 0.875rem; color: #6b7280; margin: 0 0 0.5rem 0;">
-                                        {{ $workOrder->client->name }}
+                                    @if($workOrder->job_name)
+                                    <p style="font-size: 0.875rem; color: #2563eb; font-weight: 500; margin: 0 0 0.25rem 0;">
+                                        {{ $workOrder->job_name }}
                                     </p>
+                                    @endif
+                                    <p style="font-size: 0.875rem; color: #6b7280; margin: 0 0 0.25rem 0;">
+                                        <strong>العميل:</strong> {{ $workOrder->client->name ?? 'غير محدد' }}
+                                    </p>
+                                    @if($workOrder->created_by)
+                                    <p style="font-size: 0.75rem; color: #9ca3af; margin: 0 0 0.5rem 0;">
+                                        <strong>تم الإنشاء بواسطة:</strong> {{ $workOrder->created_by }}
+                                    </p>
+                                    @endif
                                     <span class="card-status status-{{ $workOrder->status }}">
                                         {{ $label }}
                                     </span>
@@ -247,15 +244,15 @@
                                 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 0.75rem; font-size: 0.875rem;">
                                     <div>
                                         <p style="font-size: 0.75rem; color: #6b7280; margin: 0 0 0.25rem 0;">الخامة</p>
-                                        <p style="font-weight: 500; color: #111827; margin: 0;">{{ $workOrder->material }}</p>
+                                        <p style="font-weight: 500; color: #111827; margin: 0;">{{ $workOrder->material ?? '-' }}</p>
                                     </div>
                                     <div>
                                         <p style="font-size: 0.75rem; color: #6b7280; margin: 0 0 0.25rem 0;">الكمية</p>
-                                        <p style="font-weight: 500; color: #111827; margin: 0;">{{ number_format($workOrder->quantity) }}</p>
+                                        <p style="font-weight: 500; color: #111827; margin: 0;">{{ number_format($workOrder->quantity ?? 0) }}</p>
                                     </div>
                                     <div>
                                         <p style="font-size: 0.75rem; color: #6b7280; margin: 0 0 0.25rem 0;">عدد الألوان</p>
-                                        <p style="font-weight: 500; color: #111827; margin: 0;">{{ $workOrder->number_of_colors }}</p>
+                                        <p style="font-weight: 500; color: #111827; margin: 0;">{{ $workOrder->number_of_colors ?? '-' }}</p>
                                     </div>
                                     @if($workOrder->width && $workOrder->length)
                                     <div>
@@ -281,23 +278,18 @@
                                     </select>
                                 </div>
 
-                                <!-- Design Button -->
-                                <a href="{{ auth('employee')->check() ? route('employee.work-orders.design.show', $workOrder) : route('work-orders.design.show', $workOrder) }}" style="display: block; width: 100%; text-align: center; padding: 0.625rem; background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); color: white; text-decoration: none; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 600; margin-bottom: 0.5rem; box-shadow: 0 2px 4px rgba(139, 92, 246, 0.3);">
-                                    <svg style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-left: 0.375rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
-                                    </svg>
-                                    {{ ($workOrder->has_design ?? false) ? 'تعديل التصميم' : 'إضافة التصميم' }}
-                                </a>
+                         
 
                                 <div style="display: flex; gap: 0.5rem; padding-top: 0.75rem; border-top: 1px solid #e5e7eb;">
-                                    <a href="{{ route('work-orders.show', $workOrder) }}" style="flex: 1; text-align: center; padding: 0.5rem; background-color: #eff6ff; color: #2563eb; text-decoration: none; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 500;">
+                                    <a href="{{ route('work-orders.show', $workOrder->id) }}" style="flex: 1; text-align: center; padding: 0.5rem; background-color: #eff6ff; color: #2563eb; text-decoration: none; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 500;">
                                         عرض
                                     </a>
-                                    <a href="{{ route('work-orders.edit', $workOrder) }}" style="flex: 1; text-align: center; padding: 0.5rem; background-color: #f0fdf4; color: #10b981; text-decoration: none; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 500;">
+                                    <a href="{{ route('work-orders.edit', $workOrder->id) }}" style="flex: 1; text-align: center; padding: 0.5rem; background-color: #f0fdf4; color: #10b981; text-decoration: none; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 500;">
                                         تعديل
                                     </a>
                                 </div>
                             </div>
+                            @endif
                         @endforeach
                         </div>
                     </div>
@@ -311,8 +303,7 @@
             </svg>
             <h3 style="font-size: 1.125rem; font-weight: 600; color: #111827; margin-bottom: 0.5rem;">لا توجد أوامر شغل</h3>
             <p style="font-size: 0.875rem; color: #6b7280; margin-bottom: 2rem;">ابدأ بإضافة أمر شغل جديد</p>
-            @if(!auth('employee')->check())
-                <a href="{{ route('work-orders.create') }}" style="display: inline-flex; align-items: center; padding: 0.75rem 1.5rem; background-color: #2563eb; color: white; text-decoration: none; border-radius: 0.5rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
+            <a href="{{ route('work-orders.create') }}" style="display: inline-flex; align-items: center; padding: 0.75rem 1.5rem; background-color: #2563eb; color: white; text-decoration: none; border-radius: 0.5rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
                 <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
@@ -360,7 +351,6 @@
                 return;
             }
 
-            // Update production status via AJAX
             updateProductionStatus(draggedOrderId, newStatus === 'null' ? 'بدون حالة' : newStatus, draggedElement, column);
         }
 
@@ -371,8 +361,7 @@
             formData.append('production_status', status || 'بدون حالة');
             formData.append('_token', csrfToken);
             
-            const routePrefix = @json(auth('employee')->check() ? '/employee' : '');
-            fetch(`${routePrefix}/work-orders/${workOrderId}/production-status`, {
+            fetch(`/work-orders/${workOrderId}/production-status`, {
                 method: 'POST',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
@@ -390,12 +379,10 @@
             })
             .then(data => {
                 if (data.success) {
-                    // Move card to new column
                     const cardsContainer = targetColumn.querySelector('.kanban-cards');
                     cardElement.classList.remove('dragging');
                     cardsContainer.appendChild(cardElement);
                     
-                    // Update count in header
                     const header = targetColumn.querySelector('.kanban-row-header');
                     const countSpan = header.querySelector('span:last-child');
                     if (countSpan) {
@@ -403,7 +390,6 @@
                         countSpan.textContent = currentCount + 1;
                     }
 
-                    // Update old row count
                     const oldRow = cardElement.closest('.kanban-row');
                     if (oldRow && oldRow !== targetColumn) {
                         const oldHeader = oldRow.querySelector('.kanban-row-header');
@@ -416,7 +402,6 @@
                         }
                     }
 
-                    // Reload page after a short delay to ensure data is saved
                     setTimeout(() => {
                         window.location.reload();
                     }, 500);
@@ -431,7 +416,6 @@
             });
         }
 
-        // Prevent default drag behavior on links and buttons
         document.addEventListener('DOMContentLoaded', function() {
             const cards = document.querySelectorAll('.kanban-card');
             cards.forEach(card => {
@@ -443,7 +427,6 @@
                 });
             });
 
-            // Handle production status change from select dropdown
             const statusSelects = document.querySelectorAll('.production-status-select');
             statusSelects.forEach(select => {
                 select.addEventListener('change', function() {
@@ -464,8 +447,7 @@
             formData.append('production_status', status || 'بدون حالة');
             formData.append('_token', csrfToken);
             
-            const routePrefix = @json(auth('employee')->check() ? '/employee' : '');
-            fetch(`${routePrefix}/work-orders/${workOrderId}/production-status`, {
+            fetch(`/work-orders/${workOrderId}/production-status`, {
                 method: 'POST',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
@@ -483,17 +465,14 @@
             })
             .then(data => {
                 if (data.success) {
-                    // Find target row based on status
                     const targetStatus = status || 'بدون حالة';
                     const targetRow = document.querySelector(`.kanban-row[data-status="${targetStatus}"]`);
                     
                     if (targetRow && targetRow !== currentRow) {
-                        // Move card to new row
                         const cardsContainer = targetRow.querySelector('.kanban-cards');
                         if (cardsContainer) {
                             cardsContainer.appendChild(cardElement);
                             
-                            // Update count in target row header
                             const header = targetRow.querySelector('.kanban-row-header');
                             const countSpan = header.querySelector('span:last-child');
                             if (countSpan) {
@@ -501,7 +480,6 @@
                                 countSpan.textContent = currentCount + 1;
                             }
 
-                            // Update old row count
                             if (currentRow) {
                                 const oldHeader = currentRow.querySelector('.kanban-row-header');
                                 const oldCountSpan = oldHeader.querySelector('span:last-child');
@@ -515,7 +493,6 @@
                         }
                     }
 
-                    // Reload page after a short delay to ensure data is saved
                     setTimeout(() => {
                         window.location.reload();
                     }, 500);
@@ -526,7 +503,6 @@
             .catch(error => {
                 console.error('Error updating production status:', error);
                 alert('حدث خطأ أثناء تحديث حالة الإنتاج: ' + error.message);
-                // Reset select to original value
                 const select = cardElement.querySelector('.production-status-select');
                 if (select) {
                     const originalStatus = currentRow?.getAttribute('data-status') || 'بدون حالة';
@@ -535,8 +511,5 @@
             });
         }
     </script>
-@if(auth('employee')->check())
-    </x-employee-layout>
-@else
-    </x-app-layout>
-@endif
+
+</x-app-layout>

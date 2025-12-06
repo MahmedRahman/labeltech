@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('work_orders', function (Blueprint $table) {
-            $table->integer('design_rows_count')->nullable()->after('design_file');
+        Schema::create('departments', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->comment('اسم القسم');
+            $table->text('description')->nullable()->comment('وصف القسم');
+            $table->timestamps();
         });
     }
 
@@ -21,8 +24,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('work_orders', function (Blueprint $table) {
-            $table->dropColumn('design_rows_count');
-        });
+        Schema::dropIfExists('departments');
     }
 };
+
