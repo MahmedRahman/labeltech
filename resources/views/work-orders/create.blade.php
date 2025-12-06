@@ -340,36 +340,47 @@
                                 <input type="radio" 
                                        name="additions" 
                                        value="لا يوجد" 
+                                       data-price="0"
                                        {{ old('additions', 'لا يوجد') == 'لا يوجد' ? 'checked' : '' }}
+                                       onchange="updateAdditionPrice()"
                                        style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
                                 <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">لا يوجد</span>
                             </label>
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('additions') == 'يوفي' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                            @foreach($additions as $addition)
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('additions') == $addition->name ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
                                 <input type="radio" 
                                        name="additions" 
-                                       value="يوفي" 
-                                       {{ old('additions') == 'يوفي' ? 'checked' : '' }}
+                                       value="{{ $addition->name }}" 
+                                       data-price="{{ $addition->price }}"
+                                       {{ old('additions') == $addition->name ? 'checked' : '' }}
+                                       onchange="updateAdditionPrice()"
                                        style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
-                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">يوفي</span>
+                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">{{ $addition->name }}</span>
                             </label>
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('additions') == 'سلوفان' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
-                                <input type="radio" 
-                                       name="additions" 
-                                       value="سلوفان" 
-                                       {{ old('additions') == 'سلوفان' ? 'checked' : '' }}
-                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
-                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">سلوفان</span>
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('additions') == 'سلوفان مط' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
-                                <input type="radio" 
-                                       name="additions" 
-                                       value="سلوفان مط" 
-                                       {{ old('additions') == 'سلوفان مط' ? 'checked' : '' }}
-                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
-                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">سلوفان مط</span>
-                            </label>
+                            @endforeach
                         </div>
                         @error('additions')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Addition Price (shown when addition is selected) -->
+                    <div id="addition_price_group" class="form-group" style="display: {{ old('additions', 'لا يوجد') != 'لا يوجد' ? 'block' : 'none' }};">
+                        <label for="addition_price" class="form-label">سعر الإضافة</label>
+                        <input type="number" 
+                               name="addition_price" 
+                               id="addition_price" 
+                               value="{{ old('addition_price') }}" 
+                               step="0.01"
+                               min="0"
+                               class="form-input"
+                               placeholder="0.00"
+                               required>
+                        <input type="hidden" id="addition_min_price" value="0">
+                        <p id="addition_price_hint" style="font-size: 0.75rem; color: #6b7280; margin-top: 0.25rem; margin-bottom: 0;">
+                            السعر الأدنى: <span id="addition_min_price_display">0.00</span> ج.م
+                        </p>
+                        @error('addition_price')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
                     </div>
@@ -382,7 +393,9 @@
                                 <input type="radio" 
                                        name="fingerprint" 
                                        value="no" 
+                                       id="fingerprint_no"
                                        {{ old('fingerprint', 'no') == 'no' ? 'checked' : '' }}
+                                       onchange="toggleFingerprintPrice()"
                                        style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
                                 <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">لا يوجد</span>
                             </label>
@@ -390,12 +403,31 @@
                                 <input type="radio" 
                                        name="fingerprint" 
                                        value="yes" 
+                                       id="fingerprint_yes"
                                        {{ old('fingerprint') == 'yes' ? 'checked' : '' }}
+                                       onchange="toggleFingerprintPrice()"
                                        style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
                                 <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">موجود</span>
                             </label>
                         </div>
                         @error('fingerprint')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Fingerprint Price (shown when fingerprint is yes) -->
+                    <div id="fingerprint_price_group" class="form-group" style="display: {{ old('fingerprint') == 'yes' ? 'block' : 'none' }};">
+                        <label for="fingerprint_price" class="form-label">سعر البصمة</label>
+                        <input type="number" 
+                               name="fingerprint_price" 
+                               id="fingerprint_price" 
+                               value="{{ old('fingerprint_price') }}" 
+                               step="0.01"
+                               min="0"
+                               class="form-input"
+                               placeholder="0.00"
+                               {{ old('fingerprint') == 'yes' ? 'required' : '' }}>
+                        @error('fingerprint_price')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
                     </div>
@@ -462,7 +494,9 @@
                                 <input type="radio" 
                                        name="knife_exists" 
                                        value="no" 
+                                       id="knife_exists_no"
                                        {{ old('knife_exists', 'no') == 'no' ? 'checked' : '' }}
+                                       onchange="toggleKnifePrice()"
                                        style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
                                 <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">لا يوجد</span>
                             </label>
@@ -470,12 +504,78 @@
                                 <input type="radio" 
                                        name="knife_exists" 
                                        value="yes" 
+                                       id="knife_exists_yes"
                                        {{ old('knife_exists') == 'yes' ? 'checked' : '' }}
+                                       onchange="toggleKnifePrice()"
                                        style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
                                 <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">يوجد</span>
                             </label>
                         </div>
                         @error('knife_exists')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Knife Price (shown when knife_exists is yes) -->
+                    <div id="knife_price_group" class="form-group" style="display: {{ old('knife_exists') == 'yes' ? 'block' : 'none' }};">
+                        <label for="knife_price" class="form-label">سعر السكينة</label>
+                        <input type="number" 
+                               name="knife_price" 
+                               id="knife_price" 
+                               value="{{ old('knife_price') }}" 
+                               step="0.01"
+                               min="0"
+                               class="form-input"
+                               placeholder="0.00"
+                               {{ old('knife_exists') == 'yes' ? 'required' : '' }}>
+                        @error('knife_price')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- External Breaking -->
+                    <div class="form-group">
+                        <label class="form-label">التكسير الخارجي</label>
+                        <div style="display: flex; gap: 2rem; margin-top: 0.5rem;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('external_breaking', 'no') == 'no' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                                <input type="radio" 
+                                       name="external_breaking" 
+                                       value="no" 
+                                       id="external_breaking_no"
+                                       {{ old('external_breaking', 'no') == 'no' ? 'checked' : '' }}
+                                       onchange="toggleExternalBreakingPrice()"
+                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">لا يوجد</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('external_breaking') == 'yes' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                                <input type="radio" 
+                                       name="external_breaking" 
+                                       value="yes" 
+                                       id="external_breaking_yes"
+                                       {{ old('external_breaking') == 'yes' ? 'checked' : '' }}
+                                       onchange="toggleExternalBreakingPrice()"
+                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">يوجد</span>
+                            </label>
+                        </div>
+                        @error('external_breaking')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- External Breaking Price (shown when external_breaking is yes) -->
+                    <div id="external_breaking_price_group" class="form-group" style="display: {{ old('external_breaking') == 'yes' ? 'block' : 'none' }};">
+                        <label for="external_breaking_price" class="form-label">سعر التكسير الخارجي</label>
+                        <input type="number" 
+                               name="external_breaking_price" 
+                               id="external_breaking_price" 
+                               value="{{ old('external_breaking_price') }}" 
+                               step="0.01"
+                               min="0"
+                               class="form-input"
+                               placeholder="0.00"
+                               {{ old('external_breaking') == 'yes' ? 'required' : '' }}>
+                        @error('external_breaking_price')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
                     </div>
@@ -531,6 +631,39 @@
                         @error('sales_percentage')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
+                    </div>
+
+                    <!-- Material and Manufacturing Prices -->
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="material_price_per_meter" class="form-label">سعر المتر الخامة</label>
+                            <input type="number" 
+                                   name="material_price_per_meter" 
+                                   id="material_price_per_meter" 
+                                   value="{{ old('material_price_per_meter') }}" 
+                                   step="0.01"
+                                   min="0"
+                                   class="form-input"
+                                   placeholder="0.00">
+                            @error('material_price_per_meter')
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label for="manufacturing_price_per_meter" class="form-label">سعر متر التصنيع</label>
+                            <input type="number" 
+                                   name="manufacturing_price_per_meter" 
+                                   id="manufacturing_price_per_meter" 
+                                   value="{{ old('manufacturing_price_per_meter') }}" 
+                                   step="0.01"
+                                   min="0"
+                                   class="form-input"
+                                   placeholder="0.00">
+                            @error('manufacturing_price_per_meter')
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
                 </div>
 
@@ -680,6 +813,7 @@
             additionsRadios.forEach(radio => {
                 radio.addEventListener('change', function() {
                     updateAdditionsStyle();
+                    updateAdditionPrice();
                 });
                 
                 // Also listen to click on the label
@@ -690,6 +824,7 @@
                         if (e.target !== radio) {
                             radio.checked = true;
                             updateAdditionsStyle();
+                            updateAdditionPrice();
                         }
                     });
                 }
@@ -713,12 +848,16 @@
             
             // Initialize additions styling
             updateAdditionsStyle();
+            
+            // Initialize addition price on page load
+            updateAdditionPrice();
 
             // Handle fingerprint radio buttons
             const fingerprintRadios = document.querySelectorAll('input[name="fingerprint"]');
             fingerprintRadios.forEach(radio => {
                 radio.addEventListener('change', function() {
                     updateFingerprintStyle();
+                    toggleFingerprintPrice();
                 });
                 
                 // Also listen to click on the label
@@ -729,6 +868,7 @@
                         if (e.target !== radio) {
                             radio.checked = true;
                             updateFingerprintStyle();
+                            toggleFingerprintPrice();
                         }
                     });
                 }
@@ -801,6 +941,7 @@
             knifeExistsRadios.forEach(radio => {
                 radio.addEventListener('change', function() {
                     updateKnifeExistsStyle();
+                    toggleKnifePrice();
                 });
                 
                 // Also listen to click on the label
@@ -811,6 +952,7 @@
                         if (e.target !== radio) {
                             radio.checked = true;
                             updateKnifeExistsStyle();
+                            toggleKnifePrice();
                         }
                     });
                 }
@@ -834,6 +976,45 @@
             
             // Initialize knife_exists styling
             updateKnifeExistsStyle();
+
+            // Handle external_breaking radio buttons
+            const externalBreakingRadios = document.querySelectorAll('input[name="external_breaking"]');
+            externalBreakingRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    updateExternalBreakingStyle();
+                });
+                
+                // Also listen to click on the label
+                const label = radio.closest('label');
+                if (label) {
+                    label.addEventListener('click', function(e) {
+                        // Prevent double triggering
+                        if (e.target !== radio) {
+                            radio.checked = true;
+                            updateExternalBreakingStyle();
+                        }
+                    });
+                }
+            });
+            
+            // Function to update external_breaking styling
+            function updateExternalBreakingStyle() {
+                document.querySelectorAll('input[name="external_breaking"]').forEach(r => {
+                    const label = r.closest('label');
+                    if (label) {
+                        if (r.checked) {
+                            label.style.borderColor = '#2563eb';
+                            label.style.backgroundColor = '#eff6ff';
+                        } else {
+                            label.style.borderColor = '#d1d5db';
+                            label.style.backgroundColor = 'transparent';
+                        }
+                    }
+                });
+            }
+            
+            // Initialize external_breaking styling
+            updateExternalBreakingStyle();
 
             // Handle winding_direction radio buttons
             const windingDirectionRadios = document.querySelectorAll('input[name="winding_direction"]');
@@ -971,6 +1152,98 @@
                 }
             });
         }
+
+        // Update addition price field based on selected addition
+        function updateAdditionPrice() {
+            const selectedAddition = document.querySelector('input[name="additions"]:checked');
+            const priceGroup = document.getElementById('addition_price_group');
+            const priceInput = document.getElementById('addition_price');
+            const minPriceInput = document.getElementById('addition_min_price');
+            const minPriceDisplay = document.getElementById('addition_min_price_display');
+            
+            if (selectedAddition && selectedAddition.value !== 'لا يوجد') {
+                const defaultPrice = parseFloat(selectedAddition.getAttribute('data-price')) || 0;
+                
+                // Show price field
+                if (priceGroup) priceGroup.style.display = 'block';
+                
+                // Set minimum price
+                if (minPriceInput) minPriceInput.value = defaultPrice;
+                if (minPriceDisplay) minPriceDisplay.textContent = defaultPrice.toFixed(2);
+                
+                // Set default price if not already set or if current value is less than minimum
+                if (priceInput) {
+                    const currentValue = parseFloat(priceInput.value) || 0;
+                    if (currentValue < defaultPrice || !priceInput.value) {
+                        priceInput.value = defaultPrice.toFixed(2);
+                    }
+                    priceInput.setAttribute('min', defaultPrice);
+                    priceInput.setAttribute('required', 'required');
+                }
+            } else {
+                // Hide price field if "لا يوجد" is selected
+                if (priceGroup) priceGroup.style.display = 'none';
+                if (priceInput) {
+                    priceInput.value = '';
+                    priceInput.removeAttribute('required');
+                }
+            }
+        }
+
+        // Toggle fingerprint price field
+        function toggleFingerprintPrice() {
+            const fingerprintYes = document.getElementById('fingerprint_yes');
+            const priceGroup = document.getElementById('fingerprint_price_group');
+            const priceInput = document.getElementById('fingerprint_price');
+            
+            if (fingerprintYes && fingerprintYes.checked) {
+                if (priceGroup) priceGroup.style.display = 'block';
+                if (priceInput) priceInput.setAttribute('required', 'required');
+            } else {
+                if (priceGroup) priceGroup.style.display = 'none';
+                if (priceInput) {
+                    priceInput.value = '';
+                    priceInput.removeAttribute('required');
+                }
+            }
+        }
+
+        // Toggle knife price field
+        function toggleKnifePrice() {
+            const knifeYes = document.getElementById('knife_exists_yes');
+            const priceGroup = document.getElementById('knife_price_group');
+            const priceInput = document.getElementById('knife_price');
+            
+            if (knifeYes && knifeYes.checked) {
+                if (priceGroup) priceGroup.style.display = 'block';
+                if (priceInput) priceInput.setAttribute('required', 'required');
+            } else {
+                if (priceGroup) priceGroup.style.display = 'none';
+                if (priceInput) {
+                    priceInput.value = '';
+                    priceInput.removeAttribute('required');
+                }
+            }
+        }
+
+        // Toggle external breaking price field
+        function toggleExternalBreakingPrice() {
+            const externalBreakingYes = document.getElementById('external_breaking_yes');
+            const priceGroup = document.getElementById('external_breaking_price_group');
+            const priceInput = document.getElementById('external_breaking_price');
+            
+            if (externalBreakingYes && externalBreakingYes.checked) {
+                if (priceGroup) priceGroup.style.display = 'block';
+                if (priceInput) priceInput.setAttribute('required', 'required');
+            } else {
+                if (priceGroup) priceGroup.style.display = 'none';
+                if (priceInput) {
+                    priceInput.value = '';
+                    priceInput.removeAttribute('required');
+                }
+            }
+        }
+
     </script>
 </x-app-layout>
 

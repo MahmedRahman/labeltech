@@ -79,7 +79,8 @@ class WorkOrderController extends Controller
     {
         $clients = Client::orderBy('name')->get();
         $materials = Material::where('is_active', true)->orderBy('name')->get();
-        return view('work-orders.create', compact('clients', 'materials'));
+        $additions = \App\Models\Addition::orderBy('name')->get();
+        return view('work-orders.create', compact('clients', 'materials', 'additions'));
     }
 
     /**
@@ -99,12 +100,58 @@ class WorkOrderController extends Controller
             'length' => 'nullable|numeric|min:0',
             'final_product_shape' => 'nullable|string',
             'additions' => 'nullable|string',
+            'addition_price' => [
+                'nullable',
+                'numeric',
+                'min:0',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->additions && $request->additions !== 'لا يوجد' && $value !== null) {
+                        $addition = \App\Models\Addition::where('name', $request->additions)->first();
+                        if ($addition && $value < $addition->price) {
+                            $fail('سعر الإضافة يجب أن يكون أكبر من أو يساوي السعر الافتراضي (' . number_format($addition->price, 2) . ' ج.م)');
+                        }
+                    }
+                },
+            ],
             'fingerprint' => 'nullable|in:yes,no',
+            'fingerprint_price' => [
+                'nullable',
+                'numeric',
+                'min:0',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->fingerprint === 'yes' && empty($value)) {
+                        $fail('سعر البصمة مطلوب عند اختيار وجود البصمة');
+                    }
+                },
+            ],
             'winding_direction' => 'nullable|in:no,clockwise,counterclockwise',
             'knife_exists' => 'nullable|in:yes,no',
+            'knife_price' => [
+                'nullable',
+                'numeric',
+                'min:0',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->knife_exists === 'yes' && empty($value)) {
+                        $fail('سعر السكينة مطلوب عند اختيار وجود السكينة');
+                    }
+                },
+            ],
+            'external_breaking' => 'nullable|in:yes,no',
+            'external_breaking_price' => [
+                'nullable',
+                'numeric',
+                'min:0',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->external_breaking === 'yes' && empty($value)) {
+                        $fail('سعر التكسير الخارجي مطلوب عند اختيار وجود التكسير الخارجي');
+                    }
+                },
+            ],
             'film_price' => 'nullable|numeric|min:0',
             'film_count' => 'nullable|integer|min:1',
             'sales_percentage' => 'nullable|numeric|min:0|max:100',
+            'material_price_per_meter' => 'nullable|numeric|min:0',
+            'manufacturing_price_per_meter' => 'nullable|numeric|min:0',
             'number_of_rolls' => 'nullable|integer|min:1',
             'core_size' => 'nullable|in:76,40,25',
             'pieces_per_sheet' => 'nullable|integer|min:1',
@@ -217,7 +264,8 @@ class WorkOrderController extends Controller
     {
         $clients = Client::orderBy('name')->get();
         $materials = Material::where('is_active', true)->orderBy('name')->get();
-        return view('work-orders.edit', compact('workOrder', 'clients', 'materials'));
+        $additions = \App\Models\Addition::orderBy('name')->get();
+        return view('work-orders.edit', compact('workOrder', 'clients', 'materials', 'additions'));
     }
 
     /**
@@ -228,17 +276,69 @@ class WorkOrderController extends Controller
         $validated = $request->validate([
             'client_id' => 'required|exists:clients,id',
             'order_number' => 'nullable|string|max:255|unique:work_orders,order_number,' . $workOrder->id,
-            'number_of_colors' => 'required|integer|min:1',
+            'job_name' => 'nullable|string|max:255',
+            'number_of_colors' => 'required|integer|min:0|max:6',
+            'rows_count' => 'nullable|integer|min:1',
             'material' => 'required|string|max:255',
             'quantity' => 'required|integer|min:1',
             'width' => 'nullable|numeric|min:0',
             'length' => 'nullable|numeric|min:0',
             'final_product_shape' => 'nullable|string',
             'additions' => 'nullable|string',
+            'addition_price' => [
+                'nullable',
+                'numeric',
+                'min:0',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->additions && $request->additions !== 'لا يوجد' && $value !== null) {
+                        $addition = \App\Models\Addition::where('name', $request->additions)->first();
+                        if ($addition && $value < $addition->price) {
+                            $fail('سعر الإضافة يجب أن يكون أكبر من أو يساوي السعر الافتراضي (' . number_format($addition->price, 2) . ' ج.م)');
+                        }
+                    }
+                },
+            ],
             'fingerprint' => 'nullable|in:yes,no',
-            'winding_direction' => 'nullable|in:yes,no',
+            'fingerprint_price' => [
+                'nullable',
+                'numeric',
+                'min:0',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->fingerprint === 'yes' && empty($value)) {
+                        $fail('سعر البصمة مطلوب عند اختيار وجود البصمة');
+                    }
+                },
+            ],
+            'winding_direction' => 'nullable|in:no,clockwise,counterclockwise',
+            'knife_exists' => 'nullable|in:yes,no',
+            'knife_price' => [
+                'nullable',
+                'numeric',
+                'min:0',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->knife_exists === 'yes' && empty($value)) {
+                        $fail('سعر السكينة مطلوب عند اختيار وجود السكينة');
+                    }
+                },
+            ],
+            'external_breaking' => 'nullable|in:yes,no',
+            'external_breaking_price' => [
+                'nullable',
+                'numeric',
+                'min:0',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($request->external_breaking === 'yes' && empty($value)) {
+                        $fail('سعر التكسير الخارجي مطلوب عند اختيار وجود التكسير الخارجي');
+                    }
+                },
+            ],
+            'film_price' => 'nullable|numeric|min:0',
+            'film_count' => 'nullable|integer|min:1',
+            'sales_percentage' => 'nullable|numeric|min:0|max:100',
+            'material_price_per_meter' => 'nullable|numeric|min:0',
+            'manufacturing_price_per_meter' => 'nullable|numeric|min:0',
             'number_of_rolls' => 'nullable|integer|min:1',
-            'core_size' => 'nullable|numeric|min:0',
+            'core_size' => 'nullable|in:76,40,25',
             'pieces_per_sheet' => 'nullable|integer|min:1',
             'sheets_per_stack' => 'nullable|integer|min:1',
             'notes' => 'nullable|string',

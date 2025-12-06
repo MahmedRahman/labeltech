@@ -29,14 +29,21 @@ return new class extends Migration
             $table->decimal('length', 10, 2)->nullable(); // الطول (بالسنتيمتر)
             $table->text('final_product_shape')->nullable(); // شكل المنتج النهائي
             $table->text('additions')->nullable(); // الإضافات المطلوبة
+            $table->decimal('addition_price', 10, 2)->nullable(); // سعر الإضافة
             $table->string('fingerprint')->nullable(); // البصمة (yes/no)
+            $table->decimal('fingerprint_price', 10, 2)->nullable(); // سعر البصمة
             $table->string('winding_direction')->nullable(); // اتجاه اللف (no/clockwise/counterclockwise)
             $table->string('knife_exists')->nullable(); // السكينة (yes/no)
+            $table->decimal('knife_price', 10, 2)->nullable(); // سعر السكينة
+            $table->string('external_breaking')->nullable(); // التكسير الخارجي (yes/no)
+            $table->decimal('external_breaking_price', 10, 2)->nullable(); // سعر التكسير الخارجي
             
             // Equipment
             $table->decimal('film_price', 10, 2)->nullable(); // سعر الفيلم الواحد
             $table->integer('film_count')->nullable(); // العدد
             $table->decimal('sales_percentage', 5, 2)->nullable(); // نسبة المبيعات
+            $table->decimal('material_price_per_meter', 10, 2)->nullable(); // سعر المتر الخامة
+            $table->decimal('manufacturing_price_per_meter', 10, 2)->nullable(); // سعر متر التصنيع
             
             // Design Information
             $table->string('design_shape')->nullable(); // الشكل
