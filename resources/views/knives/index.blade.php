@@ -41,13 +41,13 @@
 
     <!-- Filters -->
     <div style="background: white; border-radius: 0.75rem; border: 1px solid #e5e7eb; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);">
-        <form method="GET" action="{{ route('knives.index') }}" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; align-items: end;">
-            <!-- Filter by Type -->
-            <div>
+        <form method="GET" action="{{ route('knives.index') }}">
+            <!-- Filter by Type - Full Width Row -->
+            <div style="margin-bottom: 1.5rem;">
                 <label for="filter_type" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">النوع</label>
                 <select name="filter_type" 
                         id="filter_type" 
-                        style="width: 100%; padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; color: #111827; background-color: #fff;">
+                        style="width: 100%; max-width: 300px; padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; color: #111827; background-color: #fff;">
                     <option value="">جميع الأنواع</option>
                     @foreach($types as $type)
                         <option value="{{ $type }}" {{ request('filter_type') == $type ? 'selected' : '' }}>{{ $type }}</option>
@@ -55,39 +55,55 @@
                 </select>
             </div>
 
-            <!-- Filter by Width -->
-            <div>
-                <label for="filter_width" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">العرض</label>
-                <select name="filter_width" 
-                        id="filter_width" 
-                        style="width: 100%; padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; color: #111827; background-color: #fff;">
-                    <option value="">جميع الأعراض</option>
-                    @foreach($widths as $width)
-                        <option value="{{ $width }}" {{ request('filter_width') == $width ? 'selected' : '' }}>{{ number_format($width, 2) }}</option>
-                    @endforeach
-                </select>
+            <!-- Filter by Length and Width - Same Row -->
+            <div id="lengthWidthRow" style="display: {{ request('filter_type') ? 'grid' : 'none' }}; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+                <!-- Filter by Length -->
+                <div>
+                    <label for="filter_length" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">الطول</label>
+                    <select name="filter_length" 
+                            id="filter_length" 
+                            style="width: 100%; padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; color: #111827; background-color: #fff;">
+                        <option value="">جميع الأطوال</option>
+                        @foreach($lengths as $length)
+                            <option value="{{ $length }}" {{ request('filter_length') == $length ? 'selected' : '' }}>{{ number_format($length, 2) }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Filter by Width -->
+                <div>
+                    <label for="filter_width" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">العرض</label>
+                    <select name="filter_width" 
+                            id="filter_width" 
+                            style="width: 100%; padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; color: #111827; background-color: #fff;">
+                        <option value="">جميع الأعراض</option>
+                        @foreach($widths as $width)
+                            <option value="{{ $width }}" {{ request('filter_width') == $width ? 'selected' : '' }}>{{ number_format($width, 2) }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
 
-            <!-- Filter by Length -->
-            <div>
-                <label for="filter_length" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">الطول</label>
-                <select name="filter_length" 
-                        id="filter_length" 
-                        style="width: 100%; padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; color: #111827; background-color: #fff;">
-                    <option value="">جميع الأطوال</option>
-                    @foreach($lengths as $length)
-                        <option value="{{ $length }}" {{ request('filter_length') == $length ? 'selected' : '' }}>{{ number_format($length, 2) }}</option>
+            <!-- Filter by Dragile Drive - Full Width Row -->
+            <div id="dragileDriveRow" style="display: {{ request('filter_type') ? 'block' : 'none' }}; margin-bottom: 1.5rem;">
+                <label for="filter_dragile_drive" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">درافيل</label>
+                <select name="filter_dragile_drive" 
+                        id="filter_dragile_drive" 
+                        style="width: 100%; max-width: 300px; padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; color: #111827; background-color: #fff;">
+                    <option value="">جميع درافيل</option>
+                    @foreach($dragileDrives as $dragileDrive)
+                        <option value="{{ $dragileDrive }}" {{ request('filter_dragile_drive') == $dragileDrive ? 'selected' : '' }}>{{ $dragileDrive }}</option>
                     @endforeach
                 </select>
             </div>
 
             <!-- Filter Actions -->
             <div style="display: flex; gap: 0.75rem;">
-                <button type="submit" style="flex: 1; padding: 0.625rem 1rem; background-color: #2563eb; color: white; border: none; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background-color 0.15s;">
+                <button type="submit" style="padding: 0.625rem 1.5rem; background-color: #2563eb; color: white; border: none; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background-color 0.15s;">
                     تطبيق الفلترة
                 </button>
-                @if(request()->hasAny(['filter_type', 'filter_width', 'filter_length']))
-                    <a href="{{ route('knives.index') }}" style="flex: 1; padding: 0.625rem 1rem; background-color: #6b7280; color: white; text-decoration: none; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; text-align: center; display: flex; align-items: center; justify-content: center;">
+                @if(request()->hasAny(['filter_type', 'filter_width', 'filter_length', 'filter_dragile_drive']))
+                    <a href="{{ route('knives.index') }}" style="padding: 0.625rem 1.5rem; background-color: #6b7280; color: white; text-decoration: none; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; text-align: center; display: flex; align-items: center; justify-content: center;">
                         إلغاء الفلترة
                     </a>
                 @endif
@@ -193,6 +209,7 @@
                         <li>الرقم الكود مطلوب لكل سكينة</li>
                         <li>إذا كان الرقم الكود موجوداً، سيتم تحديث البيانات</li>
                         <li>إذا كان الرقم الكود غير موجود، سيتم إنشاء سكينة جديدة</li>
+                        <li><strong>الجاب سيتم حسابه تلقائياً من درافيل والطول - لا تضعه في الملف</strong></li>
                     </ul>
                 </div>
 
@@ -226,6 +243,89 @@
     @endif
 
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterType = document.getElementById('filter_type');
+            const filterLength = document.getElementById('filter_length');
+            const filterWidth = document.getElementById('filter_width');
+            const filterDragileDrive = document.getElementById('filter_dragile_drive');
+            const lengthWidthRow = document.getElementById('lengthWidthRow');
+            const dragileDriveRow = document.getElementById('dragileDriveRow');
+
+            // Function to update filter options based on selected type
+            function updateFilterOptions(type) {
+                if (!type || type === '') {
+                    // Hide filter rows and clear options
+                    lengthWidthRow.style.display = 'none';
+                    dragileDriveRow.style.display = 'none';
+                    filterLength.innerHTML = '<option value="">جميع الأطوال</option>';
+                    filterWidth.innerHTML = '<option value="">جميع الأعراض</option>';
+                    filterDragileDrive.innerHTML = '<option value="">جميع درافيل</option>';
+                    return;
+                }
+
+                // Show filter rows
+                lengthWidthRow.style.display = 'grid';
+                dragileDriveRow.style.display = 'block';
+
+                // Fetch filter values from server
+                fetch(`{{ route('knives.get-filter-values') }}?type=${encodeURIComponent(type)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Update Length options
+                        filterLength.innerHTML = '<option value="">جميع الأطوال</option>';
+                        data.lengths.forEach(item => {
+                            const option = document.createElement('option');
+                            option.value = item.value;
+                            option.textContent = item.label;
+                            // Preserve selected value if it exists
+                            if (option.value === '{{ request('filter_length') }}') {
+                                option.selected = true;
+                            }
+                            filterLength.appendChild(option);
+                        });
+
+                        // Update Width options
+                        filterWidth.innerHTML = '<option value="">جميع الأعراض</option>';
+                        data.widths.forEach(item => {
+                            const option = document.createElement('option');
+                            option.value = item.value;
+                            option.textContent = item.label;
+                            // Preserve selected value if it exists
+                            if (option.value === '{{ request('filter_width') }}') {
+                                option.selected = true;
+                            }
+                            filterWidth.appendChild(option);
+                        });
+
+                        // Update Dragile Drive options
+                        filterDragileDrive.innerHTML = '<option value="">جميع درافيل</option>';
+                        data.dragileDrives.forEach(item => {
+                            const option = document.createElement('option');
+                            option.value = item.value;
+                            option.textContent = item.label;
+                            // Preserve selected value if it exists
+                            if (option.value === '{{ request('filter_dragile_drive') }}') {
+                                option.selected = true;
+                            }
+                            filterDragileDrive.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching filter values:', error);
+                    });
+            }
+
+            // Listen to type change
+            filterType.addEventListener('change', function() {
+                updateFilterOptions(this.value);
+            });
+
+            // Initialize on page load if type is already selected
+            if (filterType.value) {
+                updateFilterOptions(filterType.value);
+            }
+        });
+
         // Close modal when clicking outside
         window.onclick = function(event) {
             const modal = document.getElementById('importModal');

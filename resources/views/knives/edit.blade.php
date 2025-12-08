@@ -213,13 +213,15 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="dragile_drive" class="form-label">دراغيل</label>
-                            <input type="text" 
+                            <label for="dragile_drive" class="form-label">درافيل</label>
+                            <input type="number" 
                                    name="dragile_drive" 
                                    id="dragile_drive" 
                                    value="{{ old('dragile_drive', $knife->dragile_drive) }}" 
                                    class="form-input"
-                                   placeholder="أدخل دراغيل">
+                                   step="0.01"
+                                   min="0"
+                                   placeholder="أدخل درافيل">
                             @error('dragile_drive')
                                 <p class="error-message">{{ $message }}</p>
                             @enderror
@@ -293,13 +295,19 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="flap_size" class="form-label">الجيب</label>
-                        <input type="text" 
+                        <label for="flap_size" class="form-label">الجاب</label>
+                        <input type="number" 
                                name="flap_size" 
                                id="flap_size" 
                                value="{{ old('flap_size', $knife->flap_size) }}" 
                                class="form-input"
-                               placeholder="أدخل الجيب">
+                               readonly
+                               style="background-color: #f3f4f6; cursor: not-allowed;"
+                               placeholder="سيتم الحساب تلقائياً"
+                               step="0.001">
+                        <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
+                            يتم الحساب تلقائياً من درافيل والطول
+                        </small>
                         @error('flap_size')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
@@ -334,4 +342,45 @@
             </form>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dragileDriveInput = document.getElementById('dragile_drive');
+            const lengthInput = document.getElementById('length');
+            const flapSizeInput = document.getElementById('flap_size');
+
+            // Function to calculate الجاب (flap_size)
+            function calculateFlapSize() {
+                const dragileDrive = parseFloat(dragileDriveInput.value) || 0;
+                const length = parseFloat(lengthInput.value) || 0;
+
+                if (dragileDrive > 0 && length > 0) {
+                    // Formula: (((3.175*A2/10)/INT(3.175*A2/(B2+0.2)/10))-B2)*10
+                    // Where A2 = dragileDrive, B2 = length
+                    const numerator = (3.175 * dragileDrive / 10);
+                    const denominator = Math.floor(3.175 * dragileDrive / (length + 0.2) / 10);
+                    
+                    if (denominator !== 0) {
+                        const result = ((numerator / denominator) - length) * 10;
+                        flapSizeInput.value = result.toFixed(3);
+                    } else {
+                        flapSizeInput.value = '';
+                    }
+                } else {
+                    flapSizeInput.value = '';
+                }
+            }
+
+            // Add event listeners for automatic calculation
+            dragileDriveInput.addEventListener('input', calculateFlapSize);
+            dragileDriveInput.addEventListener('change', calculateFlapSize);
+            lengthInput.addEventListener('input', calculateFlapSize);
+            lengthInput.addEventListener('change', calculateFlapSize);
+
+            // Calculate on page load if values exist
+            if (dragileDriveInput.value && lengthInput.value) {
+                calculateFlapSize();
+            }
+        });
+    </script>
 </x-app-layout>

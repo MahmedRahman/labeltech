@@ -29,15 +29,30 @@ class KnifeController extends Controller
             $query->where('length', $request->filter_length);
         }
 
+        // Filter by dragile_drive
+        if ($request->filled('filter_dragile_drive')) {
+            $query->where('dragile_drive', $request->filter_dragile_drive);
+        }
+
         $knives = $query->latest()->paginate(20)->appends($request->query());
         $totalKnives = Knife::count();
         
         // Get unique values for filter dropdowns
         $types = Knife::distinct()->whereNotNull('type')->pluck('type')->sort()->values();
-        $widths = Knife::distinct()->whereNotNull('width')->pluck('width')->sort()->values();
-        $lengths = Knife::distinct()->whereNotNull('length')->pluck('length')->sort()->values();
         
-        return view('knives.index', compact('knives', 'totalKnives', 'types', 'widths', 'lengths'));
+        // Get filtered values based on selected type
+        $widths = [];
+        $lengths = [];
+        $dragileDrives = [];
+        
+        if ($request->filled('filter_type')) {
+            $filterQuery = Knife::where('type', $request->filter_type);
+            $widths = $filterQuery->distinct()->whereNotNull('width')->pluck('width')->sort()->values();
+            $lengths = $filterQuery->distinct()->whereNotNull('length')->pluck('length')->sort()->values();
+            $dragileDrives = $filterQuery->distinct()->whereNotNull('dragile_drive')->pluck('dragile_drive')->sort()->values();
+        }
+        
+        return view('knives.index', compact('knives', 'totalKnives', 'types', 'widths', 'lengths', 'dragileDrives'));
     }
 
     /**
@@ -65,6 +80,42 @@ class KnifeController extends Controller
     }
 
     /**
+     * Get filter values for a given type (AJAX)
+     */
+    public function getFilterValues(Request $request)
+    {
+        $type = $request->input('type');
+        
+        if (empty($type)) {
+            return response()->json([
+                'lengths' => [],
+                'widths' => [],
+                'dragileDrives' => []
+            ]);
+        }
+
+        $query = Knife::where('type', $type);
+        
+        $lengths = $query->distinct()->whereNotNull('length')->pluck('length')->sort()->values()->map(function($length) {
+            return ['value' => $length, 'label' => number_format($length, 2)];
+        });
+        
+        $widths = $query->distinct()->whereNotNull('width')->pluck('width')->sort()->values()->map(function($width) {
+            return ['value' => $width, 'label' => number_format($width, 2)];
+        });
+        
+        $dragileDrives = $query->distinct()->whereNotNull('dragile_drive')->pluck('dragile_drive')->sort()->values()->map(function($drive) {
+            return ['value' => $drive, 'label' => $drive];
+        });
+        
+        return response()->json([
+            'lengths' => $lengths,
+            'widths' => $widths,
+            'dragileDrives' => $dragileDrives
+        ]);
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
@@ -72,10 +123,10 @@ class KnifeController extends Controller
         $validated = $request->validate([
             'type' => 'required|in:مستطيل,دائرة,مربع,بيضاوي,شكل خاص',
             'gear' => 'nullable|string|max:255',
-            'dragile_drive' => 'nullable|string|max:255',
+            'dragile_drive' => 'nullable|numeric|min:0',
             'rows_count' => 'nullable|integer|min:0',
             'eyes_count' => 'nullable|integer|min:0',
-            'flap_size' => 'nullable|string|max:255',
+            'flap_size' => 'nullable|numeric',
             'length' => 'nullable|numeric|min:0',
             'width' => 'nullable|numeric|min:0',
             'knife_code' => 'nullable|string|max:255|unique:knives,knife_code',
@@ -158,10 +209,10 @@ class KnifeController extends Controller
         $validated = $request->validate([
             'type' => 'nullable|in:مستطيل,دائرة,مربع,بيضاوي,شكل خاص',
             'gear' => 'nullable|string|max:255',
-            'dragile_drive' => 'nullable|string|max:255',
+            'dragile_drive' => 'nullable|numeric|min:0',
             'rows_count' => 'nullable|integer|min:0',
             'eyes_count' => 'nullable|integer|min:0',
-            'flap_size' => 'nullable|string|max:255',
+            'flap_size' => 'nullable|numeric',
             'length' => 'nullable|numeric|min:0',
             'width' => 'nullable|numeric|min:0',
             'knife_code' => 'required|string|max:255|unique:knives,knife_code,' . $knife->id,
@@ -205,21 +256,20 @@ class KnifeController extends Controller
             // Add BOM for UTF-8
             fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
             
-            // Add headers
+            // Add headers (without الجاب as it's calculated automatically)
             fputcsv($file, [
                 'الرقم الكود',
                 'النوع',
                 'تُرس',
-                'دراغيل',
+                'درافيل',
                 'عدد الصفوف',
                 'عدد العيون',
-                'الجيب',
                 'الطول',
                 'العرض',
                 'الملاحظات'
             ]);
 
-            // Add data
+            // Add data (without flap_size as it's calculated automatically)
             foreach ($knives as $knife) {
                 fputcsv($file, [
                     $knife->knife_code ?? '',
@@ -228,7 +278,6 @@ class KnifeController extends Controller
                     $knife->dragile_drive ?? '',
                     $knife->rows_count ?? '',
                     $knife->eyes_count ?? '',
-                    $knife->flap_size ?? '',
                     $knife->length ?? '',
                     $knife->width ?? '',
                     $knife->notes ?? ''
@@ -263,6 +312,13 @@ class KnifeController extends Controller
         // Remove header row
         $header = array_shift($data);
         
+        // Find column indices by header name (to support flexible column order)
+        $headerMap = [];
+        foreach ($header as $idx => $col) {
+            $col = trim($col);
+            $headerMap[$col] = $idx;
+        }
+        
         $imported = 0;
         $skipped = 0;
         $errors = [];
@@ -273,19 +329,42 @@ class KnifeController extends Controller
                 continue;
             }
 
-            // Map CSV columns to database fields
+            // Helper function to get value by header name or index
+            $getValue = function($key, $defaultIndex = null) use ($row, $headerMap) {
+                if (isset($headerMap[$key])) {
+                    return isset($row[$headerMap[$key]]) ? trim($row[$headerMap[$key]]) : null;
+                }
+                return $defaultIndex !== null && isset($row[$defaultIndex]) ? trim($row[$defaultIndex]) : null;
+            };
+
+            // Map CSV columns to database fields (without flap_size - it will be calculated)
             $knifeData = [
-                'knife_code' => isset($row[0]) ? trim($row[0]) : null,
-                'type' => isset($row[1]) ? trim($row[1]) : null,
-                'gear' => isset($row[2]) ? trim($row[2]) : null,
-                'dragile_drive' => isset($row[3]) ? trim($row[3]) : null,
-                'rows_count' => isset($row[4]) && $row[4] !== '' ? (int)$row[4] : null,
-                'eyes_count' => isset($row[5]) && $row[5] !== '' ? (int)$row[5] : null,
-                'flap_size' => isset($row[6]) ? trim($row[6]) : null,
-                'length' => isset($row[7]) && $row[7] !== '' ? (float)$row[7] : null,
-                'width' => isset($row[8]) && $row[8] !== '' ? (float)$row[8] : null,
-                'notes' => isset($row[9]) ? trim($row[9]) : null,
+                'knife_code' => $getValue('الرقم الكود', 0),
+                'type' => $getValue('النوع', 1),
+                'gear' => $getValue('تُرس', 2),
+                'dragile_drive' => $getValue('درافيل', 3) ?: $getValue('دراغيل', 3), // Support both spellings
+                'rows_count' => ($val = $getValue('عدد الصفوف', 4)) && $val !== '' ? (int)$val : null,
+                'eyes_count' => ($val = $getValue('عدد العيون', 5)) && $val !== '' ? (int)$val : null,
+                'length' => ($val = $getValue('الطول', 6)) && $val !== '' ? (float)$val : null,
+                'width' => ($val = $getValue('العرض', 7)) && $val !== '' ? (float)$val : null,
+                'notes' => $getValue('الملاحظات', 8),
             ];
+            
+            // Calculate flap_size automatically if dragile_drive and length are provided
+            if (!empty($knifeData['dragile_drive']) && !empty($knifeData['length'])) {
+                $dragileDrive = (float)$knifeData['dragile_drive'];
+                $length = (float)$knifeData['length'];
+                
+                if ($dragileDrive > 0 && $length > 0) {
+                    // Formula: (((3.175 * dragileDrive / 10) / INT(3.175 * dragileDrive / (length + 0.2) / 10)) - length) * 10
+                    $numerator = (3.175 * $dragileDrive / 10);
+                    $denominator = floor(3.175 * $dragileDrive / ($length + 0.2) / 10);
+                    
+                    if ($denominator != 0) {
+                        $knifeData['flap_size'] = round((($numerator / $denominator) - $length) * 10, 3);
+                    }
+                }
+            }
 
             // Validate knife_code is required
             if (empty($knifeData['knife_code'])) {

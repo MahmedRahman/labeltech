@@ -38,5 +38,8 @@ class DatabaseSeeder extends Seeder
         
         // Seed Wastes (Printing)
         $this->call(WasteSeeder::class);
+        
+        // Seed Knives
+        $this->call(KnifeSeeder::class);
     }
 }

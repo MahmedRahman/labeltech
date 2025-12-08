@@ -166,6 +166,8 @@
                 <!-- معلومات أساسية -->
                 <div class="form-section">
                     <h3>معلومات أساسية</h3>
+                    
+                    <!-- النوع -->
                     <div class="form-group">
                         <label for="type" class="form-label required">النوع</label>
                         <select name="type" 
@@ -184,87 +186,11 @@
                         @enderror
                     </div>
 
-                    <div class="form-group">
-                        <label for="knife_code" class="form-label">الرقم الكود</label>
-                        <input type="text" 
-                               name="knife_code" 
-                               id="knife_code" 
-                               value="{{ old('knife_code') }}" 
-                               class="form-input"
-                               readonly
-                               style="background-color: #f3f4f6; cursor: not-allowed;"
-                               placeholder="سيتم توليد الكود تلقائياً عند اختيار النوع">
-                        <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
-                            سيتم توليد الرقم الكود تلقائياً بناءً على النوع المختار
-                        </small>
-                        @error('knife_code')
-                            <p class="error-message">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    <!-- الرقم الكود (مخفي في واجهة المستخدم) -->
+                    <input type="hidden" name="knife_code" id="knife_code" value="{{ old('knife_code') }}">
 
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="gear" class="form-label">تُرس</label>
-                            <input type="text" 
-                                   name="gear" 
-                                   id="gear" 
-                                   value="{{ old('gear') }}" 
-                                   class="form-input"
-                                   placeholder="أدخل تُرس">
-                            @error('gear')
-                                <p class="error-message">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <label for="dragile_drive" class="form-label">دراغيل</label>
-                            <input type="text" 
-                                   name="dragile_drive" 
-                                   id="dragile_drive" 
-                                   value="{{ old('dragile_drive') }}" 
-                                   class="form-input"
-                                   placeholder="أدخل دراغيل">
-                            @error('dragile_drive')
-                                <p class="error-message">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
-                </div>
-
-                <!-- المواصفات -->
-                <div class="form-section">
-                    <h3>المواصفات</h3>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="rows_count" class="form-label">عدد الصفوف</label>
-                            <input type="number" 
-                                   name="rows_count" 
-                                   id="rows_count" 
-                                   value="{{ old('rows_count') }}" 
-                                   min="0"
-                                   class="form-input"
-                                   placeholder="أدخل عدد الصفوف">
-                            @error('rows_count')
-                                <p class="error-message">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <label for="eyes_count" class="form-label">عدد العيون</label>
-                            <input type="number" 
-                                   name="eyes_count" 
-                                   id="eyes_count" 
-                                   value="{{ old('eyes_count') }}" 
-                                   min="0"
-                                   class="form-input"
-                                   placeholder="أدخل عدد العيون">
-                            @error('eyes_count')
-                                <p class="error-message">{{ $message }}</p>
-                            @enderror
-                        </div>
-                    </div>
-
-                    <div class="form-grid">
+                    <!-- العرض والطول وعدد العيون وعدد الصفوف -->
+                    <div class="form-grid" style="grid-template-columns: repeat(2, 1fr);">
                         <div class="form-group">
                             <label for="width" class="form-label">العرض</label>
                             <input type="number" 
@@ -294,16 +220,82 @@
                                 <p class="error-message">{{ $message }}</p>
                             @enderror
                         </div>
+
+                        <div class="form-group">
+                            <label for="eyes_count" class="form-label">عدد العيون</label>
+                            <input type="number" 
+                                   name="eyes_count" 
+                                   id="eyes_count" 
+                                   value="{{ old('eyes_count') }}" 
+                                   min="0"
+                                   class="form-input"
+                                   placeholder="أدخل عدد العيون">
+                            @error('eyes_count')
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label for="rows_count" class="form-label">عدد الصفوف</label>
+                            <input type="number" 
+                                   name="rows_count" 
+                                   id="rows_count" 
+                                   value="{{ old('rows_count') }}" 
+                                   min="0"
+                                   class="form-input"
+                                   placeholder="أدخل عدد الصفوف">
+                            @error('rows_count')
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
 
+                    <!-- درافيل وتُرس -->
+                    <div class="form-grid" style="grid-template-columns: repeat(2, 1fr);">
+                        <div class="form-group">
+                            <label for="dragile_drive" class="form-label">درافيل</label>
+                            <input type="number" 
+                                   name="dragile_drive" 
+                                   id="dragile_drive" 
+                                   value="{{ old('dragile_drive') }}" 
+                                   class="form-input"
+                                   step="0.01"
+                                   min="0"
+                                   placeholder="أدخل درافيل">
+                            @error('dragile_drive')
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label for="gear" class="form-label">تُرس</label>
+                            <input type="text" 
+                                   name="gear" 
+                                   id="gear" 
+                                   value="{{ old('gear') }}" 
+                                   class="form-input"
+                                   placeholder="أدخل تُرس">
+                            @error('gear')
+                                <p class="error-message">{{ $message }}</p>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- الجاب (محسوب تلقائياً) -->
                     <div class="form-group">
-                        <label for="flap_size" class="form-label">الجيب</label>
-                        <input type="text" 
+                        <label for="flap_size" class="form-label">الجاب</label>
+                        <input type="number" 
                                name="flap_size" 
                                id="flap_size" 
                                value="{{ old('flap_size') }}" 
                                class="form-input"
-                               placeholder="أدخل الجيب">
+                               readonly
+                               style="background-color: #f3f4f6; cursor: not-allowed;"
+                               placeholder="سيتم الحساب تلقائياً"
+                               step="0.001">
+                        <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
+                            يتم الحساب تلقائياً من درافيل والطول
+                        </small>
                         @error('flap_size')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
@@ -343,6 +335,42 @@
         document.addEventListener('DOMContentLoaded', function() {
             const typeSelect = document.getElementById('type');
             const knifeCodeInput = document.getElementById('knife_code');
+            const dragileDriveInput = document.getElementById('dragile_drive');
+            const lengthInput = document.getElementById('length');
+            const flapSizeInput = document.getElementById('flap_size');
+
+            // Function to calculate الجاب (flap_size)
+            function calculateFlapSize() {
+                const dragileDrive = parseFloat(dragileDriveInput.value) || 0;
+                const length = parseFloat(lengthInput.value) || 0;
+
+                if (dragileDrive > 0 && length > 0) {
+                    // Formula: (((3.175*A2/10)/INT(3.175*A2/(B2+0.2)/10))-B2)*10
+                    // Where A2 = dragileDrive, B2 = length
+                    const numerator = (3.175 * dragileDrive / 10);
+                    const denominator = Math.floor(3.175 * dragileDrive / (length + 0.2) / 10);
+                    
+                    if (denominator !== 0) {
+                        const result = ((numerator / denominator) - length) * 10;
+                        flapSizeInput.value = result.toFixed(3);
+                    } else {
+                        flapSizeInput.value = '';
+                    }
+                } else {
+                    flapSizeInput.value = '';
+                }
+            }
+
+            // Add event listeners for automatic calculation
+            dragileDriveInput.addEventListener('input', calculateFlapSize);
+            dragileDriveInput.addEventListener('change', calculateFlapSize);
+            lengthInput.addEventListener('input', calculateFlapSize);
+            lengthInput.addEventListener('change', calculateFlapSize);
+
+            // Calculate on page load if values exist
+            if (dragileDriveInput.value && lengthInput.value) {
+                calculateFlapSize();
+            }
 
             typeSelect.addEventListener('change', function() {
                 const type = this.value;

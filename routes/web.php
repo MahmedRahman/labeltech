@@ -76,6 +76,7 @@ Route::middleware('auth')->group(function () {
     Route::get('knives/export', [\App\Http\Controllers\KnifeController::class, 'export'])->name('knives.export');
     Route::post('knives/import', [\App\Http\Controllers\KnifeController::class, 'import'])->name('knives.import');
     Route::get('knives/get-next-code', [\App\Http\Controllers\KnifeController::class, 'getNextKnifeCode'])->name('knives.get-next-code');
+    Route::get('knives/get-filter-values', [\App\Http\Controllers\KnifeController::class, 'getFilterValues'])->name('knives.get-filter-values');
     Route::resource('knives', \App\Http\Controllers\KnifeController::class);
     
     // الطباعة
