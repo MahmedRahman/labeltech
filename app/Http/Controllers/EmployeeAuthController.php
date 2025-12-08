@@ -36,11 +36,11 @@ class EmployeeAuthController extends Controller
 
         $employee = Auth::guard('employee')->user();
 
-        // التحقق من أن نوع الحساب هو "مبيعات"
-        if ($employee->account_type !== 'مبيعات') {
+        // التحقق من أن نوع الحساب هو "مبيعات" أو "تصميم" أو "تشغيل"
+        if (!in_array($employee->account_type, ['مبيعات', 'تصميم', 'تشغيل'])) {
             Auth::guard('employee')->logout();
             throw ValidationException::withMessages([
-                'email' => 'ليس لديك صلاحية للدخول. يجب أن يكون نوع حسابك "مبيعات".',
+                'email' => 'ليس لديك صلاحية للدخول.',
             ]);
         }
 
@@ -53,6 +53,15 @@ class EmployeeAuthController extends Controller
         }
 
         $request->session()->regenerate();
+
+        // Redirect based on account type
+        if ($employee->account_type === 'مبيعات') {
+            return redirect()->intended(route('employee.dashboard', absolute: false));
+        } elseif ($employee->account_type === 'تصميم') {
+            return redirect()->intended(route('employee.designer.dashboard', absolute: false));
+        } elseif ($employee->account_type === 'تشغيل') {
+            return redirect()->intended(route('employee.production.dashboard', absolute: false));
+        }
 
         return redirect()->intended(route('employee.dashboard', absolute: false));
     }

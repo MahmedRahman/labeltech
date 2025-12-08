@@ -122,13 +122,13 @@ class KnifeController extends Controller
     {
         $validated = $request->validate([
             'type' => 'required|in:مستطيل,دائرة,مربع,بيضاوي,شكل خاص',
-            'gear' => 'nullable|string|max:255',
-            'dragile_drive' => 'nullable|numeric|min:0',
+            'gear' => 'nullable|integer|min:0|max:999',
+            'dragile_drive' => 'required|numeric|min:0|max:999',
             'rows_count' => 'nullable|integer|min:0',
             'eyes_count' => 'nullable|integer|min:0',
             'flap_size' => 'nullable|numeric',
-            'length' => 'nullable|numeric|min:0',
-            'width' => 'nullable|numeric|min:0',
+            'length' => 'required|numeric|min:0',
+            'width' => 'required|numeric|min:0',
             'knife_code' => 'nullable|string|max:255|unique:knives,knife_code',
             'notes' => 'nullable|string',
         ]);
@@ -207,14 +207,14 @@ class KnifeController extends Controller
     public function update(Request $request, Knife $knife)
     {
         $validated = $request->validate([
-            'type' => 'nullable|in:مستطيل,دائرة,مربع,بيضاوي,شكل خاص',
-            'gear' => 'nullable|string|max:255',
-            'dragile_drive' => 'nullable|numeric|min:0',
+            'type' => 'required|in:مستطيل,دائرة,مربع,بيضاوي,شكل خاص',
+            'gear' => 'nullable|integer|min:0|max:999',
+            'dragile_drive' => 'required|numeric|min:0|max:999',
             'rows_count' => 'nullable|integer|min:0',
             'eyes_count' => 'nullable|integer|min:0',
             'flap_size' => 'nullable|numeric',
-            'length' => 'nullable|numeric|min:0',
-            'width' => 'nullable|numeric|min:0',
+            'length' => 'required|numeric|min:0',
+            'width' => 'required|numeric|min:0',
             'knife_code' => 'required|string|max:255|unique:knives,knife_code,' . $knife->id,
             'notes' => 'nullable|string',
         ]);
@@ -239,9 +239,28 @@ class KnifeController extends Controller
     /**
      * Export knives to CSV
      */
-    public function export()
+    public function export(Request $request)
     {
-        $knives = Knife::orderBy('knife_code')->get();
+        $query = Knife::query();
+
+        // Apply same filters as index
+        if ($request->filled('filter_type')) {
+            $query->where('type', $request->filter_type);
+        }
+
+        if ($request->filled('filter_width')) {
+            $query->where('width', $request->filter_width);
+        }
+
+        if ($request->filled('filter_length')) {
+            $query->where('length', $request->filter_length);
+        }
+
+        if ($request->filled('filter_dragile_drive')) {
+            $query->where('dragile_drive', $request->filter_dragile_drive);
+        }
+
+        $knives = $query->orderBy('knife_code')->get();
 
         $filename = 'knives_export_' . date('Y-m-d_His') . '.csv';
         

@@ -30,6 +30,17 @@ class AuthenticatedSessionController extends Controller
 
         // Check which guard is authenticated and redirect accordingly
         if (Auth::guard('employee')->check()) {
+            $employee = Auth::guard('employee')->user();
+            
+            // Redirect based on account type
+            if ($employee->account_type === 'مبيعات') {
+                return redirect()->intended(route('employee.dashboard', absolute: false));
+            } elseif ($employee->account_type === 'تصميم') {
+                return redirect()->intended(route('employee.designer.dashboard', absolute: false));
+            } elseif ($employee->account_type === 'تشغيل') {
+                return redirect()->intended(route('employee.production.dashboard', absolute: false));
+            }
+            
             return redirect()->intended(route('employee.dashboard', absolute: false));
         }
 

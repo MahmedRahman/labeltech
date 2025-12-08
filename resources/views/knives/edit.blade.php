@@ -182,10 +182,11 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="type" class="form-label">النوع</label>
+                        <label for="type" class="form-label required">النوع</label>
                         <select name="type" 
                                 id="type" 
-                                class="form-select">
+                                class="form-select"
+                                required>
                             <option value="">اختر النوع</option>
                             <option value="مستطيل" {{ old('type', $knife->type) == 'مستطيل' ? 'selected' : '' }}>مستطيل</option>
                             <option value="دائرة" {{ old('type', $knife->type) == 'دائرة' ? 'selected' : '' }}>دائرة</option>
@@ -201,19 +202,22 @@
                     <div class="form-grid">
                         <div class="form-group">
                             <label for="gear" class="form-label">تُرس</label>
-                            <input type="text" 
+                            <input type="number" 
                                    name="gear" 
                                    id="gear" 
                                    value="{{ old('gear', $knife->gear) }}" 
                                    class="form-input"
-                                   placeholder="أدخل تُرس">
+                                   min="0"
+                                   max="999"
+                                   maxlength="3"
+                                   placeholder="أدخل تُرس (حد أقصى 3 أرقام)">
                             @error('gear')
                                 <p class="error-message">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <div class="form-group">
-                            <label for="dragile_drive" class="form-label">درافيل</label>
+                            <label for="dragile_drive" class="form-label required">درافيل</label>
                             <input type="number" 
                                    name="dragile_drive" 
                                    id="dragile_drive" 
@@ -221,7 +225,10 @@
                                    class="form-input"
                                    step="0.01"
                                    min="0"
-                                   placeholder="أدخل درافيل">
+                                   max="999"
+                                   required
+                                   maxlength="3"
+                                   placeholder="أدخل درافيل (حد أقصى 3 أرقام)">
                             @error('dragile_drive')
                                 <p class="error-message">{{ $message }}</p>
                             @enderror
@@ -240,6 +247,7 @@
                                    id="rows_count" 
                                    value="{{ old('rows_count', $knife->rows_count) }}" 
                                    min="0"
+                                   step="1"
                                    class="form-input"
                                    placeholder="أدخل عدد الصفوف">
                             @error('rows_count')
@@ -254,6 +262,7 @@
                                    id="eyes_count" 
                                    value="{{ old('eyes_count', $knife->eyes_count) }}" 
                                    min="0"
+                                   step="1"
                                    class="form-input"
                                    placeholder="أدخل عدد العيون">
                             @error('eyes_count')
@@ -264,13 +273,14 @@
 
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="width" class="form-label">العرض</label>
+                            <label for="width" class="form-label required">العرض</label>
                             <input type="number" 
                                    name="width" 
                                    id="width" 
                                    value="{{ old('width', $knife->width) }}" 
                                    step="0.01"
                                    min="0"
+                                   required
                                    class="form-input"
                                    placeholder="أدخل العرض">
                             @error('width')
@@ -279,13 +289,14 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="length" class="form-label">الطول</label>
+                            <label for="length" class="form-label required">الطول</label>
                             <input type="number" 
                                    name="length" 
                                    id="length" 
                                    value="{{ old('length', $knife->length) }}" 
                                    step="0.01"
                                    min="0"
+                                   required
                                    class="form-input"
                                    placeholder="أدخل الطول">
                             @error('length')
@@ -348,6 +359,42 @@
             const dragileDriveInput = document.getElementById('dragile_drive');
             const lengthInput = document.getElementById('length');
             const flapSizeInput = document.getElementById('flap_size');
+            const gearInput = document.getElementById('gear');
+
+            // Limit dragile_drive and gear to max 3 digits
+            function limitToThreeDigits(input) {
+                input.addEventListener('input', function() {
+                    let value = this.value;
+                    // Remove any non-digit characters except decimal point
+                    if (this.id === 'dragile_drive') {
+                        // For dragile_drive, allow decimals
+                        value = value.replace(/[^\d.]/g, '');
+                        // Ensure only one decimal point
+                        const parts = value.split('.');
+                        if (parts.length > 2) {
+                            value = parts[0] + '.' + parts.slice(1).join('');
+                        }
+                        // Limit integer part to 3 digits
+                        if (parts[0] && parts[0].length > 3) {
+                            value = parts[0].substring(0, 3) + (parts[1] ? '.' + parts[1] : '');
+                        }
+                    } else {
+                        // For gear, only integers
+                        value = value.replace(/\D/g, '');
+                        if (value.length > 3) {
+                            value = value.substring(0, 3);
+                        }
+                    }
+                    // Ensure max value is 999
+                    if (parseFloat(value) > 999) {
+                        value = '999';
+                    }
+                    this.value = value;
+                });
+            }
+
+            limitToThreeDigits(dragileDriveInput);
+            limitToThreeDigits(gearInput);
 
             // Function to calculate الجاب (flap_size)
             function calculateFlapSize() {

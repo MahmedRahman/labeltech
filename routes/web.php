@@ -7,7 +7,14 @@ use Illuminate\Support\Facades\Route;
 // الصفحة الرئيسية - تسجيل الدخول
 Route::get('/', function () {
     if (auth('employee')->check()) {
-        return redirect()->route('employee.dashboard');
+        $employee = auth('employee')->user();
+        if ($employee->account_type === 'تصميم') {
+            return redirect()->route('employee.designer.dashboard');
+        } elseif ($employee->account_type === 'تشغيل') {
+            return redirect()->route('employee.production.dashboard');
+        } else {
+            return redirect()->route('employee.dashboard');
+        }
     }
     if (auth()->check()) {
         return redirect()->route('dashboard');
@@ -44,6 +51,12 @@ Route::middleware('auth.any')->group(function () {
     Route::post('work-orders/{workOrder}/design', [\App\Http\Controllers\WorkOrderController::class, 'storeDesign'])->name('work-orders.design.store');
     Route::post('work-orders/{workOrder}/production-status', [\App\Http\Controllers\WorkOrderController::class, 'updateProductionStatus'])->name('work-orders.production-status.update');
     Route::resource('work-orders', \App\Http\Controllers\WorkOrderController::class);
+    
+    // السكاكين - متاح للمصمم والادمن
+    Route::get('knives/export', [\App\Http\Controllers\KnifeController::class, 'export'])->name('knives.export');
+    Route::get('knives/get-next-code', [\App\Http\Controllers\KnifeController::class, 'getNextKnifeCode'])->name('knives.get-next-code');
+    Route::get('knives/get-filter-values', [\App\Http\Controllers\KnifeController::class, 'getFilterValues'])->name('knives.get-filter-values');
+    Route::resource('knives', \App\Http\Controllers\KnifeController::class)->except(['import']);
 });
 
 // Routes accessible by admin only
@@ -72,12 +85,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('departments', \App\Http\Controllers\DepartmentController::class);
     Route::resource('positions', \App\Http\Controllers\PositionController::class);
     
-    // السكاكين
-    Route::get('knives/export', [\App\Http\Controllers\KnifeController::class, 'export'])->name('knives.export');
+    // السكاكين - Import فقط للادمن
     Route::post('knives/import', [\App\Http\Controllers\KnifeController::class, 'import'])->name('knives.import');
-    Route::get('knives/get-next-code', [\App\Http\Controllers\KnifeController::class, 'getNextKnifeCode'])->name('knives.get-next-code');
-    Route::get('knives/get-filter-values', [\App\Http\Controllers\KnifeController::class, 'getFilterValues'])->name('knives.get-filter-values');
-    Route::resource('knives', \App\Http\Controllers\KnifeController::class);
     
     // الطباعة
     Route::resource('wastes', \App\Http\Controllers\WasteController::class);
@@ -114,4 +123,49 @@ Route::middleware(['auth:employee', 'employee.sales'])->prefix('employee')->name
     
     // Logout is handled by the main auth routes
     // Work Orders routes are now handled by auth.any middleware above
+});
+
+// Employee Routes (Design Employees) - Dashboard and Knives only
+Route::middleware(['auth:employee'])->prefix('employee')->name('employee.')->group(function () {
+    Route::get('/designer/dashboard', function () {
+        $employee = auth('employee')->user();
+        if ($employee->account_type !== 'تصميم') {
+            abort(403);
+        }
+        $knivesCount = \App\Models\Knife::count();
+        $recentKnives = \App\Models\Knife::latest()->take(5)->get();
+        return view('employee.designer-dashboard', compact('knivesCount', 'recentKnives'));
+    })->name('designer.dashboard');
+    
+    // Employee Routes (Production Employees) - Dashboard and Work Orders only
+    Route::get('/production/dashboard', function () {
+        $employee = auth('employee')->user();
+        if ($employee->account_type !== 'تشغيل') {
+            abort(403);
+        }
+        // Get work orders in production (not archived)
+        $workOrdersCount = \App\Models\WorkOrder::where('production_status', '!=', 'أرشيف')
+            ->where(function($q) {
+                $q->whereNull('production_status')
+                  ->orWhere('production_status', 'بدون حالة')
+                  ->orWhereIn('production_status', ['طباعة', 'قص', 'تقفيل']);
+            })
+            ->count();
+        
+        $recentWorkOrders = \App\Models\WorkOrder::with('client')
+            ->where('production_status', '!=', 'أرشيف')
+            ->where(function($q) {
+                $q->whereNull('production_status')
+                  ->orWhere('production_status', 'بدون حالة')
+                  ->orWhereIn('production_status', ['طباعة', 'قص', 'تقفيل']);
+            })
+            ->latest()
+            ->take(5)
+            ->get();
+        
+        $knivesCount = \App\Models\Knife::count();
+        $recentKnives = \App\Models\Knife::latest()->take(5)->get();
+        
+        return view('employee.production-dashboard', compact('workOrdersCount', 'recentWorkOrders', 'knivesCount', 'recentKnives'));
+    })->name('production.dashboard');
 });

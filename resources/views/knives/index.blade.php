@@ -10,11 +10,17 @@
             <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">إدارة جميع السكاكين في المطبعة</p>
         </div>
         <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-            <a href="{{ route('knives.export') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #10b981; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
+            <button type="button" onclick="printFilteredData()" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #6366f1; color: white; text-decoration: none; border: none; border-radius: 0.375rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); cursor: pointer;">
+                <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                </svg>
+                طباعة
+            </button>
+            <a href="{{ route('knives.export', request()->query()) }}" id="exportLink" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #10b981; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
                 <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                 </svg>
-                تصدير CSV
+                تصدير Excel
             </a>
             <button type="button" onclick="document.getElementById('importModal').style.display='block'" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #f59e0b; color: white; text-decoration: none; border: none; border-radius: 0.375rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); cursor: pointer;">
                 <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -332,6 +338,139 @@
             if (event.target == modal) {
                 modal.style.display = 'none';
             }
+        }
+
+        // Function to update export link with current filters
+        function updateExportLink() {
+            const params = new URLSearchParams();
+            const filterType = document.getElementById('filter_type').value;
+            const filterLength = document.getElementById('filter_length').value;
+            const filterWidth = document.getElementById('filter_width').value;
+            const filterDragileDrive = document.getElementById('filter_dragile_drive').value;
+
+            if (filterType) params.append('filter_type', filterType);
+            if (filterLength) params.append('filter_length', filterLength);
+            if (filterWidth) params.append('filter_width', filterWidth);
+            if (filterDragileDrive) params.append('filter_dragile_drive', filterDragileDrive);
+
+            const exportLink = document.getElementById('exportLink');
+            const baseUrl = '{{ route('knives.export') }}';
+            exportLink.href = params.toString() ? `${baseUrl}?${params.toString()}` : baseUrl;
+        }
+
+        // Update export link when filters change
+        document.getElementById('filter_type').addEventListener('change', updateExportLink);
+        document.getElementById('filter_length').addEventListener('change', updateExportLink);
+        document.getElementById('filter_width').addEventListener('change', updateExportLink);
+        document.getElementById('filter_dragile_drive').addEventListener('change', updateExportLink);
+
+        // Function to print filtered data
+        function printFilteredData() {
+            const table = document.querySelector('.table');
+            
+            if (!table) {
+                alert('لا توجد بيانات للطباعة');
+                return;
+            }
+
+            // Clone the table and remove actions column
+            const clonedTable = table.cloneNode(true);
+            const rows = clonedTable.querySelectorAll('tr');
+            
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('th, td');
+                // Remove last cell (actions column)
+                if (cells.length > 0) {
+                    cells[cells.length - 1].remove();
+                }
+            });
+
+            const printWindow = window.open('', '_blank');
+            const printContent = `
+                <!DOCTYPE html>
+                <html dir="rtl" lang="ar">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>طباعة السكاكين</title>
+                    <style>
+                        @media print {
+                            @page {
+                                margin: 1cm;
+                                size: A4 landscape;
+                            }
+                            body {
+                                margin: 0;
+                                padding: 0;
+                            }
+                        }
+                        body {
+                            font-family: 'Cairo', Arial, sans-serif;
+                            direction: rtl;
+                            padding: 20px;
+                        }
+                        h1 {
+                            text-align: center;
+                            margin-bottom: 20px;
+                            font-size: 24px;
+                            color: #111827;
+                        }
+                        .filters-info {
+                            margin-bottom: 20px;
+                            padding: 10px;
+                            background-color: #f3f4f6;
+                            border-radius: 5px;
+                            font-size: 14px;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            font-size: 11px;
+                        }
+                        th, td {
+                            border: 1px solid #d1d5db;
+                            padding: 6px;
+                            text-align: right;
+                        }
+                        th {
+                            background-color: #f9fafb;
+                            font-weight: 600;
+                            color: #111827;
+                        }
+                        tr:nth-child(even) {
+                            background-color: #f9fafb;
+                        }
+                        .print-date {
+                            text-align: left;
+                            margin-top: 20px;
+                            font-size: 12px;
+                            color: #6b7280;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h1>قائمة السكاكين</h1>
+                    <div class="filters-info">
+                        <strong>الفلاتر المطبقة:</strong>
+                        ${document.getElementById('filter_type').value ? `النوع: ${document.getElementById('filter_type').options[document.getElementById('filter_type').selectedIndex].text}` : ''}
+                        ${document.getElementById('filter_length').value ? ` | الطول: ${document.getElementById('filter_length').options[document.getElementById('filter_length').selectedIndex].text}` : ''}
+                        ${document.getElementById('filter_width').value ? ` | العرض: ${document.getElementById('filter_width').options[document.getElementById('filter_width').selectedIndex].text}` : ''}
+                        ${document.getElementById('filter_dragile_drive').value ? ` | درافيل: ${document.getElementById('filter_dragile_drive').options[document.getElementById('filter_dragile_drive').selectedIndex].text}` : ''}
+                        ${!document.getElementById('filter_type').value && !document.getElementById('filter_length').value && !document.getElementById('filter_width').value && !document.getElementById('filter_dragile_drive').value ? 'جميع السكاكين' : ''}
+                    </div>
+                    ${clonedTable.outerHTML}
+                    <div class="print-date">
+                        تاريخ الطباعة: ${new Date().toLocaleString('ar-EG')}
+                    </div>
+                </body>
+                </html>
+            `;
+
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            
+            setTimeout(() => {
+                printWindow.print();
+            }, 250);
         }
     </script>
 </x-app-layout>

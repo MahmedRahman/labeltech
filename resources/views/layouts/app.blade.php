@@ -274,14 +274,40 @@
                 <div style="padding: 1.5rem; border-bottom: 1px solid #e5e7eb;">
                     @php
                         $isEmployee = auth('employee')->check();
+                        $logoDashboardRoute = route('dashboard');
+                        if ($isEmployee) {
+                            $employeeAccountType = auth('employee')->user()->account_type;
+                            if ($employeeAccountType === 'تصميم') {
+                                $logoDashboardRoute = route('employee.designer.dashboard');
+                            } elseif ($employeeAccountType === 'تشغيل') {
+                                $logoDashboardRoute = route('employee.production.dashboard');
+                            } else {
+                                $logoDashboardRoute = route('employee.dashboard');
+                            }
+                        }
                     @endphp
-                    <a href="{{ $isEmployee ? route('employee.dashboard') : route('dashboard') }}" style="display: flex; align-items: center; text-decoration: none;">
+                    <a href="{{ $logoDashboardRoute }}" style="display: flex; align-items: center; text-decoration: none;">
                         <div style="width: 40px; height: 40px; background-color: #2563eb; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;">
                             <span style="color: white; font-weight: bold; font-size: 1.125rem;">LT</span>
                         </div>
                         <div style="margin-right: 0.75rem;">
                             <h1 style="font-size: 1.375rem; font-weight: 700; color: #111827; margin: 0; letter-spacing: -0.025em;">LabelTech</h1>
-                            <p style="font-size: 0.8125rem; color: #6b7280; margin: 0.125rem 0 0 0; font-weight: 500;">{{ $isEmployee ? 'موظف مبيعات' : 'نظام الإدارة' }}</p>
+                            <p style="font-size: 0.8125rem; color: #6b7280; margin: 0.125rem 0 0 0; font-weight: 500;">
+                                @if($isEmployee)
+                                    @php
+                                        $accountType = auth('employee')->user()->account_type;
+                                        $typeLabels = [
+                                            'مبيعات' => 'موظف مبيعات',
+                                            'تصميم' => 'موظف تصميم',
+                                            'تشغيل' => 'موظف تشغيل',
+                                            'حسابات' => 'موظف حسابات',
+                                        ];
+                                    @endphp
+                                    {{ $typeLabels[$accountType] ?? 'موظف' }}
+                                @else
+                                    نظام الإدارة
+                                @endif
+                            </p>
                         </div>
                     </a>
                 </div>
@@ -298,7 +324,23 @@
                     @endphp
 
                     <!-- لوحة التحكم - تظهر لجميع المستخدمين -->
-                    <a href="{{ $isEmployee ? route('employee.dashboard') : route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') || request()->routeIs('employee.dashboard') ? 'active' : '' }}">
+                    @php
+                        $dashboardRoute = route('dashboard');
+                        if ($isEmployee) {
+                            if ($isDesignEmployee) {
+                                $dashboardRoute = route('employee.designer.dashboard');
+                            } elseif ($isProductionEmployee) {
+                                $dashboardRoute = route('employee.production.dashboard');
+                            } else {
+                                $dashboardRoute = route('employee.dashboard');
+                            }
+                        }
+                        $isDashboardActive = request()->routeIs('dashboard') || 
+                                            request()->routeIs('employee.dashboard') || 
+                                            request()->routeIs('employee.designer.dashboard') || 
+                                            request()->routeIs('employee.production.dashboard');
+                    @endphp
+                    <a href="{{ $dashboardRoute }}" class="nav-link {{ $isDashboardActive ? 'active' : '' }}">
                         <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                         </svg>
@@ -335,7 +377,7 @@
                         </a>
                     @endif
 
-                    @if($isSalesEmployee || $isAdmin)
+                    @if($isSalesEmployee || $isProductionEmployee || $isAdmin)
                         <!-- أمر التصنيع -->
                         <div class="nav-section-title " style="margin-top: 1rem; font-size: 1rem; font-weight: 600; color: #111827; border-top: 1px solid #e5e7eb; padding-top: 1rem;">   
                             امر التصنيع
@@ -359,19 +401,22 @@
                         </a>
                     @endif
 
+                    @if($isDesignEmployee || $isProductionEmployee || $isAdmin)
+                        <!-- السكاكين - للمصمم والتشغيل والادمن -->
+                        <a href="{{ route('knives.index') }}" class="nav-link {{ request()->routeIs('knives.*') ? 'active' : '' }}">
+                            <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            السكاكين
+                        </a>
+                    @endif
+
                     @if($isAdmin)
                         <a href="{{ route('work-orders.archive') }}" class="nav-link {{ request()->routeIs('work-orders.archive') ? 'active' : '' }}">
                             <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
                             </svg>
                             الأرشيف
-                        </a>
-
-                        <a href="{{ route('knives.index') }}" class="nav-link {{ request()->routeIs('knives.*') ? 'active' : '' }}">
-                            <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                            السكاكين
                         </a>
 
                         <div class="nav-section-title " style="margin-top: 1rem; font-size: 1rem; font-weight: 600; color: #111827; border-top: 1px solid #e5e7eb; padding-top: 1rem;">   
@@ -448,8 +493,17 @@
                         </div>
                         <div style="margin-right: 0.75rem; flex: 1; min-width: 0;">
                             @if($isEmployee)
+                                @php
+                                    $accountType = auth('employee')->user()->account_type;
+                                    $typeLabels = [
+                                        'مبيعات' => 'موظف مبيعات',
+                                        'تصميم' => 'موظف تصميم',
+                                        'تشغيل' => 'موظف تشغيل',
+                                        'حسابات' => 'موظف حسابات',
+                                    ];
+                                @endphp
                                 <p style="font-size: 0.875rem; font-weight: 500; color: #111827; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ auth('employee')->user()->name }}</p>
-                                <p style="font-size: 0.75rem; color: #6b7280; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">موظف مبيعات</p>
+                                <p style="font-size: 0.75rem; color: #6b7280; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $typeLabels[$accountType] ?? 'موظف' }}</p>
                             @else
                                 <p style="font-size: 0.875rem; font-weight: 500; color: #111827; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ Auth::user()->name }}</p>
                                 <p style="font-size: 0.75rem; color: #6b7280; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ Auth::user()->email }}</p>

@@ -64,6 +64,15 @@ class LoginRequest extends FormRequest
                 ]);
             }
 
+            // Check if account type is allowed (مبيعات, تصميم, تشغيل)
+            if (!in_array($employee->account_type, ['مبيعات', 'تصميم', 'تشغيل'])) {
+                Auth::guard('employee')->logout();
+                RateLimiter::hit($this->throttleKey());
+                throw ValidationException::withMessages([
+                    'email' => 'ليس لديك صلاحية للدخول.',
+                ]);
+            }
+
             RateLimiter::clear($this->throttleKey());
             return;
         }
