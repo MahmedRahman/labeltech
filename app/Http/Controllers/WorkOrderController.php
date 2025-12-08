@@ -156,6 +156,10 @@ class WorkOrderController extends Controller
             'core_size' => 'nullable|in:76,40,25',
             'pieces_per_sheet' => 'nullable|integer|min:1',
             'sheets_per_stack' => 'nullable|integer|min:1',
+            'paper_width' => 'nullable|numeric|min:0',
+            'gap_count' => 'nullable|integer|min:0',
+            'increase' => 'nullable|numeric|min:0',
+            'linear_meter' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string',
             'status' => 'nullable|in:pending,in_progress,completed,cancelled',
         ]);
@@ -341,6 +345,10 @@ class WorkOrderController extends Controller
             'core_size' => 'nullable|in:76,40,25',
             'pieces_per_sheet' => 'nullable|integer|min:1',
             'sheets_per_stack' => 'nullable|integer|min:1',
+            'paper_width' => 'nullable|numeric|min:0',
+            'gap_count' => 'nullable|integer|min:0',
+            'increase' => 'nullable|numeric|min:0',
+            'linear_meter' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string',
             'status' => 'nullable|in:pending,in_progress,completed,cancelled',
         ]);

@@ -55,6 +55,9 @@ class WorkOrder extends Model
         'sheets_per_stack',
         'pieces_per_stack',
         'has_production',
+        'gap_count',
+        'increase',
+        'linear_meter',
     ];
 
     protected $casts = [
@@ -83,6 +86,9 @@ class WorkOrder extends Model
         'sheets_per_stack' => 'integer',
         'pieces_per_stack' => 'integer',
         'has_production' => 'boolean',
+        'gap_count' => 'integer',
+        'increase' => 'decimal:2',
+        'linear_meter' => 'decimal:2',
     ];
 
     /**

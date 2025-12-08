@@ -4,9 +4,92 @@
     @endphp
 
     <style>
-        .form-container {
-            max-width: 900px;
+        .page-wrapper {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+            max-width: 1400px;
             margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .calculations-sidebar {
+            position: sticky;
+            top: 2rem;
+            width: 300px;
+            background-color: white;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+            max-height: calc(100vh - 4rem);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .calculations-sidebar h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #111827;
+            margin: 0;
+            padding: 1.5rem 1.5rem 1rem 1.5rem;
+            border-bottom: 2px solid #2563eb;
+            background-color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .calculations-content {
+            padding: 0 1.5rem 1.5rem 1.5rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .calculation-item {
+            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .calculation-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .calculation-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .calculation-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #111827;
+            direction: ltr;
+            text-align: right;
+        }
+
+        .calculation-value.empty {
+            color: #9ca3af;
+            font-weight: 400;
+        }
+
+        .calculation-unit {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-right: 0.25rem;
+        }
+
+        .form-container {
+            flex: 1;
+            min-width: 0;
         }
         
         .form-card {
@@ -140,6 +223,19 @@
             gap: 1.5rem;
         }
         
+        @media (max-width: 1024px) {
+            .page-wrapper {
+                flex-direction: column;
+            }
+
+            .calculations-sidebar {
+                position: relative;
+                top: 0;
+                width: 100%;
+                max-height: none;
+            }
+        }
+
         @media (max-width: 768px) {
             .form-grid {
                 grid-template-columns: 1fr;
@@ -151,7 +247,69 @@
         }
     </style>
 
-    <div class="form-container">
+    <div class="page-wrapper">
+        <!-- Calculations Sidebar -->
+        <div class="calculations-sidebar">
+            <h3>البيانات المحسوبة</h3>
+            
+            <div class="calculations-content">
+                <div class="calculation-item">
+                    <div class="calculation-label">عرض الورق</div>
+                    <div class="calculation-value" id="calc_paper_width">
+                        <span class="calculation-unit">سم</span>
+                        <span id="calc_paper_width_value" class="empty">-</span>
+                    </div>
+                </div>
+
+                <div class="calculation-item">
+                    <div class="calculation-label">عدد الصفوف</div>
+                    <div class="calculation-value" id="calc_rows_count">
+                        <span id="calc_rows_count_value" class="empty">-</span>
+                    </div>
+                </div>
+
+                <div class="calculation-item">
+                    <div class="calculation-label">عرض القطعة</div>
+                    <div class="calculation-value" id="calc_width">
+                        <span class="calculation-unit">سم</span>
+                        <span id="calc_width_value" class="empty">-</span>
+                    </div>
+                </div>
+
+                <div class="calculation-item">
+                    <div class="calculation-label">الطول</div>
+                    <div class="calculation-value" id="calc_length">
+                        <span class="calculation-unit">سم</span>
+                        <span id="calc_length_value" class="empty">-</span>
+                    </div>
+                </div>
+
+                <div class="calculation-item">
+                    <div class="calculation-label">الكمية</div>
+                    <div class="calculation-value" id="calc_quantity">
+                        <span id="calc_quantity_value" class="empty">-</span>
+                    </div>
+                </div>
+
+                <div class="calculation-item">
+                    <div class="calculation-label">المساحة الإجمالية</div>
+                    <div class="calculation-value" id="calc_total_area">
+                        <span class="calculation-unit">سم²</span>
+                        <span id="calc_total_area_value" class="empty">-</span>
+                    </div>
+                </div>
+
+                <div class="calculation-item">
+                    <div class="calculation-label">المتر الطولي 🔥</div>
+                    <div class="calculation-value" id="calc_linear_meter">
+                        <span class="calculation-unit">م</span>
+                        <span id="calc_linear_meter_value" class="empty">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-container">
         <div class="form-card">
             <div class="form-header">
                 <h2>إضافة أمر شغل جديد</h2>
@@ -277,7 +435,8 @@
                            value="{{ old('rows_count') }}" 
                            min="1"
                            class="form-input"
-                           placeholder="أدخل عدد الصفوف">
+                           placeholder="أدخل عدد الصفوف"
+                           oninput="calculatePaperWidth()">
                     @error('rows_count')
                         <p class="error-message">{{ $message }}</p>
                     @enderror
@@ -310,7 +469,8 @@
                                step="0.01"
                                min="0"
                                class="form-input"
-                               placeholder="0.00">
+                               placeholder="0.00"
+                               oninput="calculatePaperWidth()">
                         @error('width')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
@@ -330,6 +490,83 @@
                             <p class="error-message">{{ $message }}</p>
                         @enderror
                     </div>
+                </div>
+
+                <!-- Paper Width (calculated automatically) -->
+                <div class="form-group">
+                    <label for="paper_width" class="form-label">عرض الورق (سم)</label>
+                    <input type="number" 
+                           name="paper_width" 
+                           id="paper_width" 
+                           value="{{ old('paper_width') }}" 
+                           step="0.01"
+                           min="0"
+                           class="form-input"
+                           readonly
+                           style="background-color: #f3f4f6; cursor: not-allowed;"
+                           placeholder="سيتم الحساب تلقائياً">
+                    <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
+                        يتم الحساب تلقائياً: (العرض × عدد الصفوف) + ((عدد الصفوف - 1) × 0.3) + 1.2
+                    </small>
+                    @error('paper_width')
+                        <p class="error-message">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Gap Count and Increase -->
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="gap_count" class="form-label">عدد الجاب</label>
+                        <input type="number" 
+                               name="gap_count" 
+                               id="gap_count" 
+                               value="{{ old('gap_count') }}" 
+                               min="0"
+                               step="1"
+                               class="form-input"
+                               placeholder="أدخل عدد الجاب"
+                               oninput="calculateLinearMeter()">
+                        @error('gap_count')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label for="increase" class="form-label">الزيادة (سم)</label>
+                        <input type="number" 
+                               name="increase" 
+                               id="increase" 
+                               value="{{ old('increase') }}" 
+                               step="0.01"
+                               min="0"
+                               class="form-input"
+                               placeholder="0.00"
+                               oninput="calculateLinearMeter()">
+                        @error('increase')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
+                <!-- Linear Meter (calculated automatically) -->
+                <div class="form-group">
+                    <label for="linear_meter" class="form-label">المتر الطولي 🔥</label>
+                    <input type="number" 
+                           name="linear_meter" 
+                           id="linear_meter" 
+                           value="{{ old('linear_meter') }}" 
+                           step="0.01"
+                           min="0"
+                           class="form-input"
+                           readonly
+                           style="background-color: #f3f4f6; cursor: not-allowed;"
+                           placeholder="سيتم الحساب تلقائياً">
+                    <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
+                        يتم الحساب تلقائياً: (عدد الجاب × 1000 × (الطول + الزيادة)) ÷ 100 ÷ عرض الورق
+                    </small>
+                    @error('linear_meter')
+                        <p class="error-message">{{ $message }}</p>
+                    @enderror
                 </div>
 
                     <!-- Additions -->
@@ -804,6 +1041,7 @@
             </form>
         </div>
     </div>
+    </div>
 
     <script>
         // Handle radio button styling for additions, fingerprint, winding_direction and final_product_shape
@@ -1243,6 +1481,198 @@
                 }
             }
         }
+
+        // Calculate paper width automatically
+        function calculatePaperWidth() {
+            const rowsCountInput = document.getElementById('rows_count');
+            const widthInput = document.getElementById('width');
+            const paperWidthInput = document.getElementById('paper_width');
+            
+            const rowsCount = parseFloat(rowsCountInput.value) || 0;
+            const width = parseFloat(widthInput.value) || 0;
+            
+            // Formula: (العرض × عدد الصفوف) + (عدد الصفوف - 1) + 0.3 + 1.2
+            if (rowsCount > 0 && width > 0) {
+                const paperWidth = (width * rowsCount) + (((rowsCount - 1) * 0.3) + 1.2);
+                if (paperWidthInput) {
+                    paperWidthInput.value = paperWidth.toFixed(2);
+                }
+            } else {
+                if (paperWidthInput) {
+                    paperWidthInput.value = '';
+                }
+            }
+            
+            // Update sidebar calculations
+            updateSidebarCalculations();
+            // Also calculate linear meter
+            calculateLinearMeter();
+        }
+
+        // Calculate linear meter automatically
+        function calculateLinearMeter() {
+            const gapCountInput = document.getElementById('gap_count');
+            const lengthInput = document.getElementById('length');
+            const increaseInput = document.getElementById('increase');
+            const paperWidthInput = document.getElementById('paper_width');
+            const linearMeterInput = document.getElementById('linear_meter');
+            
+            const gapCount = parseFloat(gapCountInput?.value) || 0;
+            const length = parseFloat(lengthInput?.value) || 0;
+            const increase = parseFloat(increaseInput?.value) || 0;
+            const paperWidth = parseFloat(paperWidthInput?.value) || 0;
+            
+            // Formula: (عدد الجاب × 1000 × (الطول + الزيادة)) ÷ 100 ÷ عرض الورق
+            if (gapCount > 0 && length > 0 && paperWidth > 0) {
+                const linearMeter = (gapCount * 1000 * (length + increase)) / 100 / paperWidth;
+                if (linearMeterInput) {
+                    linearMeterInput.value = linearMeter.toFixed(2);
+                }
+            } else {
+                if (linearMeterInput) {
+                    linearMeterInput.value = '';
+                }
+            }
+            
+            // Update sidebar calculations
+            updateSidebarCalculations();
+        }
+
+        // Update sidebar calculations
+        function updateSidebarCalculations() {
+            const rowsCount = parseFloat(document.getElementById('rows_count')?.value) || 0;
+            const width = parseFloat(document.getElementById('width')?.value) || 0;
+            const length = parseFloat(document.getElementById('length')?.value) || 0;
+            const quantity = parseFloat(document.getElementById('quantity')?.value) || 0;
+            
+            // Update paper width
+            const paperWidthValue = document.getElementById('calc_paper_width_value');
+            if (rowsCount > 0 && width > 0) {
+                // Formula: (العرض × عدد الصفوف) + (عدد الصفوف - 1) + 0.3 + 1.2
+                const paperWidth = (width * rowsCount) + (((rowsCount - 1) * 0.3) + 1.2);
+                if (paperWidthValue) {
+                    paperWidthValue.textContent = paperWidth.toFixed(2);
+                    paperWidthValue.classList.remove('empty');
+                }
+            } else {
+                if (paperWidthValue) {
+                    paperWidthValue.textContent = '-';
+                    paperWidthValue.classList.add('empty');
+                }
+            }
+            
+            // Update rows count
+            const rowsCountValue = document.getElementById('calc_rows_count_value');
+            if (rowsCountValue) {
+                if (rowsCount > 0) {
+                    rowsCountValue.textContent = rowsCount;
+                    rowsCountValue.classList.remove('empty');
+                } else {
+                    rowsCountValue.textContent = '-';
+                    rowsCountValue.classList.add('empty');
+                }
+            }
+            
+            // Update width
+            const widthValue = document.getElementById('calc_width_value');
+            if (widthValue) {
+                if (width > 0) {
+                    widthValue.textContent = width.toFixed(2);
+                    widthValue.classList.remove('empty');
+                } else {
+                    widthValue.textContent = '-';
+                    widthValue.classList.add('empty');
+                }
+            }
+            
+            // Update length
+            const lengthValue = document.getElementById('calc_length_value');
+            if (lengthValue) {
+                if (length > 0) {
+                    lengthValue.textContent = length.toFixed(2);
+                    lengthValue.classList.remove('empty');
+                } else {
+                    lengthValue.textContent = '-';
+                    lengthValue.classList.add('empty');
+                }
+            }
+            
+            // Update quantity
+            const quantityValue = document.getElementById('calc_quantity_value');
+            if (quantityValue) {
+                if (quantity > 0) {
+                    quantityValue.textContent = quantity.toLocaleString('ar-EG');
+                    quantityValue.classList.remove('empty');
+                } else {
+                    quantityValue.textContent = '-';
+                    quantityValue.classList.add('empty');
+                }
+            }
+            
+            // Calculate and update total area (width * length * quantity)
+            const totalAreaValue = document.getElementById('calc_total_area_value');
+            if (totalAreaValue) {
+                if (width > 0 && length > 0 && quantity > 0) {
+                    const totalArea = (width * length * quantity).toFixed(2);
+                    totalAreaValue.textContent = parseFloat(totalArea).toLocaleString('ar-EG');
+                    totalAreaValue.classList.remove('empty');
+                } else {
+                    totalAreaValue.textContent = '-';
+                    totalAreaValue.classList.add('empty');
+                }
+            }
+            
+            // Update linear meter
+            const gapCount = parseFloat(document.getElementById('gap_count')?.value) || 0;
+            const increase = parseFloat(document.getElementById('increase')?.value) || 0;
+            const paperWidth = parseFloat(document.getElementById('paper_width')?.value) || 0;
+            
+            const linearMeterValue = document.getElementById('calc_linear_meter_value');
+            if (linearMeterValue) {
+                if (gapCount > 0 && length > 0 && paperWidth > 0) {
+                    // Formula: (عدد الجاب × 1000 × (الطول + الزيادة)) ÷ 100 ÷ عرض الورق
+                    const linearMeter = (gapCount * 1000 * (length + increase)) / 100 / paperWidth;
+                    linearMeterValue.textContent = linearMeter.toFixed(2);
+                    linearMeterValue.classList.remove('empty');
+                } else {
+                    linearMeterValue.textContent = '-';
+                    linearMeterValue.classList.add('empty');
+                }
+            }
+        }
+
+        // Initialize calculations on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            calculatePaperWidth();
+            
+            // Add event listeners to update sidebar on input changes
+            const inputsToWatch = ['rows_count', 'width', 'length', 'quantity'];
+            inputsToWatch.forEach(inputId => {
+                const input = document.getElementById(inputId);
+                if (input) {
+                    input.addEventListener('input', function() {
+                        calculatePaperWidth();
+                    });
+                    input.addEventListener('change', function() {
+                        calculatePaperWidth();
+                    });
+                }
+            });
+            
+            // Add event listeners for linear meter calculation
+            const linearMeterInputs = ['gap_count', 'increase', 'length', 'paper_width'];
+            linearMeterInputs.forEach(inputId => {
+                const input = document.getElementById(inputId);
+                if (input) {
+                    input.addEventListener('input', function() {
+                        calculateLinearMeter();
+                    });
+                    input.addEventListener('change', function() {
+                        calculateLinearMeter();
+                    });
+                }
+            });
+        });
 
     </script>
 </x-app-layout>

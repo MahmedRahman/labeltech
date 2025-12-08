@@ -277,7 +277,8 @@
                            value="{{ old('rows_count', $workOrder->rows_count) }}" 
                            min="1"
                            class="form-input"
-                           placeholder="أدخل عدد الصفوف">
+                           placeholder="أدخل عدد الصفوف"
+                           oninput="calculatePaperWidth()">
                     @error('rows_count')
                         <p class="error-message">{{ $message }}</p>
                     @enderror
@@ -308,7 +309,8 @@
                                value="{{ old('width', $workOrder->width) }}" 
                                step="0.01"
                                min="0"
-                               class="form-input">
+                               class="form-input"
+                               oninput="calculatePaperWidth()">
                         @error('width')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
@@ -327,6 +329,27 @@
                             <p class="error-message">{{ $message }}</p>
                         @enderror
                     </div>
+                </div>
+
+                <!-- Paper Width (calculated automatically) -->
+                <div class="form-group">
+                    <label for="paper_width" class="form-label">عرض الورق (سم)</label>
+                    <input type="number" 
+                           name="paper_width" 
+                           id="paper_width" 
+                           value="{{ old('paper_width', $workOrder->paper_width) }}" 
+                           step="0.01"
+                           min="0"
+                           class="form-input"
+                           readonly
+                           style="background-color: #f3f4f6; cursor: not-allowed;"
+                           placeholder="سيتم الحساب تلقائياً">
+                    <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
+                        يتم الحساب تلقائياً: (العرض × عدد الصفوف) + (عدد الصفوف - 1) + 0.3 + 1.2
+                    </small>
+                    @error('paper_width')
+                        <p class="error-message">{{ $message }}</p>
+                    @enderror
                 </div>
 
                     <!-- Additions -->
@@ -1243,6 +1266,33 @@
                 }
             }
         }
+
+        // Calculate paper width automatically
+        function calculatePaperWidth() {
+            const rowsCountInput = document.getElementById('rows_count');
+            const widthInput = document.getElementById('width');
+            const paperWidthInput = document.getElementById('paper_width');
+            
+            const rowsCount = parseFloat(rowsCountInput.value) || 0;
+            const width = parseFloat(widthInput.value) || 0;
+            
+            // Formula: (العرض × عدد الصفوف) + (عدد الصفوف - 1) + 0.3 + 1.2
+            if (rowsCount > 0 && width > 0) {
+                const paperWidth = (width * rowsCount) + (rowsCount - 1) + 0.3 + 1.2;
+                if (paperWidthInput) {
+                    paperWidthInput.value = paperWidth.toFixed(2);
+                }
+            } else {
+                if (paperWidthInput) {
+                    paperWidthInput.value = '';
+                }
+            }
+        }
+
+        // Initialize paper width calculation on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            calculatePaperWidth();
+        });
 
     </script>
 </x-app-layout>
