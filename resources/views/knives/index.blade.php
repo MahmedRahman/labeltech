@@ -34,6 +34,18 @@
                 </svg>
                 إضافة سكينة جديدة
             </a>
+            @if($totalKnives > 0)
+            <form action="{{ route('knives.delete-all') }}" method="POST" style="display: inline;" id="deleteAllForm">
+                @csrf
+                @method('DELETE')
+                <button type="submit" onclick="return confirmDeleteAll()" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #dc2626; color: white; text-decoration: none; border: none; border-radius: 0.375rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); cursor: pointer;">
+                    <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                    حذف الكل
+                </button>
+            </form>
+            @endif
         </div>
     </div>
 
@@ -61,37 +73,34 @@
                 </select>
             </div>
 
-            <!-- Filter by Length and Width - Same Row -->
-            <div id="lengthWidthRow" style="display: {{ request('filter_type') ? 'grid' : 'none' }}; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
-                <!-- Filter by Length -->
-                <div>
-                    <label for="filter_length" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">الطول</label>
-                    <select name="filter_length" 
-                            id="filter_length" 
-                            style="width: 100%; padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; color: #111827; background-color: #fff;">
-                        <option value="">جميع الأطوال</option>
-                        @foreach($lengths as $length)
-                            <option value="{{ $length }}" {{ request('filter_length') == $length ? 'selected' : '' }}>{{ number_format($length, 2) }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- Filter by Width -->
-                <div>
-                    <label for="filter_width" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">العرض</label>
-                    <select name="filter_width" 
-                            id="filter_width" 
-                            style="width: 100%; padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; color: #111827; background-color: #fff;">
-                        <option value="">جميع الأعراض</option>
-                        @foreach($widths as $width)
-                            <option value="{{ $width }}" {{ request('filter_width') == $width ? 'selected' : '' }}>{{ number_format($width, 2) }}</option>
-                        @endforeach
-                    </select>
-                </div>
+            <!-- Filter by Length -->
+            <div id="lengthRow" style="display: {{ request('filter_type') ? 'block' : 'none' }}; margin-bottom: 1.5rem;">
+                <label for="filter_length" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">الطول</label>
+                <select name="filter_length" 
+                        id="filter_length" 
+                        style="width: 100%; max-width: 300px; padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; color: #111827; background-color: #fff;">
+                    <option value="">جميع الأطوال</option>
+                    @foreach($lengths as $length)
+                        <option value="{{ $length }}" {{ request('filter_length') == $length ? 'selected' : '' }}>{{ number_format($length, 2) }}</option>
+                    @endforeach
+                </select>
             </div>
 
-            <!-- Filter by Dragile Drive - Full Width Row -->
-            <div id="dragileDriveRow" style="display: {{ request('filter_type') ? 'block' : 'none' }}; margin-bottom: 1.5rem;">
+            <!-- Filter by Width -->
+            <div id="widthRow" style="display: {{ (request('filter_type') && request('filter_length')) ? 'block' : 'none' }}; margin-bottom: 1.5rem;">
+                <label for="filter_width" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">العرض</label>
+                <select name="filter_width" 
+                        id="filter_width" 
+                        style="width: 100%; max-width: 300px; padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; color: #111827; background-color: #fff;">
+                    <option value="">جميع الأعراض</option>
+                    @foreach($widths as $width)
+                        <option value="{{ $width }}" {{ request('filter_width') == $width ? 'selected' : '' }}>{{ number_format($width, 2) }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <!-- Filter by Dragile Drive -->
+            <div id="dragileDriveRow" style="display: {{ (request('filter_type') && request('filter_length') && request('filter_width')) ? 'block' : 'none' }}; margin-bottom: 1.5rem;">
                 <label for="filter_dragile_drive" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">درافيل</label>
                 <select name="filter_dragile_drive" 
                         id="filter_dragile_drive" 
@@ -254,67 +263,74 @@
             const filterLength = document.getElementById('filter_length');
             const filterWidth = document.getElementById('filter_width');
             const filterDragileDrive = document.getElementById('filter_dragile_drive');
-            const lengthWidthRow = document.getElementById('lengthWidthRow');
+            const lengthRow = document.getElementById('lengthRow');
+            const widthRow = document.getElementById('widthRow');
             const dragileDriveRow = document.getElementById('dragileDriveRow');
 
-            // Function to update filter options based on selected type
-            function updateFilterOptions(type) {
-                if (!type || type === '') {
-                    // Hide filter rows and clear options
-                    lengthWidthRow.style.display = 'none';
-                    dragileDriveRow.style.display = 'none';
-                    filterLength.innerHTML = '<option value="">جميع الأطوال</option>';
-                    filterWidth.innerHTML = '<option value="">جميع الأعراض</option>';
-                    filterDragileDrive.innerHTML = '<option value="">جميع درافيل</option>';
-                    return;
-                }
-
-                // Show filter rows
-                lengthWidthRow.style.display = 'grid';
-                dragileDriveRow.style.display = 'block';
+            // Function to update filter options progressively
+            function updateFilterOptions(type, length, width) {
+                const params = new URLSearchParams();
+                if (type) params.append('type', type);
+                if (length) params.append('length', length);
+                if (width) params.append('width', width);
 
                 // Fetch filter values from server
-                fetch(`{{ route('knives.get-filter-values') }}?type=${encodeURIComponent(type)}`)
+                fetch(`{{ route('knives.get-filter-values') }}?${params.toString()}`)
                     .then(response => response.json())
                     .then(data => {
-                        // Update Length options
-                        filterLength.innerHTML = '<option value="">جميع الأطوال</option>';
-                        data.lengths.forEach(item => {
-                            const option = document.createElement('option');
-                            option.value = item.value;
-                            option.textContent = item.label;
-                            // Preserve selected value if it exists
-                            if (option.value === '{{ request('filter_length') }}') {
-                                option.selected = true;
-                            }
-                            filterLength.appendChild(option);
-                        });
-
-                        // Update Width options
-                        filterWidth.innerHTML = '<option value="">جميع الأعراض</option>';
-                        data.widths.forEach(item => {
-                            const option = document.createElement('option');
-                            option.value = item.value;
-                            option.textContent = item.label;
-                            // Preserve selected value if it exists
-                            if (option.value === '{{ request('filter_width') }}') {
-                                option.selected = true;
-                            }
-                            filterWidth.appendChild(option);
-                        });
-
-                        // Update Dragile Drive options
-                        filterDragileDrive.innerHTML = '<option value="">جميع درافيل</option>';
-                        data.dragileDrives.forEach(item => {
-                            const option = document.createElement('option');
-                            option.value = item.value;
-                            option.textContent = item.label;
-                            // Preserve selected value if it exists
-                            if (option.value === '{{ request('filter_dragile_drive') }}') {
-                                option.selected = true;
-                            }
-                            filterDragileDrive.appendChild(option);
-                        });
+                        // Update Length options (only if type is selected and length/width are not)
+                        if (type && !length && !width) {
+                            filterLength.innerHTML = '<option value="">جميع الأطوال</option>';
+                            data.lengths.forEach(item => {
+                                const option = document.createElement('option');
+                                option.value = item.value;
+                                option.textContent = item.label;
+                                // Preserve selected value if it exists
+                                if (option.value === '{{ request('filter_length') }}') {
+                                    option.selected = true;
+                                }
+                                filterLength.appendChild(option);
+                            });
+                            lengthRow.style.display = 'block';
+                            // Reset and hide width and dragile drive
+                            filterWidth.value = '';
+                            filterDragileDrive.value = '';
+                            widthRow.style.display = 'none';
+                            dragileDriveRow.style.display = 'none';
+                        }
+                        // Update Width options (if type and length are selected, but not width)
+                        else if (type && length && !width) {
+                            filterWidth.innerHTML = '<option value="">جميع الأعراض</option>';
+                            data.widths.forEach(item => {
+                                const option = document.createElement('option');
+                                option.value = item.value;
+                                option.textContent = item.label;
+                                // Preserve selected value if it exists
+                                if (option.value === '{{ request('filter_width') }}') {
+                                    option.selected = true;
+                                }
+                                filterWidth.appendChild(option);
+                            });
+                            widthRow.style.display = 'block';
+                            // Reset and hide dragile drive
+                            filterDragileDrive.value = '';
+                            dragileDriveRow.style.display = 'none';
+                        }
+                        // Update Dragile Drive options (if type, length, and width are selected)
+                        else if (type && length && width) {
+                            filterDragileDrive.innerHTML = '<option value="">جميع درافيل</option>';
+                            data.dragileDrives.forEach(item => {
+                                const option = document.createElement('option');
+                                option.value = item.value;
+                                option.textContent = item.label;
+                                // Preserve selected value if it exists
+                                if (option.value === '{{ request('filter_dragile_drive') }}') {
+                                    option.selected = true;
+                                }
+                                filterDragileDrive.appendChild(option);
+                            });
+                            dragileDriveRow.style.display = 'block';
+                        }
                     })
                     .catch(error => {
                         console.error('Error fetching filter values:', error);
@@ -323,12 +339,75 @@
 
             // Listen to type change
             filterType.addEventListener('change', function() {
-                updateFilterOptions(this.value);
+                const type = this.value;
+                if (!type) {
+                    // Hide all filter rows
+                    lengthRow.style.display = 'none';
+                    widthRow.style.display = 'none';
+                    dragileDriveRow.style.display = 'none';
+                    // Reset all filters
+                    filterLength.value = '';
+                    filterWidth.value = '';
+                    filterDragileDrive.value = '';
+                } else {
+                    // Reset dependent filters
+                    filterLength.value = '';
+                    filterWidth.value = '';
+                    filterDragileDrive.value = '';
+                    // Load lengths for this type
+                    updateFilterOptions(type, null, null);
+                }
             });
 
-            // Initialize on page load if type is already selected
-            if (filterType.value) {
-                updateFilterOptions(filterType.value);
+            // Listen to length change
+            filterLength.addEventListener('change', function() {
+                const type = filterType.value;
+                const length = this.value;
+                if (!length) {
+                    // Hide width and dragile drive
+                    widthRow.style.display = 'none';
+                    dragileDriveRow.style.display = 'none';
+                    filterWidth.value = '';
+                    filterDragileDrive.value = '';
+                } else if (type) {
+                    // Reset dependent filters
+                    filterWidth.value = '';
+                    filterDragileDrive.value = '';
+                    // Load widths for this type and length
+                    updateFilterOptions(type, length, null);
+                }
+            });
+
+            // Listen to width change
+            filterWidth.addEventListener('change', function() {
+                const type = filterType.value;
+                const length = filterLength.value;
+                const width = this.value;
+                if (!width) {
+                    // Hide dragile drive
+                    dragileDriveRow.style.display = 'none';
+                    filterDragileDrive.value = '';
+                } else if (type && length) {
+                    // Reset dragile drive
+                    filterDragileDrive.value = '';
+                    // Load dragile drives for this type, length, and width
+                    updateFilterOptions(type, length, width);
+                }
+            });
+
+            // Initialize on page load
+            const currentType = filterType.value;
+            const currentLength = filterLength.value;
+            const currentWidth = filterWidth.value;
+            
+            if (currentType) {
+                if (currentLength && currentWidth) {
+                    updateFilterOptions(currentType, currentLength, currentWidth);
+                } else if (currentLength) {
+                    updateFilterOptions(currentType, currentLength, null);
+                } else {
+                    updateFilterOptions(currentType, null, null);
+                }
             }
         });
 
@@ -363,6 +442,13 @@
         document.getElementById('filter_length').addEventListener('change', updateExportLink);
         document.getElementById('filter_width').addEventListener('change', updateExportLink);
         document.getElementById('filter_dragile_drive').addEventListener('change', updateExportLink);
+
+        // Function to confirm delete all
+        function confirmDeleteAll() {
+            const totalKnives = {{ $totalKnives }};
+            const message = `هل أنت متأكد من حذف جميع السكاكين (${totalKnives} سكينة)؟\n\nهذا الإجراء لا يمكن التراجع عنه!`;
+            return confirm(message);
+        }
 
         // Function to print filtered data
         function printFilteredData() {

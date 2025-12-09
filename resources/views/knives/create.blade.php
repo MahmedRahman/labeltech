@@ -184,6 +184,12 @@
                         @error('type')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
+                        
+                        <!-- عرض الكود التلقائي -->
+                        <div id="knife_code_display" style="margin-top: 0.75rem; padding: 0.75rem; background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 0.375rem; display: none;">
+                            <div style="font-size: 0.75rem; font-weight: 500; color: #1e40af; margin-bottom: 0.25rem;">الرقم الكود التلقائي:</div>
+                            <div style="font-size: 1rem; font-weight: 600; color: #1e3a8a; font-family: monospace;" id="knife_code_value">-</div>
+                        </div>
                     </div>
 
                     <!-- الرقم الكود (مخفي في واجهة المستخدم) -->
@@ -420,6 +426,8 @@
 
             typeSelect.addEventListener('change', function() {
                 const type = this.value;
+                const codeDisplay = document.getElementById('knife_code_display');
+                const codeValue = document.getElementById('knife_code_value');
                 
                 if (type) {
                     // Fetch next knife code from server
@@ -428,19 +436,31 @@
                         .then(data => {
                             if (data.knife_code) {
                                 knifeCodeInput.value = data.knife_code;
+                                codeValue.textContent = data.knife_code;
+                                codeDisplay.style.display = 'block';
                             }
                         })
                         .catch(error => {
                             console.error('Error fetching knife code:', error);
+                            codeDisplay.style.display = 'none';
                         });
                 } else {
                     knifeCodeInput.value = '';
+                    codeDisplay.style.display = 'none';
                 }
             });
 
             // Trigger on page load if type is already selected
             if (typeSelect.value) {
                 typeSelect.dispatchEvent(new Event('change'));
+            } else if (knifeCodeInput.value) {
+                // If knife code exists from old input, display it
+                const codeDisplay = document.getElementById('knife_code_display');
+                const codeValue = document.getElementById('knife_code_value');
+                if (codeDisplay && codeValue) {
+                    codeValue.textContent = knifeCodeInput.value;
+                    codeDisplay.style.display = 'block';
+                }
             }
         });
     </script>

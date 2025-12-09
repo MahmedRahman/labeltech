@@ -85,34 +85,63 @@ class KnifeController extends Controller
     public function getFilterValues(Request $request)
     {
         $type = $request->input('type');
+        $length = $request->input('length');
+        $width = $request->input('width');
         
-        if (empty($type)) {
-            return response()->json([
+        $query = Knife::query();
+        
+        // Apply filters progressively
+        if (!empty($type)) {
+            $query->where('type', $type);
+        }
+        
+        if (!empty($length)) {
+            $query->where('length', $length);
+        }
+        
+        if (!empty($width)) {
+            $query->where('width', $width);
+        }
+        
+        $result = [];
+        
+        // If only type is selected, return lengths
+        if (!empty($type) && empty($length) && empty($width)) {
+            $lengths = $query->distinct()->whereNotNull('length')->pluck('length')->sort()->values()->map(function($length) {
+                return ['value' => $length, 'label' => number_format($length, 2)];
+            });
+            $result['lengths'] = $lengths;
+            $result['widths'] = [];
+            $result['dragileDrives'] = [];
+        }
+        // If type and length are selected, return widths
+        else if (!empty($type) && !empty($length) && empty($width)) {
+            $widths = $query->distinct()->whereNotNull('width')->pluck('width')->sort()->values()->map(function($width) {
+                return ['value' => $width, 'label' => number_format($width, 2)];
+            });
+            $result['lengths'] = [];
+            $result['widths'] = $widths;
+            $result['dragileDrives'] = [];
+        }
+        // If type, length, and width are selected, return dragile drives
+        else if (!empty($type) && !empty($length) && !empty($width)) {
+            $dragileDrives = $query->distinct()->whereNotNull('dragile_drive')->pluck('dragile_drive')->sort()->values()->map(function($drive) {
+                return ['value' => $drive, 'label' => $drive];
+            });
+            $result['lengths'] = [];
+            $result['widths'] = [];
+            $result['dragileDrives'] = $dragileDrives;
+        }
+        // Default: return empty
+        else {
+            $result = [
                 'lengths' => [],
                 'widths' => [],
                 'dragileDrives' => []
-            ]);
+            ];
         }
-
-        $query = Knife::where('type', $type);
         
-        $lengths = $query->distinct()->whereNotNull('length')->pluck('length')->sort()->values()->map(function($length) {
-            return ['value' => $length, 'label' => number_format($length, 2)];
-        });
-        
-        $widths = $query->distinct()->whereNotNull('width')->pluck('width')->sort()->values()->map(function($width) {
-            return ['value' => $width, 'label' => number_format($width, 2)];
-        });
-        
-        $dragileDrives = $query->distinct()->whereNotNull('dragile_drive')->pluck('dragile_drive')->sort()->values()->map(function($drive) {
-            return ['value' => $drive, 'label' => $drive];
-        });
-        
-        return response()->json([
-            'lengths' => $lengths,
-            'widths' => $widths,
-            'dragileDrives' => $dragileDrives
-        ]);
+        return response()->json($result);
     }
 
     /**
@@ -154,25 +183,28 @@ class KnifeController extends Controller
      */
     private function generateKnifeCode($type)
     {
-        // Map type to prefix
-        $prefixMap = [
-            'مستطيل' => 'M',
-            'دائرة' => 'D',
-            'مربع' => 'S',
-            'بيضاوي' => 'O',
-            'شكل خاص' => 'C',
+        // Map type to prefix and starting number
+        $typeConfig = [
+            'مستطيل' => ['prefix' => 'A', 'start' => 701],
+            'دائرة' => ['prefix' => 'C', 'start' => 115],
+            'مربع' => ['prefix' => 'S', 'start' => 25],
+            'بيضاوي' => ['prefix' => 'O', 'start' => 0],
+            'شكل خاص' => ['prefix' => 'L', 'start' => 414],
         ];
 
-        $prefix = $prefixMap[$type] ?? 'K';
+        $config = $typeConfig[$type] ?? ['prefix' => 'K', 'start' => 1];
+        $prefix = $config['prefix'];
+        $startNumber = $config['start'];
 
-        // Get all knives with this prefix
+        // Get all knives with this type
         $knives = Knife::where('type', $type)
-            ->where('knife_code', 'like', $prefix . '-%')
+            ->where('knife_code', 'like', $prefix . '%')
             ->get();
 
-        $maxNumber = 0;
+        $maxNumber = $startNumber - 1;
         foreach ($knives as $knife) {
-            if (preg_match('/^' . preg_quote($prefix, '/') . '-(\d+)$/', $knife->knife_code, $matches)) {
+            // Match pattern like A0701, C0115, S0025, L0414
+            if (preg_match('/^' . preg_quote($prefix, '/') . '(\d+)$/', $knife->knife_code, $matches)) {
                 $number = (int)$matches[1];
                 if ($number > $maxNumber) {
                     $maxNumber = $number;
@@ -180,9 +212,10 @@ class KnifeController extends Controller
             }
         }
 
-        $nextNumber = $maxNumber + 1;
-
-        return $prefix . '-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+        // Generate next number (start from startNumber if no existing codes)
+        $nextNumber = $maxNumber >= $startNumber ? $maxNumber + 1 : $startNumber;
+        
+        return $prefix . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
     }
 
     /**
@@ -424,5 +457,23 @@ class KnifeController extends Controller
         return redirect()->route('knives.index')
             ->with('success', $message)
             ->with('import_errors', $errors);
+    }
+
+    /**
+     * Delete all knives.
+     */
+    public function deleteAll(Request $request)
+    {
+        $count = Knife::count();
+        
+        if ($count === 0) {
+            return redirect()->route('knives.index')
+                ->with('error', 'لا توجد سكاكين للحذف');
+        }
+
+        Knife::truncate();
+
+        return redirect()->route('knives.index')
+            ->with('success', "تم حذف جميع السكاكين بنجاح ({$count} سكينة)");
     }
 }

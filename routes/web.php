@@ -56,6 +56,7 @@ Route::middleware('auth.any')->group(function () {
     Route::get('knives/export', [\App\Http\Controllers\KnifeController::class, 'export'])->name('knives.export');
     Route::get('knives/get-next-code', [\App\Http\Controllers\KnifeController::class, 'getNextKnifeCode'])->name('knives.get-next-code');
     Route::get('knives/get-filter-values', [\App\Http\Controllers\KnifeController::class, 'getFilterValues'])->name('knives.get-filter-values');
+    Route::delete('knives/delete-all', [\App\Http\Controllers\KnifeController::class, 'deleteAll'])->name('knives.delete-all');
     Route::resource('knives', \App\Http\Controllers\KnifeController::class)->except(['import']);
 });
 
