@@ -357,15 +357,26 @@ class KnifeController extends Controller
         // Read file content with proper encoding handling
         $content = file_get_contents($path);
         
-        // Detect encoding
-        $encoding = mb_detect_encoding($content, ['UTF-8', 'Windows-1256', 'ISO-8859-1', 'ASCII'], true);
+        // Detect encoding (use valid encoding names)
+        $encodings = ['UTF-8', 'ISO-8859-1', 'ASCII'];
+        $encoding = mb_detect_encoding($content, $encodings, true);
         
         // Convert to UTF-8 if not already
         if ($encoding && $encoding !== 'UTF-8') {
             $content = mb_convert_encoding($content, 'UTF-8', $encoding);
         } else if (!$encoding) {
             // If encoding detection failed, try to convert from common Arabic encodings
-            $content = mb_convert_encoding($content, 'UTF-8', 'Windows-1256');
+            // Try CP1256 (Windows-1256) first, then ISO-8859-6
+            try {
+                $content = mb_convert_encoding($content, 'UTF-8', 'CP1256');
+            } catch (\Exception $e) {
+                try {
+                    $content = mb_convert_encoding($content, 'UTF-8', 'ISO-8859-6');
+                } catch (\Exception $e2) {
+                    // If all else fails, assume UTF-8
+                    $content = mb_convert_encoding($content, 'UTF-8', 'UTF-8');
+                }
+            }
         }
         
         // Remove BOM if present
@@ -396,7 +407,16 @@ class KnifeController extends Controller
                     $cell = preg_replace('/\x{EF}\x{BB}\x{BF}/u', '', $cell);
                     // Ensure UTF-8 encoding
                     if (!mb_check_encoding($cell, 'UTF-8')) {
-                        $cell = mb_convert_encoding($cell, 'UTF-8', 'Windows-1256');
+                        // Try to convert from common Arabic encodings
+                        try {
+                            $cell = mb_convert_encoding($cell, 'UTF-8', 'CP1256');
+                        } catch (\Exception $e) {
+                            try {
+                                $cell = mb_convert_encoding($cell, 'UTF-8', 'ISO-8859-6');
+                            } catch (\Exception $e2) {
+                                // If conversion fails, keep as is
+                            }
+                        }
                     }
                     return $cell;
                 }, $parsed);
