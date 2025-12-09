@@ -6,8 +6,8 @@
     <!-- Header Actions -->
     <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
         <div>
-            <h2 style="font-size: 1.5rem; font-weight: 600; color: #111827; margin: 0 0 0.25rem 0;">تفاصيل أمر الشغل</h2>
-            <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">{{ $workOrder->order_number ?? 'بدون رقم' }}</p>
+            <h2 style="font-size: 1.75rem; font-weight: 700; color: #111827; margin: 0 0 0.25rem 0;">تفاصيل أمر الشغل</h2>
+            <p style="font-size: 1rem; color: #6b7280; margin: 0;">{{ $workOrder->order_number ?? 'بدون رقم' }}</p>
         </div>
         <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
             <a href="{{ route('work-orders.design.show', $workOrder) }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; box-shadow: 0 2px 4px rgba(139, 92, 246, 0.3);">

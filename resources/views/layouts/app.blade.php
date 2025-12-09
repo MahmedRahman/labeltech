@@ -10,7 +10,7 @@
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
         
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -23,7 +23,8 @@
             }
             
             body {
-                font-family: 'Cairo', 'Arial', sans-serif;
+                font-family: 'Tajawal', 'Tahoma', 'Arial', sans-serif;
+                font-size: 16px;
                 background-color: #f3f4f6;
                 color: #111827;
                 line-height: 1.6;
@@ -35,14 +36,29 @@
                 font-weight: 700;
                 color: #111827;
                 line-height: 1.3;
+                font-size: 1.5rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            h2 {
+                font-size: 1.75rem;
+            }
+            
+            h3 {
+                font-size: 1.5rem;
             }
             
             p, span, div, label {
                 color: #374151;
+                font-size: 1rem;
             }
             
             input, textarea, select {
-                font-family: 'Cairo', 'Arial', sans-serif;
+                font-family: 'Tajawal', 'Tahoma', 'Arial', sans-serif;
+                font-size: 1rem;
             }
             
             .sidebar {
@@ -105,7 +121,7 @@
                 border-radius: 0.5rem;
                 margin-bottom: 0.375rem;
                 transition: all 0.2s;
-                font-size: 0.9375rem;
+                font-size: 1.0625rem;
                 font-weight: 600;
             }
             
@@ -125,8 +141,8 @@
                 display: flex;
                 align-items: center;
                 padding: 0.75rem 1rem;
-                color: #6b7280;
-                font-size: 0.8125rem;
+                color: #111827;
+                font-size: 1.25rem;
                 font-weight: 700;
                 text-transform: uppercase;
                 letter-spacing: 0.05em;
@@ -180,7 +196,7 @@
                 padding: 1rem;
                 background-color: #f9fafb;
                 font-weight: 600;
-                font-size: 0.875rem;
+                font-size: 1rem;
                 color: #374151;
                 border-bottom: 2px solid #e5e7eb;
                 text-transform: uppercase;
@@ -191,7 +207,7 @@
                 text-align: right;
                 padding: 1rem;
                 border-bottom: 1px solid #e5e7eb;
-                font-size: 0.9375rem;
+                font-size: 1.0625rem;
                 color: #374151;
             }
             
@@ -231,37 +247,38 @@
             }
             
             .stat-label {
-                font-size: 0.875rem;
+                font-size: 1rem;
                 font-weight: 500;
                 color: #6b7280;
                 margin-bottom: 0.5rem;
             }
             
             .stat-number {
-                font-size: 2rem;
+                font-size: 2.5rem;
                 font-weight: 700;
                 color: #111827;
                 line-height: 1.2;
             }
             
             .form-input, .form-textarea, .form-select {
-                font-size: 0.9375rem;
+                font-size: 1.0625rem;
                 font-weight: 400;
             }
             
             .form-label {
-                font-size: 0.9375rem;
+                font-size: 1.0625rem;
                 font-weight: 600;
                 color: #374151;
             }
             
             button, .btn {
                 font-weight: 600;
-                font-size: 0.9375rem;
+                font-size: 1.0625rem;
             }
             
             a {
                 font-weight: 500;
+                font-size: 1rem;
             }
             
         </style>
@@ -291,8 +308,8 @@
                             <span style="color: white; font-weight: bold; font-size: 1.125rem;">LT</span>
                         </div>
                         <div style="margin-right: 0.75rem;">
-                            <h1 style="font-size: 1.375rem; font-weight: 700; color: #111827; margin: 0; letter-spacing: -0.025em;">LabelTech</h1>
-                            <p style="font-size: 0.8125rem; color: #6b7280; margin: 0.125rem 0 0 0; font-weight: 500;">
+                            <h1 style="font-size: 1.5rem; font-weight: 700; color: #111827; margin: 0; letter-spacing: -0.025em;">LabelTech</h1>
+                            <p style="font-size: 0.9375rem; color: #6b7280; margin: 0.125rem 0 0 0; font-weight: 500;">
                                 @if($isEmployee)
                                     @php
                                         $accountType = auth('employee')->user()->account_type;
@@ -349,7 +366,7 @@
 
                     @if($isSalesEmployee || $isAdmin)
                         <!-- إدخال بيانات - للمبيعات والادمن فقط -->
-                        <div class="nav-section-title " style="margin-top: 1rem; font-size: 1rem; font-weight: 600; color: #111827; border-top: 1px solid #e5e7eb; padding-top: 1rem;">   
+                        <div class="nav-section-title " style="margin-top: 1rem; font-size: 1.25rem; font-weight: 700; color: #111827; border-top: 1px solid #e5e7eb; padding-top: 1rem;">   
                             إدخال بيانات
                         </div>
 
@@ -379,7 +396,7 @@
 
                     @if($isSalesEmployee || $isProductionEmployee || $isAdmin)
                         <!-- أمر التصنيع -->
-                        <div class="nav-section-title " style="margin-top: 1rem; font-size: 1rem; font-weight: 600; color: #111827; border-top: 1px solid #e5e7eb; padding-top: 1rem;">   
+                        <div class="nav-section-title " style="margin-top: 1rem; font-size: 1.25rem; font-weight: 700; color: #111827; border-top: 1px solid #e5e7eb; padding-top: 1rem;">   
                             امر التصنيع
                         </div>
 
@@ -419,7 +436,7 @@
                             الأرشيف
                         </a>
 
-                        <div class="nav-section-title " style="margin-top: 1rem; font-size: 1rem; font-weight: 600; color: #111827; border-top: 1px solid #e5e7eb; padding-top: 1rem;">   
+                        <div class="nav-section-title " style="margin-top: 1rem; font-size: 1.25rem; font-weight: 700; color: #111827; border-top: 1px solid #e5e7eb; padding-top: 1rem;">   
                             المصروفات
                         </div>
                         <a href="{{ route('expenses.index') }}" class="nav-link {{ request()->routeIs('expenses.*') ? 'active' : '' }}">
@@ -436,7 +453,7 @@
                         </a>
 
                         <!-- الإعدادات -->
-                        <div class="nav-section-title " style="margin-top: 1rem; font-size: 1rem; font-weight: 600; color: #111827; border-top: 1px solid #e5e7eb; padding-top: 1rem;">   
+                        <div class="nav-section-title " style="margin-top: 1rem; font-size: 1.25rem; font-weight: 700; color: #111827; border-top: 1px solid #e5e7eb; padding-top: 1rem;">   
                             الإعدادات
                         </div>
 
@@ -502,17 +519,17 @@
                                         'حسابات' => 'موظف حسابات',
                                     ];
                                 @endphp
-                                <p style="font-size: 0.875rem; font-weight: 500; color: #111827; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ auth('employee')->user()->name }}</p>
-                                <p style="font-size: 0.75rem; color: #6b7280; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $typeLabels[$accountType] ?? 'موظف' }}</p>
+                                <p style="font-size: 1rem; font-weight: 500; color: #111827; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ auth('employee')->user()->name }}</p>
+                                <p style="font-size: 1rem; color: #6b7280; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $typeLabels[$accountType] ?? 'موظف' }}</p>
                             @else
-                                <p style="font-size: 0.875rem; font-weight: 500; color: #111827; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ Auth::user()->name }}</p>
-                                <p style="font-size: 0.75rem; color: #6b7280; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ Auth::user()->email }}</p>
+                                <p style="font-size: 1rem; font-weight: 500; color: #111827; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ Auth::user()->name }}</p>
+                                <p style="font-size: 1rem; color: #6b7280; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ Auth::user()->email }}</p>
                             @endif
                         </div>
                     </div>
                     <form method="POST" action="{{ route('logout') }}" style="margin-top: 0.75rem;">
                         @csrf
-                        <button type="submit" style="width: 100%; padding: 0.5rem; background-color: #ef4444; color: white; border: none; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 600; cursor: pointer;">
+                        <button type="submit" style="width: 100%; padding: 0.5rem; background-color: #ef4444; color: white; border: none; border-radius: 0.375rem; font-size: 1rem; font-weight: 600; cursor: pointer;">
                             تسجيل الخروج
                         </button>
                     </form>
@@ -523,7 +540,7 @@
             <div class="main-content" style="flex: 1;">
                 <!-- Top Navigation -->
                 <div class="top-nav">
-                    <h1 style="font-size: 1.5rem; font-weight: 700; color: #111827; margin: 0; letter-spacing: -0.025em;">{{ $title ?? 'لوحة التحكم' }}</h1>
+                    <h1 style="font-size: 1.75rem; font-weight: 700; color: #111827; margin: 0; letter-spacing: -0.025em;">{{ $title ?? 'لوحة التحكم' }}</h1>
                 </div>
 
                 <!-- Page Content -->

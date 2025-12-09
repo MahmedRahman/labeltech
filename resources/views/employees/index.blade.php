@@ -6,8 +6,8 @@
     <!-- Header Actions -->
     <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
         <div>
-            <h2 style="font-size: 1.5rem; font-weight: 600; color: #111827; margin: 0 0 0.25rem 0;">قائمة الموظفين</h2>
-            <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">إدارة جميع موظفيك من مكان واحد</p>
+            <h2 style="font-size: 1.75rem; font-weight: 700; color: #111827; margin: 0 0 0.25rem 0;">قائمة الموظفين</h2>
+            <p style="font-size: 1rem; color: #6b7280; margin: 0;">إدارة جميع موظفيك من مكان واحد</p>
         </div>
         <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
             <a href="{{ route('employees.export') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #10b981; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
@@ -138,7 +138,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                     </svg>
                     <h3 style="font-size: 0.875rem; font-weight: 500; color: #111827; margin-bottom: 0.5rem;">لا يوجد موظفين</h3>
-                    <p style="font-size: 0.875rem; color: #6b7280; margin-bottom: 1.5rem;">ابدأ بإضافة موظف جديد</p>
+                    <p style="font-size: 1rem; color: #6b7280; margin-bottom: 1.5rem;">ابدأ بإضافة موظف جديد</p>
                     <a href="{{ route('employees.create') }}" style="display: inline-flex; align-items: center; padding: 0.5rem 1rem; background-color: #2563eb; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500;">
                         <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -175,7 +175,7 @@
                 
                 <div style="background-color: #f3f4f6; padding: 1rem; border-radius: 0.375rem; margin-bottom: 1.5rem;">
                     <p style="font-size: 0.875rem; color: #374151; margin: 0 0 0.5rem 0; font-weight: 500;">ملاحظات:</p>
-                    <ul style="font-size: 0.875rem; color: #6b7280; margin: 0; padding-right: 1.25rem;">
+                    <ul style="font-size: 1rem; color: #6b7280; margin: 0; padding-right: 1.25rem;">
                         <li>يجب أن يحتوي الملف على رأس الأعمدة في السطر الأول</li>
                         <li>الاسم مطلوب لكل موظف</li>
                         <li>إذا كان كود الموظف موجوداً، سيتم تحديث البيانات</li>

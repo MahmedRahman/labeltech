@@ -3,11 +3,165 @@
         $title = 'قائمة السكاكين';
     @endphp
 
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+    
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+
+    <style>
+        /* Select2 RTL and styling */
+        .select2-container {
+            width: 100% !important;
+            direction: rtl;
+        }
+        
+        .select2-container--default .select2-selection--single {
+            height: 50px !important;
+            border: 1px solid #d1d5db !important;
+            border-radius: 0.5rem !important;
+            padding: 0.875rem 1.125rem !important;
+            font-size: 1.125rem !important;
+            line-height: 1.5 !important;
+            direction: rtl !important;
+        }
+        
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 50px !important;
+            padding-right: 20px !important;
+            padding-left: 40px !important;
+            font-size: 1.125rem !important;
+            text-align: right !important;
+        }
+        
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 48px !important;
+            right: auto !important;
+            left: 10px !important;
+        }
+        
+        .select2-container--default .select2-results__option {
+            padding: 0.75rem 1rem !important;
+            font-size: 1.125rem !important;
+            line-height: 1.5 !important;
+            text-align: right !important;
+        }
+        
+        .select2-container--default .select2-results__option--highlighted {
+            background-color: #eff6ff !important;
+            color: #1d4ed8 !important;
+        }
+        
+        .select2-dropdown {
+            border: 1px solid #d1d5db !important;
+            border-radius: 0.5rem !important;
+            direction: rtl !important;
+        }
+        
+        .select2-search--dropdown .select2-search__field {
+            padding: 0.75rem !important;
+            font-size: 1.125rem !important;
+            border: 1px solid #d1d5db !important;
+            border-radius: 0.375rem !important;
+            direction: rtl !important;
+            text-align: right !important;
+        }
+        
+        /* SweetAlert2 RTL */
+        .rtl-popup {
+            direction: rtl;
+            text-align: right;
+        }
+        
+        .swal2-popup {
+            font-family: 'Tajawal', 'Tahoma', 'Arial', sans-serif;
+        }
+        
+        .swal2-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .swal2-html-container {
+            font-size: 1.125rem;
+        }
+        
+        .swal2-confirm, .swal2-cancel {
+            font-size: 1rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+        }
+        
+        /* DataTables RTL */
+        .dataTables_wrapper {
+            direction: rtl;
+        }
+        
+        .dataTables_filter {
+            text-align: left;
+            margin-bottom: 1rem;
+        }
+        
+        .dataTables_filter input {
+            margin-right: 0.5rem;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+        }
+        
+        .dataTables_length {
+            text-align: right;
+            margin-bottom: 1rem;
+        }
+        
+        .dataTables_length select {
+            margin: 0 0.5rem;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+        }
+        
+        .dataTables_info {
+            text-align: right;
+            padding-top: 1rem;
+        }
+        
+        .dataTables_paginate {
+            text-align: left;
+            padding-top: 1rem;
+        }
+        
+        .dataTables_paginate .paginate_button {
+            padding: 0.5rem 0.75rem;
+            margin: 0 0.25rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            cursor: pointer;
+        }
+        
+        .dataTables_paginate .paginate_button:hover {
+            background-color: #f3f4f6;
+        }
+        
+        .dataTables_paginate .paginate_button.current {
+            background-color: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+    </style>
+
     <!-- Header Actions -->
     <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
         <div>
-            <h2 style="font-size: 1.5rem; font-weight: 600; color: #111827; margin: 0 0 0.25rem 0;">قائمة السكاكين</h2>
-            <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">إدارة جميع السكاكين في المطبعة</p>
+            <h2 style="font-size: 1.75rem; font-weight: 700; color: #111827; margin: 0 0 0.25rem 0;">قائمة السكاكين</h2>
+            <p style="font-size: 1rem; color: #6b7280; margin: 0;">إدارة جميع السكاكين في المطبعة</p>
         </div>
         <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
             <button type="button" onclick="printFilteredData()" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #6366f1; color: white; text-decoration: none; border: none; border-radius: 0.375rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); cursor: pointer;">
@@ -38,7 +192,7 @@
             <form action="{{ route('knives.delete-all') }}" method="POST" style="display: inline;" id="deleteAllForm">
                 @csrf
                 @method('DELETE')
-                <button type="submit" onclick="return confirmDeleteAll()" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #dc2626; color: white; text-decoration: none; border: none; border-radius: 0.375rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); cursor: pointer;">
+                <button type="button" onclick="confirmDeleteAll(event)" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #dc2626; color: white; text-decoration: none; border: none; border-radius: 0.375rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); cursor: pointer;">
                     <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                     </svg>
@@ -52,7 +206,7 @@
     <!-- Statistics Card -->
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
         <div style="background: white; border-radius: 0.75rem; border: 1px solid #e5e7eb; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);">
-            <div style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">إجمالي السكاكين</div>
+            <div style="font-size: 1rem; font-weight: 600; color: #6b7280; margin-bottom: 0.5rem;">إجمالي السكاكين</div>
             <div style="font-size: 2rem; font-weight: 700; color: #111827;">{{ $totalKnives }}</div>
         </div>
     </div>
@@ -60,54 +214,112 @@
     <!-- Filters -->
     <div style="background: white; border-radius: 0.75rem; border: 1px solid #e5e7eb; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);">
         <form method="GET" action="{{ route('knives.index') }}">
-            <!-- Filter by Type - Full Width Row -->
-            <div style="margin-bottom: 1.5rem;">
-                <label for="filter_type" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">النوع</label>
-                <select name="filter_type" 
-                        id="filter_type" 
-                        style="width: 100%; max-width: 300px; padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; color: #111827; background-color: #fff;">
-                    <option value="">جميع الأنواع</option>
+            <!-- Filter by Type - Cards -->
+            <div style="margin-bottom: 2rem;">
+                <label style="display: block; font-size: 1.0625rem; font-weight: 600; color: #374151; margin-bottom: 1rem;">النوع</label>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                    <!-- All Types Card -->
+                    <label class="type-card" style="
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 1.5rem 1rem;
+                        border: 2px solid {{ !request('filter_type') ? '#2563eb' : '#e5e7eb' }};
+                        border-radius: 0.75rem;
+                        background-color: {{ !request('filter_type') ? '#eff6ff' : '#ffffff' }};
+                        cursor: pointer;
+                        transition: all 0.2s;
+                        text-align: center;
+                        min-height: 120px;
+                        box-shadow: {{ !request('filter_type') ? '0 4px 6px rgba(0, 0, 0, 0.1)' : '0 1px 3px rgba(0, 0, 0, 0.05)' }};
+                    " onmouseover="if(!this.querySelector('input[type=radio]').checked) { this.style.borderColor='#2563eb'; this.style.backgroundColor='#eff6ff'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 6px rgba(0, 0, 0, 0.1)'; }" onmouseout="if(!this.querySelector('input[type=radio]').checked) { this.style.borderColor='#e5e7eb'; this.style.backgroundColor='#ffffff'; this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0, 0, 0, 0.05)'; }">
+                        <input type="radio" name="filter_type" value="" {{ !request('filter_type') ? 'checked' : '' }} style="display: none;">
+                        <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">📋</div>
+                        <div style="font-size: 1.125rem; font-weight: 600; color: #111827;">جميع الأنواع</div>
+                    </label>
+                    
+                    @php
+                        $typeIcons = [
+                            'مستطيل' => '📐',
+                            'دائرة' => '⭕',
+                            'مربع' => '⬜',
+                            'بيضاوي' => '🔵',
+                            'شكل خاص' => '⭐',
+                        ];
+                        $typeColors = [
+                            'مستطيل' => ['border' => '#3b82f6', 'bg' => '#dbeafe'],
+                            'دائرة' => ['border' => '#10b981', 'bg' => '#d1fae5'],
+                            'مربع' => ['border' => '#f59e0b', 'bg' => '#fef3c7'],
+                            'بيضاوي' => ['border' => '#8b5cf6', 'bg' => '#ede9fe'],
+                            'شكل خاص' => ['border' => '#ec4899', 'bg' => '#fce7f3'],
+                        ];
+                    @endphp
+                    
                     @foreach($types as $type)
-                        <option value="{{ $type }}" {{ request('filter_type') == $type ? 'selected' : '' }}>{{ $type }}</option>
+                        @php
+                            $isSelected = request('filter_type') == $type;
+                            $icon = $typeIcons[$type] ?? '📌';
+                            $colors = $typeColors[$type] ?? ['border' => '#6b7280', 'bg' => '#f3f4f6'];
+                        @endphp
+                        <label class="type-card" style="
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            justify-content: center;
+                            padding: 1.5rem 1rem;
+                            border: 2px solid {{ $isSelected ? $colors['border'] : '#e5e7eb' }};
+                            border-radius: 0.75rem;
+                            background-color: {{ $isSelected ? $colors['bg'] : '#ffffff' }};
+                            cursor: pointer;
+                            transition: all 0.2s;
+                            text-align: center;
+                            min-height: 120px;
+                            box-shadow: {{ $isSelected ? '0 4px 6px rgba(0, 0, 0, 0.1)' : '0 1px 3px rgba(0, 0, 0, 0.05)' }};
+                        " onmouseover="if(!this.querySelector('input[type=radio]').checked) { this.style.borderColor='{{ $colors['border'] }}'; this.style.backgroundColor='{{ $colors['bg'] }}'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 6px rgba(0, 0, 0, 0.1)'; }" onmouseout="if(!this.querySelector('input[type=radio]').checked) { this.style.borderColor='#e5e7eb'; this.style.backgroundColor='#ffffff'; this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0, 0, 0, 0.05)'; }">
+                            <input type="radio" name="filter_type" value="{{ $type }}" {{ $isSelected ? 'checked' : '' }} style="display: none;">
+                            <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">{{ $icon }}</div>
+                            <div style="font-size: 1.125rem; font-weight: 600; color: #111827;">{{ $type }}</div>
+                        </label>
                     @endforeach
-                </select>
+                </div>
             </div>
 
             <!-- Filter by Length -->
             <div id="lengthRow" style="display: {{ request('filter_type') ? 'block' : 'none' }}; margin-bottom: 1.5rem;">
-                <label for="filter_length" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">الطول</label>
+                <label for="filter_length" style="display: block; font-size: 1.0625rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">الطول</label>
                 <select name="filter_length" 
                         id="filter_length" 
-                        style="width: 100%; max-width: 300px; padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; color: #111827; background-color: #fff;">
-                    <option value="">جميع الأطوال</option>
+                        style="width: 100%; padding: 0.875rem 1.125rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1.125rem; color: #111827; background-color: #fff; min-height: 50px; line-height: 1.5; direction: rtl;">
+                    <option value="" style="font-size: 1.125rem; padding: 0.75rem;">جميع الأطوال</option>
                     @foreach($lengths as $length)
-                        <option value="{{ $length }}" {{ request('filter_length') == $length ? 'selected' : '' }}>{{ number_format($length, 2) }}</option>
+                        <option value="{{ $length }}" {{ request('filter_length') == $length ? 'selected' : '' }} style="font-size: 1.125rem; padding: 0.75rem;">{{ number_format($length, 2) }}</option>
                     @endforeach
                 </select>
             </div>
 
             <!-- Filter by Width -->
             <div id="widthRow" style="display: {{ (request('filter_type') && request('filter_length')) ? 'block' : 'none' }}; margin-bottom: 1.5rem;">
-                <label for="filter_width" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">العرض</label>
+                <label for="filter_width" style="display: block; font-size: 1.0625rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">العرض</label>
                 <select name="filter_width" 
                         id="filter_width" 
-                        style="width: 100%; max-width: 300px; padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; color: #111827; background-color: #fff;">
-                    <option value="">جميع الأعراض</option>
+                        style="width: 100%; padding: 0.875rem 1.125rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1.125rem; color: #111827; background-color: #fff; min-height: 50px; line-height: 1.5; direction: rtl;">
+                    <option value="" style="font-size: 1.125rem; padding: 0.75rem;">جميع الأعراض</option>
                     @foreach($widths as $width)
-                        <option value="{{ $width }}" {{ request('filter_width') == $width ? 'selected' : '' }}>{{ number_format($width, 2) }}</option>
+                        <option value="{{ $width }}" {{ request('filter_width') == $width ? 'selected' : '' }} style="font-size: 1.125rem; padding: 0.75rem;">{{ number_format($width, 2) }}</option>
                     @endforeach
                 </select>
             </div>
 
             <!-- Filter by Dragile Drive -->
             <div id="dragileDriveRow" style="display: {{ (request('filter_type') && request('filter_length') && request('filter_width')) ? 'block' : 'none' }}; margin-bottom: 1.5rem;">
-                <label for="filter_dragile_drive" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">درافيل</label>
+                <label for="filter_dragile_drive" style="display: block; font-size: 1.0625rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">درافيل</label>
                 <select name="filter_dragile_drive" 
                         id="filter_dragile_drive" 
-                        style="width: 100%; max-width: 300px; padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; color: #111827; background-color: #fff;">
-                    <option value="">جميع درافيل</option>
+                        style="width: 100%; padding: 0.875rem 1.125rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1.125rem; color: #111827; background-color: #fff; min-height: 50px; line-height: 1.5; direction: rtl;">
+                    <option value="" style="font-size: 1.125rem; padding: 0.75rem;">جميع درافيل</option>
                     @foreach($dragileDrives as $dragileDrive)
-                        <option value="{{ $dragileDrive }}" {{ request('filter_dragile_drive') == $dragileDrive ? 'selected' : '' }}>{{ $dragileDrive }}</option>
+                        <option value="{{ $dragileDrive }}" {{ request('filter_dragile_drive') == $dragileDrive ? 'selected' : '' }} style="font-size: 1.125rem; padding: 0.75rem;">{{ $dragileDrive }}</option>
                     @endforeach
                 </select>
             </div>
@@ -129,7 +341,7 @@
     <div class="table-container">
         <div class="table-content">
             @if($knives->count() > 0)
-                <table class="table">
+                <table class="table" id="knivesTable">
                     <thead>
                         <tr>
                             <th>الرقم الكود</th>
@@ -165,7 +377,7 @@
                                         <form action="{{ route('knives.destroy', $knife) }}" method="POST" style="display: inline;">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" style="color: #dc2626; text-decoration: none; font-size: 0.875rem; border: none; background: none; cursor: pointer;" onclick="return confirm('هل أنت متأكد من حذف هذه السكينة؟')">حذف</button>
+                                            <button type="submit" style="color: #dc2626; text-decoration: none; font-size: 0.875rem; border: none; background: none; cursor: pointer;" onclick="return confirmDelete(event, '{{ $knife->knife_code }}')">حذف</button>
                                         </form>
                                     </div>
                                 </td>
@@ -173,16 +385,13 @@
                         @endforeach
                     </tbody>
                 </table>
-                <div style="margin-top: 1.5rem;">
-                    {{ $knives->links() }}
-                </div>
             @else
                 <div style="text-align: center; padding: 3rem 0;">
                     <svg style="width: 48px; height: 48px; color: #9ca3af; margin: 0 auto 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
                     <h3 style="font-size: 0.875rem; font-weight: 500; color: #111827; margin-bottom: 0.5rem;">لا توجد سكاكين</h3>
-                    <p style="font-size: 0.875rem; color: #6b7280; margin-bottom: 1.5rem;">ابدأ بإضافة سكينة جديدة</p>
+                    <p style="font-size: 1rem; color: #6b7280; margin-bottom: 1.5rem;">ابدأ بإضافة سكينة جديدة</p>
                     <a href="{{ route('knives.create') }}" style="display: inline-flex; align-items: center; padding: 0.5rem 1rem; background-color: #2563eb; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500;">
                         <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -219,7 +428,7 @@
                 
                 <div style="background-color: #f3f4f6; padding: 1rem; border-radius: 0.375rem; margin-bottom: 1.5rem;">
                     <p style="font-size: 0.875rem; color: #374151; margin: 0 0 0.5rem 0; font-weight: 500;">ملاحظات:</p>
-                    <ul style="font-size: 0.875rem; color: #6b7280; margin: 0; padding-right: 1.25rem;">
+                    <ul style="font-size: 1rem; color: #6b7280; margin: 0; padding-right: 1.25rem;">
                         <li>يجب أن يحتوي الملف على رأس الأعمدة في السطر الأول</li>
                         <li>الرقم الكود مطلوب لكل سكينة</li>
                         <li>إذا كان الرقم الكود موجوداً، سيتم تحديث البيانات</li>
@@ -257,15 +466,121 @@
         </div>
     @endif
 
+    <!-- Select2 JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const filterType = document.getElementById('filter_type');
+        // Show success/error messages from session using SweetAlert2
+        @if(session('success'))
+            Swal.fire({
+                title: 'نجح!',
+                text: '{{ session('success') }}',
+                icon: 'success',
+                confirmButtonText: 'حسناً',
+                customClass: {
+                    popup: 'rtl-popup'
+                }
+            });
+        @endif
+
+        @if(session('error'))
+            Swal.fire({
+                title: 'خطأ!',
+                text: '{{ session('error') }}',
+                icon: 'error',
+                confirmButtonText: 'حسناً',
+                confirmButtonColor: '#dc2626',
+                customClass: {
+                    popup: 'rtl-popup'
+                }
+            });
+        @endif
+
+        @if(session('import_errors') && count(session('import_errors')) > 0)
+            const errors = @json(session('import_errors'));
+            let errorsHtml = '<ul style="text-align: right; padding-right: 1.5rem; margin: 1rem 0;">';
+            errors.forEach(error => {
+                errorsHtml += `<li style="margin-bottom: 0.5rem;">${error}</li>`;
+            });
+            errorsHtml += '</ul>';
+            
+            Swal.fire({
+                title: 'أخطاء في الاستيراد',
+                html: errorsHtml,
+                icon: 'error',
+                confirmButtonText: 'حسناً',
+                confirmButtonColor: '#dc2626',
+                width: '600px',
+                customClass: {
+                    popup: 'rtl-popup',
+                    htmlContainer: 'text-right'
+                }
+            });
+        @endif
+
+        $(document).ready(function() {
+            // Initialize DataTables
+            if ($('#knivesTable').length) {
+                $('#knivesTable').DataTable({
+                    language: {
+                        url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/ar.json'
+                    },
+                    order: [[0, 'asc']], // Sort by first column (الرقم الكود) ascending
+                    pageLength: 25,
+                    lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "الكل"]],
+                    responsive: true,
+                    dom: '<"top"lf>rt<"bottom"ip><"clear">',
+                    columnDefs: [
+                        { orderable: true, targets: '_all' },
+                        { orderable: false, targets: -1 } // Disable sorting on last column (الإجراءات)
+                    ]
+                });
+            }
+            
+            // Initialize Select2 on all select elements
+            function initSelect2() {
+                $('#filter_length, #filter_width, #filter_dragile_drive').each(function() {
+                    if (!$(this).hasClass('select2-hidden-accessible')) {
+                        $(this).select2({
+                            theme: 'bootstrap-5',
+                            dir: 'rtl',
+                            language: {
+                                noResults: function() {
+                                    return "لا توجد نتائج";
+                                },
+                                searching: function() {
+                                    return "جاري البحث...";
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+            
+            // Initialize Select2 on page load
+            initSelect2();
+
+            const filterTypeRadios = document.querySelectorAll('input[name="filter_type"]');
             const filterLength = document.getElementById('filter_length');
             const filterWidth = document.getElementById('filter_width');
             const filterDragileDrive = document.getElementById('filter_dragile_drive');
             const lengthRow = document.getElementById('lengthRow');
             const widthRow = document.getElementById('widthRow');
             const dragileDriveRow = document.getElementById('dragileDriveRow');
+
+            // Function to get selected type
+            function getSelectedType() {
+                const selected = document.querySelector('input[name="filter_type"]:checked');
+                return selected ? selected.value : '';
+            }
 
             // Function to update filter options progressively
             function updateFilterOptions(type, length, width) {
@@ -291,10 +606,28 @@
                                 }
                                 filterLength.appendChild(option);
                             });
+                            $('#filter_length').select2('destroy').select2({
+                                theme: 'bootstrap-5',
+                                dir: 'rtl',
+                                language: {
+                                    noResults: function() {
+                                        return "لا توجد نتائج";
+                                    },
+                                    searching: function() {
+                                        return "جاري البحث...";
+                                    }
+                                }
+                            });
                             lengthRow.style.display = 'block';
                             // Reset and hide width and dragile drive
                             filterWidth.value = '';
+                            if ($('#filter_width').hasClass('select2-hidden-accessible')) {
+                                $('#filter_width').select2('destroy');
+                            }
                             filterDragileDrive.value = '';
+                            if ($('#filter_dragile_drive').hasClass('select2-hidden-accessible')) {
+                                $('#filter_dragile_drive').select2('destroy');
+                            }
                             widthRow.style.display = 'none';
                             dragileDriveRow.style.display = 'none';
                         }
@@ -311,9 +644,24 @@
                                 }
                                 filterWidth.appendChild(option);
                             });
+                            $('#filter_width').select2('destroy').select2({
+                                theme: 'bootstrap-5',
+                                dir: 'rtl',
+                                language: {
+                                    noResults: function() {
+                                        return "لا توجد نتائج";
+                                    },
+                                    searching: function() {
+                                        return "جاري البحث...";
+                                    }
+                                }
+                            });
                             widthRow.style.display = 'block';
                             // Reset and hide dragile drive
                             filterDragileDrive.value = '';
+                            if ($('#filter_dragile_drive').hasClass('select2-hidden-accessible')) {
+                                $('#filter_dragile_drive').select2('destroy');
+                            }
                             dragileDriveRow.style.display = 'none';
                         }
                         // Update Dragile Drive options (if type, length, and width are selected)
@@ -329,6 +677,18 @@
                                 }
                                 filterDragileDrive.appendChild(option);
                             });
+                            $('#filter_dragile_drive').select2('destroy').select2({
+                                theme: 'bootstrap-5',
+                                dir: 'rtl',
+                                language: {
+                                    noResults: function() {
+                                        return "لا توجد نتائج";
+                                    },
+                                    searching: function() {
+                                        return "جاري البحث...";
+                                    }
+                                }
+                            });
                             dragileDriveRow.style.display = 'block';
                         }
                     })
@@ -337,66 +697,112 @@
                     });
             }
 
-            // Listen to type change
-            filterType.addEventListener('change', function() {
-                const type = this.value;
-                if (!type) {
-                    // Hide all filter rows
-                    lengthRow.style.display = 'none';
-                    widthRow.style.display = 'none';
-                    dragileDriveRow.style.display = 'none';
-                    // Reset all filters
-                    filterLength.value = '';
-                    filterWidth.value = '';
-                    filterDragileDrive.value = '';
-                } else {
-                    // Reset dependent filters
-                    filterLength.value = '';
-                    filterWidth.value = '';
-                    filterDragileDrive.value = '';
-                    // Load lengths for this type
-                    updateFilterOptions(type, null, null);
-                }
+            // Listen to type change (radio buttons)
+            filterTypeRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const type = this.value;
+                    // Update card styles
+                    document.querySelectorAll('.type-card').forEach(card => {
+                        const cardRadio = card.querySelector('input[type="radio"]');
+                        const isSelected = cardRadio.checked;
+                        const cardType = cardRadio.value;
+                        
+                        if (cardType === '') {
+                            // All types card
+                            if (isSelected) {
+                                card.style.borderColor = '#2563eb';
+                                card.style.backgroundColor = '#eff6ff';
+                            } else {
+                                card.style.borderColor = '#e5e7eb';
+                                card.style.backgroundColor = '#ffffff';
+                            }
+                        } else {
+                            // Type cards
+                            const typeColors = {
+                                'مستطيل': { border: '#3b82f6', bg: '#dbeafe' },
+                                'دائرة': { border: '#10b981', bg: '#d1fae5' },
+                                'مربع': { border: '#f59e0b', bg: '#fef3c7' },
+                                'بيضاوي': { border: '#8b5cf6', bg: '#ede9fe' },
+                                'شكل خاص': { border: '#ec4899', bg: '#fce7f3' },
+                            };
+                            const colors = typeColors[cardType] || { border: '#6b7280', bg: '#f3f4f6' };
+                            
+                            if (isSelected) {
+                                card.style.borderColor = colors.border;
+                                card.style.backgroundColor = colors.bg;
+                                card.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+                            } else {
+                                card.style.borderColor = '#e5e7eb';
+                                card.style.backgroundColor = '#ffffff';
+                                card.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.05)';
+                            }
+                        }
+                    });
+                    
+                    if (!type) {
+                        // Hide all filter rows
+                        lengthRow.style.display = 'none';
+                        widthRow.style.display = 'none';
+                        dragileDriveRow.style.display = 'none';
+                        // Reset all filters
+                        filterLength.value = '';
+                        filterWidth.value = '';
+                        filterDragileDrive.value = '';
+                    } else {
+                        // Reset dependent filters
+                        filterLength.value = '';
+                        filterWidth.value = '';
+                        filterDragileDrive.value = '';
+                        // Load lengths for this type
+                        updateFilterOptions(type, null, null);
+                    }
+                });
             });
 
             // Listen to length change
-            filterLength.addEventListener('change', function() {
-                const type = filterType.value;
-                const length = this.value;
+            $('#filter_length').on('change', function() {
+                const type = getSelectedType();
+                const length = $(this).val();
                 if (!length) {
                     // Hide width and dragile drive
                     widthRow.style.display = 'none';
                     dragileDriveRow.style.display = 'none';
                     filterWidth.value = '';
+                    $('#filter_width').trigger('change.select2');
                     filterDragileDrive.value = '';
+                    $('#filter_dragile_drive').trigger('change.select2');
                 } else if (type) {
                     // Reset dependent filters
                     filterWidth.value = '';
+                    $('#filter_width').trigger('change.select2');
                     filterDragileDrive.value = '';
+                    $('#filter_dragile_drive').trigger('change.select2');
                     // Load widths for this type and length
                     updateFilterOptions(type, length, null);
                 }
             });
 
             // Listen to width change
-            filterWidth.addEventListener('change', function() {
-                const type = filterType.value;
-                const length = filterLength.value;
-                const width = this.value;
+            $('#filter_width').on('change', function() {
+                const type = getSelectedType();
+                const length = $('#filter_length').val();
+                const width = $(this).val();
                 if (!width) {
                     // Hide dragile drive
                     dragileDriveRow.style.display = 'none';
                     filterDragileDrive.value = '';
+                    $('#filter_dragile_drive').trigger('change.select2');
                 } else if (type && length) {
                     // Reset dragile drive
                     filterDragileDrive.value = '';
+                    $('#filter_dragile_drive').trigger('change.select2');
                     // Load dragile drives for this type, length, and width
                     updateFilterOptions(type, length, width);
                 }
             });
 
             // Initialize on page load
-            const currentType = filterType.value;
+            const currentType = getSelectedType();
             const currentLength = filterLength.value;
             const currentWidth = filterWidth.value;
             
@@ -444,28 +850,114 @@
         document.getElementById('filter_dragile_drive').addEventListener('change', updateExportLink);
 
         // Function to confirm delete all
-        function confirmDeleteAll() {
+        function confirmDeleteAll(event) {
+            event.preventDefault();
             const totalKnives = {{ $totalKnives }};
-            const message = `هل أنت متأكد من حذف جميع السكاكين (${totalKnives} سكينة)؟\n\nهذا الإجراء لا يمكن التراجع عنه!`;
-            return confirm(message);
+            
+            Swal.fire({
+                title: 'هل أنت متأكد؟',
+                html: `هل أنت متأكد من حذف جميع السكاكين (<strong>${totalKnives} سكينة</strong>)؟<br><br>هذا الإجراء لا يمكن التراجع عنه!`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'نعم، احذف الكل',
+                cancelButtonText: 'إلغاء',
+                reverseButtons: true,
+                customClass: {
+                    popup: 'rtl-popup'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteAllForm').submit();
+                }
+            });
+            
+            return false;
+        }
+        
+        // Function to confirm delete single knife
+        function confirmDelete(event, knifeCode) {
+            event.preventDefault();
+            
+            Swal.fire({
+                title: 'هل أنت متأكد؟',
+                html: `هل أنت متأكد من حذف السكينة <strong>${knifeCode}</strong>؟`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'نعم، احذف',
+                cancelButtonText: 'إلغاء',
+                reverseButtons: true,
+                customClass: {
+                    popup: 'rtl-popup'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    event.target.closest('form').submit();
+                }
+            });
+            
+            return false;
         }
 
         // Function to print filtered data
         function printFilteredData() {
-            const table = document.querySelector('.table');
+            const table = $('#knivesTable');
             
-            if (!table) {
-                alert('لا توجد بيانات للطباعة');
+            if (!table.length) {
+                Swal.fire({
+                    title: 'لا توجد بيانات',
+                    text: 'لا توجد بيانات للطباعة',
+                    icon: 'info',
+                    confirmButtonText: 'حسناً',
+                    customClass: {
+                        popup: 'rtl-popup'
+                    }
+                });
                 return;
             }
 
-            // Clone the table and remove actions column
-            const clonedTable = table.cloneNode(true);
-            const rows = clonedTable.querySelectorAll('tr');
+            // Get DataTable instance
+            const dataTable = table.DataTable();
             
-            rows.forEach(row => {
+            // Get visible rows (after search/filter)
+            const visibleRows = dataTable.rows({search: 'applied'}).nodes();
+            
+            if (visibleRows.length === 0) {
+                Swal.fire({
+                    title: 'لا توجد بيانات',
+                    text: 'لا توجد بيانات للطباعة',
+                    icon: 'info',
+                    confirmButtonText: 'حسناً',
+                    customClass: {
+                        popup: 'rtl-popup'
+                    }
+                });
+                return;
+            }
+
+            // Clone the table
+            const clonedTable = table[0].cloneNode(true);
+            
+            // Remove DataTables classes and attributes
+            $(clonedTable).removeClass('dataTable').removeAttr('id').removeAttr('style');
+            
+            // Get all rows from cloned table
+            const rows = clonedTable.querySelectorAll('tbody tr');
+            
+            // Remove rows that are not visible in DataTable
+            Array.from(rows).forEach((row, index) => {
+                if (!Array.from(visibleRows).includes(row)) {
+                    row.remove();
+                }
+            });
+            
+            // Remove actions column from all rows
+            const allRows = clonedTable.querySelectorAll('tr');
+            allRows.forEach(row => {
                 const cells = row.querySelectorAll('th, td');
-                // Remove last cell (actions column)
                 if (cells.length > 0) {
                     cells[cells.length - 1].remove();
                 }

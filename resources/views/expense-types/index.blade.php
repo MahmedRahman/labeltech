@@ -6,8 +6,8 @@
     <!-- Header Actions -->
     <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
         <div>
-            <h2 style="font-size: 1.5rem; font-weight: 600; color: #111827; margin: 0 0 0.25rem 0;">أنواع المصروفات</h2>
-            <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">إدارة أنواع المصروفات الرئيسية والفرعية</p>
+            <h2 style="font-size: 1.75rem; font-weight: 700; color: #111827; margin: 0 0 0.25rem 0;">أنواع المصروفات</h2>
+            <p style="font-size: 1rem; color: #6b7280; margin: 0;">إدارة أنواع المصروفات الرئيسية والفرعية</p>
         </div>
         <div style="display: flex; gap: 0.75rem;">
             <a href="{{ route('expense-types.create') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #2563eb; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
@@ -33,7 +33,7 @@
                                 <div>
                                     <h3 style="font-size: 1rem; font-weight: 600; color: #111827; margin: 0;">{{ $parent->name }}</h3>
                                     @if($parent->description)
-                                        <p style="font-size: 0.875rem; color: #6b7280; margin: 0.25rem 0 0 0;">{{ $parent->description }}</p>
+                                        <p style="font-size: 1rem; color: #6b7280; margin: 0.25rem 0 0 0;">{{ $parent->description }}</p>
                                     @endif
                                 </div>
                             </div>
@@ -99,7 +99,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
                     <h3 style="font-size: 0.875rem; font-weight: 500; color: #111827; margin-bottom: 0.5rem;">لا يوجد أنواع مصروفات</h3>
-                    <p style="font-size: 0.875rem; color: #6b7280; margin-bottom: 1.5rem;">ابدأ بإضافة نوع مصروف جديد</p>
+                    <p style="font-size: 1rem; color: #6b7280; margin-bottom: 1.5rem;">ابدأ بإضافة نوع مصروف جديد</p>
                     <a href="{{ route('expense-types.create') }}" style="display: inline-flex; align-items: center; padding: 0.5rem 1rem; background-color: #2563eb; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500;">
                         <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>

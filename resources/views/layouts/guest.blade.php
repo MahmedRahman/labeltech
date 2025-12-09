@@ -10,7 +10,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -23,7 +23,8 @@
         }
 
         body {
-            font-family: 'Cairo', 'Arial', sans-serif;
+            font-family: 'Tajawal', 'Tahoma', 'Arial', sans-serif;
+            font-size: 16px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
@@ -44,7 +45,7 @@
         }
 
         .title {
-            font-size: 1.5rem;
+            font-size: 1.75rem;
             font-weight: 700;
             color: #111827;
             margin-bottom: 0.5rem;
@@ -52,7 +53,7 @@
         }
 
         .subtitle {
-            font-size: 0.875rem;
+            font-size: 1rem;
             color: #6b7280;
             margin-bottom: 1.5rem;
             text-align: center;
@@ -64,7 +65,7 @@
 
         .form-label {
             display: block;
-            font-size: 0.875rem;
+            font-size: 1rem;
             font-weight: 500;
             color: #374151;
             margin-bottom: 0.5rem;
@@ -75,7 +76,7 @@
             padding: 0.625rem 0.875rem;
             border: 1px solid #d1d5db;
             border-radius: 0.375rem;
-            font-size: 0.875rem;
+            font-size: 1.0625rem;
             color: #111827;
             background-color: #fff;
             transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
@@ -98,7 +99,7 @@
             color: white;
             border: none;
             border-radius: 0.375rem;
-            font-size: 0.875rem;
+            font-size: 1.0625rem;
             font-weight: 600;
             cursor: pointer;
             transition: background-color 0.15s ease-in-out;
@@ -124,7 +125,7 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            font-size: 0.875rem;
+            font-size: 1rem;
             color: #374151;
             cursor: pointer;
         }
@@ -136,7 +137,7 @@
         }
 
         .forgot-link {
-            font-size: 0.875rem;
+            font-size: 1rem;
             color: #2563eb;
             text-decoration: none;
             transition: color 0.15s ease-in-out;

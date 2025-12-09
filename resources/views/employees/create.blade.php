@@ -159,8 +159,8 @@
         }
         
         .section-title {
-            font-size: 1.125rem;
-            font-weight: 600;
+            font-size: 1.375rem;
+            font-weight: 700;
             color: #111827;
             margin: 0;
             display: flex;

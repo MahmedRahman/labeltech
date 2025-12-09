@@ -33,14 +33,14 @@
         }
         
         .stat-number {
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: bold;
             color: #111827;
             margin: 0.5rem 0;
         }
         
         .stat-label {
-            font-size: 0.875rem;
+            font-size: 1rem;
             color: #6b7280;
             margin: 0;
         }
@@ -67,8 +67,8 @@
 
     <!-- Welcome Section -->
     <div class="welcome-card">
-        <h2 style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;">مرحباً بك، {{ Auth::user()->name }}</h2>
-        <p style="color: rgba(255, 255, 255, 0.9); margin: 0;">إليك نظرة سريعة على إحصائيات النظام</p>
+        <h2 style="font-size: 1.75rem; font-weight: bold; margin-bottom: 0.5rem;">مرحباً بك، {{ Auth::user()->name }}</h2>
+        <p style="font-size: 1.125rem; color: rgba(255, 255, 255, 0.9); margin: 0;">إليك نظرة سريعة على إحصائيات النظام</p>
     </div>
 
     <!-- Statistics Cards -->
@@ -86,7 +86,7 @@
                     </svg>
                 </div>
             </div>
-            <a href="{{ route('clients.index') }}" style="margin-top: 1rem; display: inline-flex; align-items: center; color: #2563eb; text-decoration: none; font-size: 0.875rem;">
+            <a href="{{ route('clients.index') }}" style="margin-top: 1rem; display: inline-flex; align-items: center; color: #2563eb; text-decoration: none; font-size: 1rem;">
                 عرض الكل
                 <svg style="width: 16px; height: 16px; margin-right: 0.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
@@ -107,7 +107,7 @@
                     </svg>
                 </div>
             </div>
-            <a href="{{ route('employees.index') }}" style="margin-top: 1rem; display: inline-flex; align-items: center; color: #2563eb; text-decoration: none; font-size: 0.875rem;">
+            <a href="{{ route('employees.index') }}" style="margin-top: 1rem; display: inline-flex; align-items: center; color: #2563eb; text-decoration: none; font-size: 1rem;">
                 عرض الكل
                 <svg style="width: 16px; height: 16px; margin-right: 0.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
@@ -128,7 +128,7 @@
                     </svg>
                 </div>
             </div>
-            <a href="{{ route('suppliers.index') }}" style="margin-top: 1rem; display: inline-flex; align-items: center; color: #2563eb; text-decoration: none; font-size: 0.875rem;">
+            <a href="{{ route('suppliers.index') }}" style="margin-top: 1rem; display: inline-flex; align-items: center; color: #2563eb; text-decoration: none; font-size: 1rem;">
                 عرض الكل
                 <svg style="width: 16px; height: 16px; margin-right: 0.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
@@ -150,7 +150,7 @@
                         </svg>
                     </div>
                 </div>
-                <div style="margin-top: 1rem; display: inline-flex; align-items: center; color: #2563eb; font-size: 0.875rem;">
+                <div style="margin-top: 1rem; display: inline-flex; align-items: center; color: #2563eb; font-size: 1rem;">
                     عرض جميع أوامر الشغل
                     <svg style="width: 16px; height: 16px; margin-right: 0.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
@@ -164,7 +164,7 @@
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
                     <p class="stat-label">إجراءات سريعة</p>
-                    <p style="font-size: 1.25rem; font-weight: bold; color: #111827; margin: 0.5rem 0;">إضافة</p>
+                    <p style="font-size: 1.5rem; font-weight: bold; color: #111827; margin: 0.5rem 0;">إضافة</p>
                 </div>
                 <div style="width: 48px; height: 48px; background-color: #d1fae5; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;">
                     <svg style="width: 32px; height: 32px; color: #10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -173,25 +173,25 @@
                 </div>
             </div>
             <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
-                <a href="{{ route('clients.create') }}" style="display: inline-flex; align-items: center; color: #10b981; text-decoration: none; font-size: 0.875rem;">
+                <a href="{{ route('clients.create') }}" style="display: inline-flex; align-items: center; color: #10b981; text-decoration: none; font-size: 1rem;">
                     إضافة عميل
                     <svg style="width: 16px; height: 16px; margin-right: 0.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                     </svg>
                 </a>
-                <a href="{{ route('employees.create') }}" style="display: inline-flex; align-items: center; color: #10b981; text-decoration: none; font-size: 0.875rem;">
+                <a href="{{ route('employees.create') }}" style="display: inline-flex; align-items: center; color: #10b981; text-decoration: none; font-size: 1rem;">
                     إضافة موظف
                     <svg style="width: 16px; height: 16px; margin-right: 0.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                     </svg>
                 </a>
-                <a href="{{ route('suppliers.create') }}" style="display: inline-flex; align-items: center; color: #10b981; text-decoration: none; font-size: 0.875rem;">
+                <a href="{{ route('suppliers.create') }}" style="display: inline-flex; align-items: center; color: #10b981; text-decoration: none; font-size: 1rem;">
                     إضافة مورد
                     <svg style="width: 16px; height: 16px; margin-right: 0.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                     </svg>
                 </a>
-                <a href="{{ route('work-orders.create') }}" style="display: inline-flex; align-items: center; color: #10b981; text-decoration: none; font-size: 0.875rem;">
+                <a href="{{ route('work-orders.create') }}" style="display: inline-flex; align-items: center; color: #10b981; text-decoration: none; font-size: 1rem;">
                     إضافة أمر شغل
                     <svg style="width: 16px; height: 16px; margin-right: 0.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>

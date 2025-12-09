@@ -34,7 +34,7 @@ class KnifeController extends Controller
             $query->where('dragile_drive', $request->filter_dragile_drive);
         }
 
-        $knives = $query->latest()->paginate(20)->appends($request->query());
+        $knives = $query->latest()->get();
         $totalKnives = Knife::count();
         
         // Get unique values for filter dropdowns
@@ -354,11 +354,55 @@ class KnifeController extends Controller
         $file = $request->file('csv_file');
         $path = $file->getRealPath();
         
-        $data = array_map('str_getcsv', file($path));
+        // Read file content with proper encoding handling
+        $content = file_get_contents($path);
+        
+        // Detect encoding
+        $encoding = mb_detect_encoding($content, ['UTF-8', 'Windows-1256', 'ISO-8859-1', 'ASCII'], true);
+        
+        // Convert to UTF-8 if not already
+        if ($encoding && $encoding !== 'UTF-8') {
+            $content = mb_convert_encoding($content, 'UTF-8', $encoding);
+        } else if (!$encoding) {
+            // If encoding detection failed, try to convert from common Arabic encodings
+            $content = mb_convert_encoding($content, 'UTF-8', 'Windows-1256');
+        }
         
         // Remove BOM if present
-        if (!empty($data[0][0])) {
-            $data[0][0] = preg_replace('/\x{EF}\x{BB}\x{BF}/u', '', $data[0][0]);
+        $content = preg_replace('/^\xEF\xBB\xBF/', '', $content);
+        
+        // Convert content to array of lines
+        $lines = explode("\n", $content);
+        
+        // Parse CSV lines with proper delimiter detection
+        $data = [];
+        foreach ($lines as $line) {
+            if (trim($line) !== '') {
+                // Try to detect delimiter (comma, semicolon, or tab)
+                $delimiter = ',';
+                if (strpos($line, ';') !== false && substr_count($line, ';') > substr_count($line, ',')) {
+                    $delimiter = ';';
+                } elseif (strpos($line, "\t") !== false) {
+                    $delimiter = "\t";
+                }
+                
+                // Parse CSV line with detected delimiter
+                $parsed = str_getcsv($line, $delimiter);
+                
+                // Clean each cell
+                $parsed = array_map(function($cell) {
+                    $cell = trim($cell);
+                    // Remove any remaining BOM or special characters
+                    $cell = preg_replace('/\x{EF}\x{BB}\x{BF}/u', '', $cell);
+                    // Ensure UTF-8 encoding
+                    if (!mb_check_encoding($cell, 'UTF-8')) {
+                        $cell = mb_convert_encoding($cell, 'UTF-8', 'Windows-1256');
+                    }
+                    return $cell;
+                }, $parsed);
+                
+                $data[] = $parsed;
+            }
         }
         
         // Remove header row
@@ -367,6 +411,7 @@ class KnifeController extends Controller
         // Find column indices by header name (to support flexible column order)
         $headerMap = [];
         foreach ($header as $idx => $col) {
+            // Clean and normalize the column name (already cleaned in parsing)
             $col = trim($col);
             $headerMap[$col] = $idx;
         }
@@ -384,9 +429,13 @@ class KnifeController extends Controller
             // Helper function to get value by header name or index
             $getValue = function($key, $defaultIndex = null) use ($row, $headerMap) {
                 if (isset($headerMap[$key])) {
-                    return isset($row[$headerMap[$key]]) ? trim($row[$headerMap[$key]]) : null;
+                    $value = isset($row[$headerMap[$key]]) ? trim($row[$headerMap[$key]]) : null;
+                    return $value;
                 }
-                return $defaultIndex !== null && isset($row[$defaultIndex]) ? trim($row[$defaultIndex]) : null;
+                if ($defaultIndex !== null && isset($row[$defaultIndex])) {
+                    return trim($row[$defaultIndex]);
+                }
+                return null;
             };
 
             // Map CSV columns to database fields (without flap_size - it will be calculated)
