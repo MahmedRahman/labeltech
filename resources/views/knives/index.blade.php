@@ -589,9 +589,21 @@
                 if (length) params.append('length', length);
                 if (width) params.append('width', width);
 
-                // Get the route URL
+                // Get the route URL - use relative URL to avoid mixed content issues
                 const routeUrl = '{{ route('knives.get-filter-values') }}';
-                const url = `${routeUrl}?${params.toString()}`;
+                // Convert to relative URL if it's absolute to avoid mixed content
+                let url = routeUrl;
+                if (url.startsWith('http://') || url.startsWith('https://')) {
+                    // Extract path from full URL
+                    try {
+                        const urlObj = new URL(routeUrl);
+                        url = urlObj.pathname;
+                    } catch (e) {
+                        // If URL parsing fails, use the route as is but make it relative
+                        url = routeUrl.replace(/^https?:\/\/[^\/]+/, '');
+                    }
+                }
+                url = `${url}?${params.toString()}`;
 
                 // Fetch filter values from server
                 fetch(url, {
@@ -922,10 +934,15 @@
         // Function to update export link with current filters
         function updateExportLink() {
             const params = new URLSearchParams();
-            const filterType = document.getElementById('filter_type').value;
-            const filterLength = document.getElementById('filter_length').value;
-            const filterWidth = document.getElementById('filter_width').value;
-            const filterDragileDrive = document.getElementById('filter_dragile_drive').value;
+            const filterTypeElement = document.getElementById('filter_type');
+            const filterLengthElement = document.getElementById('filter_length');
+            const filterWidthElement = document.getElementById('filter_width');
+            const filterDragileDriveElement = document.getElementById('filter_dragile_drive');
+            
+            const filterType = filterTypeElement ? filterTypeElement.value : '';
+            const filterLength = filterLengthElement ? filterLengthElement.value : '';
+            const filterWidth = filterWidthElement ? filterWidthElement.value : '';
+            const filterDragileDrive = filterDragileDriveElement ? filterDragileDriveElement.value : '';
 
             if (filterType) params.append('filter_type', filterType);
             if (filterLength) params.append('filter_length', filterLength);
@@ -938,10 +955,23 @@
         }
 
         // Update export link when filters change
-        document.getElementById('filter_type').addEventListener('change', updateExportLink);
-        document.getElementById('filter_length').addEventListener('change', updateExportLink);
-        document.getElementById('filter_width').addEventListener('change', updateExportLink);
-        document.getElementById('filter_dragile_drive').addEventListener('change', updateExportLink);
+        const filterTypeElement = document.getElementById('filter_type');
+        const filterLengthElement = document.getElementById('filter_length');
+        const filterWidthElement = document.getElementById('filter_width');
+        const filterDragileDriveElement = document.getElementById('filter_dragile_drive');
+        
+        if (filterTypeElement) {
+            filterTypeElement.addEventListener('change', updateExportLink);
+        }
+        if (filterLengthElement) {
+            filterLengthElement.addEventListener('change', updateExportLink);
+        }
+        if (filterWidthElement) {
+            filterWidthElement.addEventListener('change', updateExportLink);
+        }
+        if (filterDragileDriveElement) {
+            filterDragileDriveElement.addEventListener('change', updateExportLink);
+        }
 
         // Function to confirm delete all
         function confirmDeleteAll(event) {
@@ -1123,11 +1153,38 @@
                     <h1>قائمة السكاكين</h1>
                     <div class="filters-info">
                         <strong>الفلاتر المطبقة:</strong>
-                        ${document.getElementById('filter_type').value ? `النوع: ${document.getElementById('filter_type').options[document.getElementById('filter_type').selectedIndex].text}` : ''}
-                        ${document.getElementById('filter_length').value ? ` | الطول: ${document.getElementById('filter_length').options[document.getElementById('filter_length').selectedIndex].text}` : ''}
-                        ${document.getElementById('filter_width').value ? ` | العرض: ${document.getElementById('filter_width').options[document.getElementById('filter_width').selectedIndex].text}` : ''}
-                        ${document.getElementById('filter_dragile_drive').value ? ` | درافيل: ${document.getElementById('filter_dragile_drive').options[document.getElementById('filter_dragile_drive').selectedIndex].text}` : ''}
-                        ${!document.getElementById('filter_type').value && !document.getElementById('filter_length').value && !document.getElementById('filter_width').value && !document.getElementById('filter_dragile_drive').value ? 'جميع السكاكين' : ''}
+                        ${(() => {
+                            try {
+                                const typeEl = document.getElementById('filter_type');
+                                const lengthEl = document.getElementById('filter_length');
+                                const widthEl = document.getElementById('filter_width');
+                                const driveEl = document.getElementById('filter_dragile_drive');
+                                
+                                let filters = [];
+                                if (typeEl) {
+                                    const selectedType = document.querySelector('input[name="filter_type"]:checked');
+                                    if (selectedType) {
+                                        const typeCard = selectedType.closest('.type-card');
+                                        if (typeCard) {
+                                            const typeText = typeCard.querySelector('div:last-child')?.textContent || '';
+                                            if (typeText) filters.push(`النوع: ${typeText}`);
+                                        }
+                                    }
+                                }
+                                if (lengthEl && lengthEl.value) {
+                                    filters.push(`الطول: ${lengthEl.options[lengthEl.selectedIndex]?.text || lengthEl.value}`);
+                                }
+                                if (widthEl && widthEl.value) {
+                                    filters.push(`العرض: ${widthEl.options[widthEl.selectedIndex]?.text || widthEl.value}`);
+                                }
+                                if (driveEl && driveEl.value) {
+                                    filters.push(`درافيل: ${driveEl.options[driveEl.selectedIndex]?.text || driveEl.value}`);
+                                }
+                                return filters.length > 0 ? filters.join(' | ') : 'جميع السكاكين';
+                            } catch (e) {
+                                return 'جميع السكاكين';
+                            }
+                        })()}
                     </div>
                     ${clonedTable.outerHTML}
                     <div class="print-date">
