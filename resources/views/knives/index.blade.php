@@ -589,9 +589,26 @@
                 if (length) params.append('length', length);
                 if (width) params.append('width', width);
 
+                // Get the route URL
+                const routeUrl = '{{ route('knives.get-filter-values') }}';
+                const url = `${routeUrl}?${params.toString()}`;
+
                 // Fetch filter values from server
-                fetch(`{{ route('knives.get-filter-values') }}?${params.toString()}`)
-                    .then(response => response.json())
+                fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    credentials: 'same-origin'
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         // Update Length options (only if type is selected and length/width are not)
                         if (type && !length && !width) {
@@ -700,6 +717,17 @@
                     })
                     .catch(error => {
                         console.error('Error fetching filter values:', error);
+                        console.error('URL:', url);
+                        // Show user-friendly error message
+                        Swal.fire({
+                            title: 'خطأ في تحميل الفلاتر',
+                            text: 'حدث خطأ أثناء تحميل خيارات الفلترة. يرجى المحاولة مرة أخرى.',
+                            icon: 'error',
+                            confirmButtonText: 'حسناً',
+                            customClass: {
+                                popup: 'rtl-popup'
+                            }
+                        });
                     });
             }
 

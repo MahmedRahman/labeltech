@@ -84,26 +84,27 @@ class KnifeController extends Controller
      */
     public function getFilterValues(Request $request)
     {
-        $type = $request->input('type');
-        $length = $request->input('length');
-        $width = $request->input('width');
-        
-        $query = Knife::query();
-        
-        // Apply filters progressively
-        if (!empty($type)) {
-            $query->where('type', $type);
-        }
-        
-        if (!empty($length)) {
-            $query->where('length', $length);
-        }
-        
-        if (!empty($width)) {
-            $query->where('width', $width);
-        }
-        
-        $result = [];
+        try {
+            $type = $request->input('type');
+            $length = $request->input('length');
+            $width = $request->input('width');
+            
+            $query = Knife::query();
+            
+            // Apply filters progressively
+            if (!empty($type)) {
+                $query->where('type', $type);
+            }
+            
+            if (!empty($length)) {
+                $query->where('length', $length);
+            }
+            
+            if (!empty($width)) {
+                $query->where('width', $width);
+            }
+            
+            $result = [];
         
         // If only type is selected, return lengths
         if (!empty($type) && empty($length) && empty($width)) {
@@ -142,6 +143,15 @@ class KnifeController extends Controller
         }
         
         return response()->json($result);
+        } catch (\Exception $e) {
+            \Log::error('Error in getFilterValues: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'حدث خطأ أثناء تحميل الفلاتر',
+                'lengths' => [],
+                'widths' => [],
+                'dragileDrives' => []
+            ], 500);
+        }
     }
 
     /**
