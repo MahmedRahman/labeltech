@@ -596,17 +596,19 @@
                         // Update Length options (only if type is selected and length/width are not)
                         if (type && !length && !width) {
                             filterLength.innerHTML = '<option value="">جميع الأطوال</option>';
-                            data.lengths.forEach(item => {
-                                const option = document.createElement('option');
-                                option.value = item.value;
-                                option.textContent = item.label;
-                                // Preserve selected value if it exists
-                                if (option.value === '{{ request('filter_length') }}') {
-                                    option.selected = true;
-                                }
-                                filterLength.appendChild(option);
-                            });
-                            $('#filter_length').select2('destroy').select2({
+                            if (data.lengths && data.lengths.length > 0) {
+                                data.lengths.forEach(item => {
+                                    const option = document.createElement('option');
+                                    option.value = item.value;
+                                    option.textContent = item.label;
+                                    filterLength.appendChild(option);
+                                });
+                            }
+                            // Reinitialize Select2
+                            if ($('#filter_length').hasClass('select2-hidden-accessible')) {
+                                $('#filter_length').select2('destroy');
+                            }
+                            $('#filter_length').select2({
                                 theme: 'bootstrap-5',
                                 dir: 'rtl',
                                 language: {
@@ -634,17 +636,19 @@
                         // Update Width options (if type and length are selected, but not width)
                         else if (type && length && !width) {
                             filterWidth.innerHTML = '<option value="">جميع الأعراض</option>';
-                            data.widths.forEach(item => {
-                                const option = document.createElement('option');
-                                option.value = item.value;
-                                option.textContent = item.label;
-                                // Preserve selected value if it exists
-                                if (option.value === '{{ request('filter_width') }}') {
-                                    option.selected = true;
-                                }
-                                filterWidth.appendChild(option);
-                            });
-                            $('#filter_width').select2('destroy').select2({
+                            if (data.widths && data.widths.length > 0) {
+                                data.widths.forEach(item => {
+                                    const option = document.createElement('option');
+                                    option.value = item.value;
+                                    option.textContent = item.label;
+                                    filterWidth.appendChild(option);
+                                });
+                            }
+                            // Reinitialize Select2
+                            if ($('#filter_width').hasClass('select2-hidden-accessible')) {
+                                $('#filter_width').select2('destroy');
+                            }
+                            $('#filter_width').select2({
                                 theme: 'bootstrap-5',
                                 dir: 'rtl',
                                 language: {
@@ -667,17 +671,19 @@
                         // Update Dragile Drive options (if type, length, and width are selected)
                         else if (type && length && width) {
                             filterDragileDrive.innerHTML = '<option value="">جميع درافيل</option>';
-                            data.dragileDrives.forEach(item => {
-                                const option = document.createElement('option');
-                                option.value = item.value;
-                                option.textContent = item.label;
-                                // Preserve selected value if it exists
-                                if (option.value === '{{ request('filter_dragile_drive') }}') {
-                                    option.selected = true;
-                                }
-                                filterDragileDrive.appendChild(option);
-                            });
-                            $('#filter_dragile_drive').select2('destroy').select2({
+                            if (data.dragileDrives && data.dragileDrives.length > 0) {
+                                data.dragileDrives.forEach(item => {
+                                    const option = document.createElement('option');
+                                    option.value = item.value;
+                                    option.textContent = item.label;
+                                    filterDragileDrive.appendChild(option);
+                                });
+                            }
+                            // Reinitialize Select2
+                            if ($('#filter_dragile_drive').hasClass('select2-hidden-accessible')) {
+                                $('#filter_dragile_drive').select2('destroy');
+                            }
+                            $('#filter_dragile_drive').select2({
                                 theme: 'bootstrap-5',
                                 dir: 'rtl',
                                 language: {
@@ -746,13 +752,34 @@
                         dragileDriveRow.style.display = 'none';
                         // Reset all filters
                         filterLength.value = '';
+                        if ($('#filter_length').hasClass('select2-hidden-accessible')) {
+                            $('#filter_length').select2('destroy');
+                        }
                         filterWidth.value = '';
+                        if ($('#filter_width').hasClass('select2-hidden-accessible')) {
+                            $('#filter_width').select2('destroy');
+                        }
                         filterDragileDrive.value = '';
+                        if ($('#filter_dragile_drive').hasClass('select2-hidden-accessible')) {
+                            $('#filter_dragile_drive').select2('destroy');
+                        }
                     } else {
                         // Reset dependent filters
                         filterLength.value = '';
+                        if ($('#filter_length').hasClass('select2-hidden-accessible')) {
+                            $('#filter_length').select2('destroy');
+                        }
                         filterWidth.value = '';
+                        if ($('#filter_width').hasClass('select2-hidden-accessible')) {
+                            $('#filter_width').select2('destroy');
+                        }
                         filterDragileDrive.value = '';
+                        if ($('#filter_dragile_drive').hasClass('select2-hidden-accessible')) {
+                            $('#filter_dragile_drive').select2('destroy');
+                        }
+                        // Hide dependent rows
+                        widthRow.style.display = 'none';
+                        dragileDriveRow.style.display = 'none';
                         // Load lengths for this type
                         updateFilterOptions(type, null, null);
                     }
@@ -763,20 +790,44 @@
             $('#filter_length').on('change', function() {
                 const type = getSelectedType();
                 const length = $(this).val();
+                
+                if (!type) {
+                    // If no type selected, hide width and dragile drive
+                    widthRow.style.display = 'none';
+                    dragileDriveRow.style.display = 'none';
+                    filterWidth.value = '';
+                    if ($('#filter_width').hasClass('select2-hidden-accessible')) {
+                        $('#filter_width').select2('destroy');
+                    }
+                    filterDragileDrive.value = '';
+                    if ($('#filter_dragile_drive').hasClass('select2-hidden-accessible')) {
+                        $('#filter_dragile_drive').select2('destroy');
+                    }
+                    return;
+                }
+                
                 if (!length) {
                     // Hide width and dragile drive
                     widthRow.style.display = 'none';
                     dragileDriveRow.style.display = 'none';
                     filterWidth.value = '';
-                    $('#filter_width').trigger('change.select2');
+                    if ($('#filter_width').hasClass('select2-hidden-accessible')) {
+                        $('#filter_width').select2('destroy');
+                    }
                     filterDragileDrive.value = '';
-                    $('#filter_dragile_drive').trigger('change.select2');
-                } else if (type) {
+                    if ($('#filter_dragile_drive').hasClass('select2-hidden-accessible')) {
+                        $('#filter_dragile_drive').select2('destroy');
+                    }
+                } else {
                     // Reset dependent filters
                     filterWidth.value = '';
-                    $('#filter_width').trigger('change.select2');
+                    if ($('#filter_width').hasClass('select2-hidden-accessible')) {
+                        $('#filter_width').select2('destroy');
+                    }
                     filterDragileDrive.value = '';
-                    $('#filter_dragile_drive').trigger('change.select2');
+                    if ($('#filter_dragile_drive').hasClass('select2-hidden-accessible')) {
+                        $('#filter_dragile_drive').select2('destroy');
+                    }
                     // Load widths for this type and length
                     updateFilterOptions(type, length, null);
                 }
@@ -787,15 +838,30 @@
                 const type = getSelectedType();
                 const length = $('#filter_length').val();
                 const width = $(this).val();
+                
+                if (!type || !length) {
+                    // If type or length not selected, hide dragile drive
+                    dragileDriveRow.style.display = 'none';
+                    filterDragileDrive.value = '';
+                    if ($('#filter_dragile_drive').hasClass('select2-hidden-accessible')) {
+                        $('#filter_dragile_drive').select2('destroy');
+                    }
+                    return;
+                }
+                
                 if (!width) {
                     // Hide dragile drive
                     dragileDriveRow.style.display = 'none';
                     filterDragileDrive.value = '';
-                    $('#filter_dragile_drive').trigger('change.select2');
-                } else if (type && length) {
+                    if ($('#filter_dragile_drive').hasClass('select2-hidden-accessible')) {
+                        $('#filter_dragile_drive').select2('destroy');
+                    }
+                } else {
                     // Reset dragile drive
                     filterDragileDrive.value = '';
-                    $('#filter_dragile_drive').trigger('change.select2');
+                    if ($('#filter_dragile_drive').hasClass('select2-hidden-accessible')) {
+                        $('#filter_dragile_drive').select2('destroy');
+                    }
                     // Load dragile drives for this type, length, and width
                     updateFilterOptions(type, length, width);
                 }
