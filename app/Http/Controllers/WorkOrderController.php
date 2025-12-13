@@ -81,7 +81,8 @@ class WorkOrderController extends Controller
         $materials = Material::where('is_active', true)->orderBy('name')->get();
         $additions = \App\Models\Addition::orderBy('name')->get();
         $externalBreakingPrice = \App\Models\SystemSetting::getValue('external_breaking_price', 4);
-        return view('work-orders.create', compact('clients', 'materials', 'additions', 'externalBreakingPrice'));
+        $wastes = \App\Models\Waste::orderBy('number_of_colors')->get();
+        return view('work-orders.create', compact('clients', 'materials', 'additions', 'externalBreakingPrice', 'wastes'));
     }
 
     /**
@@ -158,7 +159,8 @@ class WorkOrderController extends Controller
             'pieces_per_sheet' => 'nullable|integer|min:1',
             'sheets_per_stack' => 'nullable|integer|min:1',
             'paper_width' => 'nullable|numeric|min:0',
-            'gap_count' => 'nullable|integer|min:0',
+            'gap_count' => 'nullable|numeric|min:0',
+            'waste_per_roll' => 'nullable|integer|min:0',
             'increase' => 'nullable|numeric|min:0',
             'linear_meter' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string',
@@ -347,7 +349,8 @@ class WorkOrderController extends Controller
             'pieces_per_sheet' => 'nullable|integer|min:1',
             'sheets_per_stack' => 'nullable|integer|min:1',
             'paper_width' => 'nullable|numeric|min:0',
-            'gap_count' => 'nullable|integer|min:0',
+            'gap_count' => 'nullable|numeric|min:0',
+            'waste_per_roll' => 'nullable|integer|min:0',
             'increase' => 'nullable|numeric|min:0',
             'linear_meter' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string',

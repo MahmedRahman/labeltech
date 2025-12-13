@@ -56,6 +56,7 @@ class WorkOrder extends Model
         'pieces_per_stack',
         'has_production',
         'gap_count',
+        'waste_per_roll',
         'increase',
         'linear_meter',
     ];
@@ -86,7 +87,8 @@ class WorkOrder extends Model
         'sheets_per_stack' => 'integer',
         'pieces_per_stack' => 'integer',
         'has_production' => 'boolean',
-        'gap_count' => 'integer',
+        'gap_count' => 'decimal:2',
+        'waste_per_roll' => 'integer',
         'increase' => 'decimal:2',
         'linear_meter' => 'decimal:2',
     ];

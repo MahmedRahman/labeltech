@@ -521,20 +521,35 @@
                     @enderror
                 </div>
 
-                <!-- Gap Count and Increase -->
+                <!-- Gap Count, Waste Per Roll and Increase -->
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="gap_count" class="form-label">عدد الجاب</label>
                         <input type="number" 
                                name="gap_count" 
                                id="gap_count" 
-                               value="{{ old('gap_count', 4) }}" 
+                               value="{{ old('gap_count', 0.4) }}" 
                                min="0"
-                               step="1"
+                               step="0.01"
                                class="form-input"
                                placeholder="أدخل عدد الجاب"
                                oninput="calculateLinearMeter()">
                         @error('gap_count')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label for="waste_per_roll" class="form-label">عدد الهالك للبكره</label>
+                        <input type="number" 
+                               name="waste_per_roll" 
+                               id="waste_per_roll" 
+                               value="{{ old('waste_per_roll') }}" 
+                               min="0"
+                               step="1"
+                               class="form-input"
+                               placeholder="أدخل عدد الهالك للبكره">
+                        @error('waste_per_roll')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
                     </div>
@@ -575,6 +590,96 @@
                     @error('linear_meter')
                         <p class="error-message">{{ $message }}</p>
                     @enderror
+                </div>
+
+                <!-- Rolls Count (calculated automatically) -->
+                <div class="form-group">
+                    <label for="rolls_count" class="form-label">عدد البكر</label>
+                    <input type="number" 
+                           name="rolls_count" 
+                           id="rolls_count" 
+                           value="{{ old('rolls_count') }}" 
+                           min="0"
+                           step="1"
+                           class="form-input"
+                           readonly
+                           style="background-color: #f3f4f6; cursor: not-allowed;"
+                           placeholder="سيتم الحساب تلقائياً">
+                    <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
+                        يتم الحساب تلقائياً: (المتر الطولي ÷ 1000) ثم التقريب إلى الرقم الأعلى
+                    </small>
+                </div>
+
+                <!-- Waste (calculated automatically) -->
+                <div class="form-group">
+                    <label for="waste" class="form-label">الهالك</label>
+                    <input type="number" 
+                           name="waste" 
+                           id="waste" 
+                           value="{{ old('waste') }}" 
+                           min="0"
+                           step="1"
+                           class="form-input"
+                           readonly
+                           style="background-color: #f3f4f6; cursor: not-allowed;"
+                           placeholder="سيتم الحساب تلقائياً">
+                    <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
+                        يتم الحساب تلقائياً: عدد البكر × عدد الهالك للبكره
+                    </small>
+                </div>
+
+                <!-- Waste Percentage (calculated automatically from wastes table) -->
+                <div class="form-group">
+                    <label for="waste_percentage" class="form-label">نسبة الهالك</label>
+                    <input type="number" 
+                           name="waste_percentage" 
+                           id="waste_percentage" 
+                           value="{{ old('waste_percentage') }}" 
+                           step="0.01"
+                           min="0"
+                           class="form-input"
+                           readonly
+                           style="background-color: #f3f4f6; cursor: not-allowed;"
+                           placeholder="سيتم الحساب تلقائياً">
+                    <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
+                        يتم الحساب تلقائياً بناءً على عدد الألوان المختار
+                    </small>
+                </div>
+
+                <!-- Linear Meter with Waste (calculated automatically) -->
+                <div class="form-group">
+                    <label for="linear_meter_with_waste" class="form-label">المتر الطولي مضاف اليه الهالك</label>
+                    <input type="number" 
+                           name="linear_meter_with_waste" 
+                           id="linear_meter_with_waste" 
+                           value="{{ old('linear_meter_with_waste') }}" 
+                           step="0.01"
+                           min="0"
+                           class="form-input"
+                           readonly
+                           style="background-color: #f3f4f6; cursor: not-allowed;"
+                           placeholder="سيتم الحساب تلقائياً">
+                    <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
+                        يتم الحساب تلقائياً: المتر الطولي + الهالك + نسبة الهالك
+                    </small>
+                </div>
+
+                <!-- Square Meter (calculated automatically) -->
+                <div class="form-group">
+                    <label for="square_meter" class="form-label">المتر المربع</label>
+                    <input type="number" 
+                           name="square_meter" 
+                           id="square_meter" 
+                           value="{{ old('square_meter') }}" 
+                           step="0.01"
+                           min="0"
+                           class="form-input"
+                           readonly
+                           style="background-color: #f3f4f6; cursor: not-allowed;"
+                           placeholder="سيتم الحساب تلقائياً">
+                    <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
+                        يتم الحساب تلقائياً: (المتر الطولي مضاف اليه الهالك × عرض الورق) ÷ 100
+                    </small>
                 </div>
 
                     <!-- Additions -->
@@ -831,42 +936,42 @@
                 <div style="margin-bottom: 2rem; padding: 1.5rem; background-color: #f9fafb; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
                     <h3 style="font-size: 1rem; font-weight: 600; color: #111827; margin-bottom: 1.5rem;">التجهيزات</h3>
                     
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="film_price" class="form-label">سعر الفيلم الواحد</label>
-                            <input type="number" 
-                                   name="film_price" 
-                                   id="film_price" 
-                                   value="{{ old('film_price', 850) }}" 
-                                   step="0.01"
-                                   min="0"
-                                   class="form-input"
-                                   placeholder="0.00">
-                            @error('film_price')
-                                <p class="error-message">{{ $message }}</p>
-                            @enderror
+                    <!-- العدد -->
+                    <div class="form-group">
+                        <label class="form-label">العدد</label>
+                        <div style="display: flex; gap: 0.75rem; margin-top: 0.5rem; flex-wrap: wrap;">
+                            @for($i = 1; $i <= 6; $i++)
+                            <label style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; cursor: pointer; padding: 0.875rem 1.25rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; min-width: 50px; text-align: center; {{ old('film_count') == $i ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                                <input type="radio" 
+                                       name="film_count" 
+                                       value="{{ $i }}" 
+                                       id="film_count_{{ $i }}"
+                                       {{ old('film_count') == $i ? 'checked' : '' }}
+                                       onchange="updateFilmCountStyle()"
+                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                                <span style="font-size: 0.9375rem; font-weight: 600; color: #111827;">{{ $i }}</span>
+                            </label>
+                            @endfor
                         </div>
+                        @error('film_count')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
 
-                        <div class="form-group">
-                            <label class="form-label">العدد</label>
-                            <div style="display: flex; gap: 0.75rem; margin-top: 0.5rem; flex-wrap: wrap;">
-                                @for($i = 1; $i <= 6; $i++)
-                                <label style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; cursor: pointer; padding: 0.875rem 1.25rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; min-width: 50px; text-align: center; {{ old('film_count') == $i ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
-                                    <input type="radio" 
-                                           name="film_count" 
-                                           value="{{ $i }}" 
-                                           id="film_count_{{ $i }}"
-                                           {{ old('film_count') == $i ? 'checked' : '' }}
-                                           onchange="updateFilmCountStyle()"
-                                           style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
-                                    <span style="font-size: 0.9375rem; font-weight: 600; color: #111827;">{{ $i }}</span>
-                                </label>
-                                @endfor
-                            </div>
-                            @error('film_count')
-                                <p class="error-message">{{ $message }}</p>
-                            @enderror
-                        </div>
+                    <!-- سعر الفيلم الواحد -->
+                    <div class="form-group">
+                        <label for="film_price" class="form-label">سعر الفيلم الواحد</label>
+                        <input type="number" 
+                               name="film_price" 
+                               id="film_price" 
+                               value="{{ old('film_price', 850) }}" 
+                               step="0.01"
+                               min="0"
+                               class="form-input"
+                               placeholder="0.00">
+                        @error('film_price')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <!-- Sales Percentage -->
@@ -1060,6 +1165,13 @@
     </div>
 
     <script>
+        // Waste percentages data from database
+        const wastePercentages = {
+            @foreach($wastes as $waste)
+            {{ $waste->number_of_colors }}: {{ $waste->waste_percentage }},
+            @endforeach
+        };
+
         // Handle radio button styling for additions, fingerprint, winding_direction and final_product_shape
         document.addEventListener('DOMContentLoaded', function() {
             // Handle additions radio buttons
@@ -1312,6 +1424,7 @@
                     // Use setTimeout to ensure the checked state is updated
                     setTimeout(() => {
                         updateNumberOfColorsStyle();
+                        updateWastePercentage();
                     }, 0);
                 });
                 
@@ -1320,6 +1433,7 @@
                     // Use setTimeout to ensure the checked state is updated
                     setTimeout(() => {
                         updateNumberOfColorsStyle();
+                        updateWastePercentage();
                     }, 0);
                 });
                 
@@ -1340,6 +1454,7 @@
                             radio.checked = true;
                             // Update style immediately
                             updateNumberOfColorsStyle();
+                            updateWastePercentage();
                             // Trigger change event manually
                             const changeEvent = new Event('change', { bubbles: true });
                             radio.dispatchEvent(changeEvent);
@@ -1350,6 +1465,15 @@
             
             // Initialize number_of_colors styling
             updateNumberOfColorsStyle();
+            
+            // Initialize waste percentage on page load
+            updateWastePercentage();
+            
+            // Initialize linear meter with waste on page load
+            calculateLinearMeterWithWaste();
+            
+            // Initialize square meter on page load
+            calculateSquareMeter();
             
             // Handle rows_count radio buttons
             const rowsCountRadios = document.querySelectorAll('input[name="rows_count"]');
@@ -1482,6 +1606,30 @@
                     }
                 }
             });
+        }
+
+        // Update waste percentage based on number of colors
+        function updateWastePercentage() {
+            const numberOfColorsRadio = document.querySelector('input[name="number_of_colors"]:checked');
+            const wastePercentageInput = document.getElementById('waste_percentage');
+            
+            if (!wastePercentageInput) return;
+            
+            if (numberOfColorsRadio) {
+                const numberOfColors = parseInt(numberOfColorsRadio.value) || 0;
+                const wastePercentage = wastePercentages[numberOfColors];
+                
+                if (wastePercentage !== undefined) {
+                    wastePercentageInput.value = parseFloat(wastePercentage).toFixed(2);
+                } else {
+                    wastePercentageInput.value = '';
+                }
+            } else {
+                wastePercentageInput.value = '';
+            }
+            
+            // Update linear meter with waste after waste percentage is updated
+            calculateLinearMeterWithWaste();
         }
 
         // Update rows count style
@@ -1728,6 +1876,9 @@
             updateSidebarCalculations();
             // Also calculate linear meter
             calculateLinearMeter();
+            
+            // Update square meter after paper width is calculated
+            calculateSquareMeter();
         }
 
         // Calculate linear meter automatically
@@ -1750,20 +1901,109 @@
                     if (linearMeterInput) {
                         linearMeterInput.value = linearMeter.toFixed(2);
                     }
+                    // Calculate rolls count after linear meter is calculated
+                    calculateRollsCount(linearMeter);
                 } else {
                     // If required fields are not set, clear the linear meter
                     if (linearMeterInput) {
                         linearMeterInput.value = '';
                     }
+                    calculateRollsCount(0);
                 }
             } else {
                 if (linearMeterInput) {
                     linearMeterInput.value = '';
                 }
+                calculateRollsCount(0);
             }
+            
+            // Update linear meter with waste after linear meter is calculated
+            calculateLinearMeterWithWaste();
             
             // Update sidebar calculations
             updateSidebarCalculations();
+        }
+
+        // Calculate rolls count automatically
+        function calculateRollsCount(linearMeter) {
+            const rollsCountInput = document.getElementById('rolls_count');
+            if (!rollsCountInput) return;
+            
+            if (linearMeter > 0) {
+                // Formula: (المتر الطولي ÷ 1000) ثم التقريب إلى الرقم الأعلى
+                const rollsCount = Math.ceil(linearMeter / 1000);
+                rollsCountInput.value = rollsCount;
+                // Calculate waste after rolls count is calculated
+                calculateWaste(rollsCount);
+            } else {
+                rollsCountInput.value = '';
+                calculateWaste(0);
+            }
+        }
+
+        // Calculate waste automatically
+        function calculateWaste(rollsCount) {
+            const wasteInput = document.getElementById('waste');
+            const wastePerRollInput = document.getElementById('waste_per_roll');
+            if (!wasteInput) return;
+            
+            const wastePerRoll = parseFloat(wastePerRollInput?.value) || 0;
+            
+            if (rollsCount > 0 && wastePerRoll > 0) {
+                // Formula: عدد البكر × عدد الهالك للبكره
+                const waste = rollsCount * wastePerRoll;
+                wasteInput.value = waste;
+            } else {
+                wasteInput.value = '';
+            }
+            
+            // Update linear meter with waste after waste is calculated
+            calculateLinearMeterWithWaste();
+        }
+
+        // Calculate linear meter with waste automatically
+        function calculateLinearMeterWithWaste() {
+            const linearMeterInput = document.getElementById('linear_meter');
+            const wasteInput = document.getElementById('waste');
+            const wastePercentageInput = document.getElementById('waste_percentage');
+            const linearMeterWithWasteInput = document.getElementById('linear_meter_with_waste');
+            
+            if (!linearMeterWithWasteInput) return;
+            
+            const linearMeter = parseFloat(linearMeterInput?.value) || 0;
+            const waste = parseFloat(wasteInput?.value) || 0;
+            const wastePercentage = parseFloat(wastePercentageInput?.value) || 0;
+            
+            if (linearMeter > 0) {
+                // Formula: المتر الطولي + الهالك + نسبة الهالك
+                const linearMeterWithWaste = linearMeter + waste + wastePercentage;
+                linearMeterWithWasteInput.value = parseFloat(linearMeterWithWaste.toFixed(2));
+            } else {
+                linearMeterWithWasteInput.value = '';
+            }
+            
+            // Update square meter after linear meter with waste is calculated
+            calculateSquareMeter();
+        }
+
+        // Calculate square meter automatically
+        function calculateSquareMeter() {
+            const linearMeterWithWasteInput = document.getElementById('linear_meter_with_waste');
+            const paperWidthInput = document.getElementById('paper_width');
+            const squareMeterInput = document.getElementById('square_meter');
+            
+            if (!squareMeterInput) return;
+            
+            const linearMeterWithWaste = parseFloat(linearMeterWithWasteInput?.value) || 0;
+            const paperWidth = parseFloat(paperWidthInput?.value) || 0;
+            
+            if (linearMeterWithWaste > 0 && paperWidth > 0) {
+                // Formula: (المتر الطولي مضاف اليه الهالك × عرض الورق) ÷ 100
+                const squareMeter = (linearMeterWithWaste * paperWidth) / 100;
+                squareMeterInput.value = parseFloat(squareMeter.toFixed(2));
+            } else {
+                squareMeterInput.value = '';
+            }
         }
 
         // Update sidebar calculations
@@ -1944,6 +2184,19 @@
                     });
                 }
             });
+            
+            // Add event listener for waste_per_roll to calculate waste
+            const wastePerRollInput = document.getElementById('waste_per_roll');
+            if (wastePerRollInput) {
+                wastePerRollInput.addEventListener('input', function() {
+                    const rollsCount = parseFloat(document.getElementById('rolls_count')?.value) || 0;
+                    calculateWaste(rollsCount);
+                });
+                wastePerRollInput.addEventListener('change', function() {
+                    const rollsCount = parseFloat(document.getElementById('rolls_count')?.value) || 0;
+                    calculateWaste(rollsCount);
+                });
+            }
         });
 
     </script>
