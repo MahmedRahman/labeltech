@@ -80,7 +80,8 @@ class WorkOrderController extends Controller
         $clients = Client::orderBy('name')->get();
         $materials = Material::where('is_active', true)->orderBy('name')->get();
         $additions = \App\Models\Addition::orderBy('name')->get();
-        return view('work-orders.create', compact('clients', 'materials', 'additions'));
+        $externalBreakingPrice = \App\Models\SystemSetting::getValue('external_breaking_price', 4);
+        return view('work-orders.create', compact('clients', 'materials', 'additions', 'externalBreakingPrice'));
     }
 
     /**

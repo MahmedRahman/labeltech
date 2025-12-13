@@ -393,10 +393,13 @@
                         <select name="material" 
                                 id="material" 
                                 required
-                                class="form-select">
+                                class="form-select"
+                                onchange="updateMaterialPrice()">
                             <option value="">اختر الخامة</option>
                             @foreach($materials as $material)
-                                <option value="{{ $material->name }}" {{ old('material') == $material->name ? 'selected' : '' }}>
+                                <option value="{{ $material->name }}" 
+                                        data-price="{{ $material->price ?? '' }}" 
+                                        {{ old('material') == $material->name ? 'selected' : '' }}>
                                     {{ $material->name }}
                                 </option>
                             @endforeach
@@ -658,7 +661,7 @@
                         <input type="number" 
                                name="fingerprint_price" 
                                id="fingerprint_price" 
-                               value="{{ old('fingerprint_price') }}" 
+                               value="{{ old('fingerprint_price', 16) }}" 
                                step="0.01"
                                min="0"
                                class="form-input"
@@ -759,7 +762,7 @@
                         <input type="number" 
                                name="knife_price" 
                                id="knife_price" 
-                               value="{{ old('knife_price') }}" 
+                               value="{{ old('knife_price', 600) }}" 
                                step="0.01"
                                min="0"
                                class="form-input"
@@ -806,11 +809,12 @@
                         <input type="number" 
                                name="external_breaking_price" 
                                id="external_breaking_price" 
-                               value="{{ old('external_breaking_price') }}" 
+                               value="{{ old('external_breaking_price', $externalBreakingPrice ?? 4) }}" 
                                step="0.01"
                                min="0"
                                class="form-input"
                                placeholder="0.00"
+                               data-default-price="{{ $externalBreakingPrice ?? 4 }}"
                                {{ old('external_breaking') == 'yes' ? 'required' : '' }}>
                         @error('external_breaking_price')
                             <p class="error-message">{{ $message }}</p>
@@ -828,7 +832,7 @@
                             <input type="number" 
                                    name="film_price" 
                                    id="film_price" 
-                                   value="{{ old('film_price') }}" 
+                                   value="{{ old('film_price', 850) }}" 
                                    step="0.01"
                                    min="0"
                                    class="form-input"
@@ -840,13 +844,17 @@
 
                         <div class="form-group">
                             <label for="film_count" class="form-label">العدد</label>
-                            <input type="number" 
-                                   name="film_count" 
-                                   id="film_count" 
-                                   value="{{ old('film_count') }}" 
-                                   min="1"
-                                   class="form-input"
-                                   placeholder="أدخل العدد">
+                            <select name="film_count" 
+                                    id="film_count" 
+                                    class="form-select">
+                                <option value="">اختر العدد</option>
+                                <option value="1" {{ old('film_count') == '1' ? 'selected' : '' }}>1</option>
+                                <option value="2" {{ old('film_count') == '2' ? 'selected' : '' }}>2</option>
+                                <option value="3" {{ old('film_count') == '3' ? 'selected' : '' }}>3</option>
+                                <option value="4" {{ old('film_count') == '4' ? 'selected' : '' }}>4</option>
+                                <option value="5" {{ old('film_count') == '5' ? 'selected' : '' }}>5</option>
+                                <option value="6" {{ old('film_count') == '6' ? 'selected' : '' }}>6</option>
+                            </select>
                             @error('film_count')
                                 <p class="error-message">{{ $message }}</p>
                             @enderror
@@ -859,7 +867,7 @@
                         <input type="number" 
                                name="sales_percentage" 
                                id="sales_percentage" 
-                               value="{{ old('sales_percentage') }}" 
+                               value="{{ old('sales_percentage', 10) }}" 
                                step="0.01"
                                min="0"
                                max="100"
@@ -892,7 +900,7 @@
                             <input type="number" 
                                    name="manufacturing_price_per_meter" 
                                    id="manufacturing_price_per_meter" 
-                                   value="{{ old('manufacturing_price_per_meter') }}" 
+                                   value="{{ old('manufacturing_price_per_meter', 10) }}" 
                                    step="0.01"
                                    min="0"
                                    class="form-input"
@@ -1220,6 +1228,7 @@
             externalBreakingRadios.forEach(radio => {
                 radio.addEventListener('change', function() {
                     updateExternalBreakingStyle();
+                    toggleExternalBreakingPrice();
                 });
                 
                 // Also listen to click on the label
@@ -1230,6 +1239,7 @@
                         if (e.target !== radio) {
                             radio.checked = true;
                             updateExternalBreakingStyle();
+                            toggleExternalBreakingPrice();
                         }
                     });
                 }
@@ -1253,6 +1263,9 @@
             
             // Initialize external_breaking styling
             updateExternalBreakingStyle();
+            
+            // Initialize external breaking price on page load
+            toggleExternalBreakingPrice();
 
             // Handle winding_direction radio buttons
             const windingDirectionRadios = document.querySelectorAll('input[name="winding_direction"]');
@@ -1436,7 +1449,13 @@
             
             if (fingerprintYes && fingerprintYes.checked) {
                 if (priceGroup) priceGroup.style.display = 'block';
-                if (priceInput) priceInput.setAttribute('required', 'required');
+                if (priceInput) {
+                    priceInput.setAttribute('required', 'required');
+                    // Set default value to 16 if field is empty
+                    if (!priceInput.value || priceInput.value === '') {
+                        priceInput.value = '16.00';
+                    }
+                }
             } else {
                 if (priceGroup) priceGroup.style.display = 'none';
                 if (priceInput) {
@@ -1454,7 +1473,13 @@
             
             if (knifeYes && knifeYes.checked) {
                 if (priceGroup) priceGroup.style.display = 'block';
-                if (priceInput) priceInput.setAttribute('required', 'required');
+                if (priceInput) {
+                    priceInput.setAttribute('required', 'required');
+                    // Set default value to 600 if field is empty
+                    if (!priceInput.value || priceInput.value === '') {
+                        priceInput.value = '600.00';
+                    }
+                }
             } else {
                 if (priceGroup) priceGroup.style.display = 'none';
                 if (priceInput) {
@@ -1472,7 +1497,14 @@
             
             if (externalBreakingYes && externalBreakingYes.checked) {
                 if (priceGroup) priceGroup.style.display = 'block';
-                if (priceInput) priceInput.setAttribute('required', 'required');
+                if (priceInput) {
+                    priceInput.setAttribute('required', 'required');
+                    // Set default value from database if field is empty
+                    if (!priceInput.value || priceInput.value === '') {
+                        const defaultPrice = priceInput.getAttribute('data-default-price') || '4';
+                        priceInput.value = parseFloat(defaultPrice).toFixed(2);
+                    }
+                }
             } else {
                 if (priceGroup) priceGroup.style.display = 'none';
                 if (priceInput) {
@@ -1641,9 +1673,50 @@
             }
         }
 
+        // Update material price per meter based on selected material
+        function updateMaterialPrice() {
+            const materialSelect = document.getElementById('material');
+            const materialPriceInput = document.getElementById('material_price_per_meter');
+            
+            if (materialSelect && materialPriceInput) {
+                const selectedOption = materialSelect.options[materialSelect.selectedIndex];
+                const price = selectedOption ? selectedOption.getAttribute('data-price') : null;
+                
+                if (price && price !== '' && price !== 'null') {
+                    // Check if user manually changed the price
+                    const isManuallyChanged = materialPriceInput.getAttribute('data-manually-changed') === 'true';
+                    
+                    // Only update if the field is empty or if user hasn't manually changed it
+                    if (!materialPriceInput.value || materialPriceInput.value === '' || !isManuallyChanged) {
+                        const priceValue = parseFloat(price).toFixed(2);
+                        materialPriceInput.value = priceValue;
+                        // Reset the manually changed flag when material changes
+                        materialPriceInput.removeAttribute('data-manually-changed');
+                    }
+                } else if (!price || price === '' || price === 'null') {
+                    // Clear the field if no material is selected or material has no price
+                    if (materialPriceInput.getAttribute('data-manually-changed') !== 'true') {
+                        materialPriceInput.value = '';
+                    }
+                }
+            }
+        }
+        
         // Initialize calculations on page load
         document.addEventListener('DOMContentLoaded', function() {
             calculatePaperWidth();
+            
+            // Track manual changes to material price field
+            const materialPriceInput = document.getElementById('material_price_per_meter');
+            if (materialPriceInput) {
+                // Mark as manually changed when user types
+                materialPriceInput.addEventListener('input', function() {
+                    this.setAttribute('data-manually-changed', 'true');
+                });
+            }
+            
+            // Initialize material price on page load if material is already selected
+            updateMaterialPrice();
             
             // Add event listeners to update sidebar on input changes
             const inputsToWatch = ['rows_count', 'width', 'length', 'quantity'];
