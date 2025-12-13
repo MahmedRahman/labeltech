@@ -386,8 +386,7 @@
                 <div style="margin-bottom: 2rem; padding: 1.5rem; background-color: #f9fafb; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
                     <h3 style="font-size: 1rem; font-weight: 600; color: #111827; margin-bottom: 1.5rem;">معلومات المنتج</h3>
                     
-                    <!-- Material and Number of Colors -->
-                <div class="form-grid">
+                    <!-- Material -->
                     <div class="form-group">
                         <label for="material" class="form-label required">الخامة</label>
                         <select name="material" 
@@ -409,37 +408,46 @@
                         @enderror
                     </div>
 
+                    <!-- Number of Colors -->
                     <div class="form-group">
-                        <label for="number_of_colors" class="form-label required">عدد الألوان</label>
-                        <select name="number_of_colors" 
-                                id="number_of_colors" 
-                                required
-                                class="form-select">
-                            <option value="0" {{ old('number_of_colors', 0) == 0 ? 'selected' : '' }}>0</option>
-                            <option value="1" {{ old('number_of_colors', 0) == 1 ? 'selected' : '' }}>1</option>
-                            <option value="2" {{ old('number_of_colors', 0) == 2 ? 'selected' : '' }}>2</option>
-                            <option value="3" {{ old('number_of_colors', 0) == 3 ? 'selected' : '' }}>3</option>
-                            <option value="4" {{ old('number_of_colors', 0) == 4 ? 'selected' : '' }}>4</option>
-                            <option value="5" {{ old('number_of_colors', 0) == 5 ? 'selected' : '' }}>5</option>
-                            <option value="6" {{ old('number_of_colors', 0) == 6 ? 'selected' : '' }}>6</option>
-                        </select>
+                        <label class="form-label required">عدد الألوان</label>
+                        <div style="display: flex; gap: 1rem; margin-top: 0.5rem; flex-wrap: wrap;">
+                            @for($i = 0; $i <= 6; $i++)
+                            <label style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; cursor: pointer; padding: 1rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; min-width: 60px; text-align: center; {{ old('number_of_colors', 4) == $i ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                                <input type="radio" 
+                                       name="number_of_colors" 
+                                       value="{{ $i }}" 
+                                       id="number_of_colors_{{ $i }}"
+                                       {{ old('number_of_colors', 4) == $i ? 'checked' : '' }}
+                                       required
+                                       onchange="updateNumberOfColorsStyle()"
+                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                                <span style="font-size: 1rem; font-weight: 600; color: #111827;">{{ $i }}</span>
+                            </label>
+                            @endfor
+                        </div>
                         @error('number_of_colors')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
                     </div>
-                </div>
 
                 <!-- Rows Count -->
                 <div class="form-group">
-                    <label for="rows_count" class="form-label">عدد الصفوف</label>
-                    <input type="number" 
-                           name="rows_count" 
-                           id="rows_count" 
-                           value="{{ old('rows_count') }}" 
-                           min="1"
-                           class="form-input"
-                           placeholder="أدخل عدد الصفوف"
-                           oninput="calculatePaperWidth()">
+                    <label class="form-label">عدد الصفوف</label>
+                    <div style="display: flex; gap: 0.75rem; margin-top: 0.5rem; flex-wrap: wrap;">
+                        @for($i = 1; $i <= 15; $i++)
+                        <label style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; cursor: pointer; padding: 0.875rem 1.25rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; min-width: 50px; text-align: center; {{ old('rows_count', 1) == $i ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                            <input type="radio" 
+                                   name="rows_count" 
+                                   value="{{ $i }}" 
+                                   id="rows_count_{{ $i }}"
+                                   {{ old('rows_count', 1) == $i ? 'checked' : '' }}
+                                   onchange="updateRowsCountStyle(); calculatePaperWidth();"
+                                   style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                            <span style="font-size: 0.9375rem; font-weight: 600; color: #111827;">{{ $i }}</span>
+                        </label>
+                        @endfor
+                    </div>
                     @error('rows_count')
                         <p class="error-message">{{ $message }}</p>
                     @enderror
@@ -523,11 +531,13 @@
                         <input type="number" 
                                name="gap_count" 
                                id="gap_count" 
-                               value="{{ old('gap_count') }}" 
+                               value="{{ old('gap_count', 4) }}" 
                                min="0"
                                step="1"
                                class="form-input"
                                placeholder="أدخل عدد الجاب"
+                               readonly
+                               style="background-color: #f3f4f6; cursor: not-allowed;"
                                oninput="calculateLinearMeter()">
                         @error('gap_count')
                             <p class="error-message">{{ $message }}</p>
@@ -1296,6 +1306,54 @@
             // Initialize production fields on page load
             toggleProductionFields();
             
+            // Handle number_of_colors radio buttons
+            const numberOfColorsRadios = document.querySelectorAll('input[name="number_of_colors"]');
+            numberOfColorsRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    updateNumberOfColorsStyle();
+                });
+                
+                // Also listen to click on the label
+                const label = radio.closest('label');
+                if (label) {
+                    label.addEventListener('click', function(e) {
+                        // Prevent double triggering
+                        if (e.target !== radio) {
+                            radio.checked = true;
+                            updateNumberOfColorsStyle();
+                        }
+                    });
+                }
+            });
+            
+            // Initialize number_of_colors styling
+            updateNumberOfColorsStyle();
+            
+            // Handle rows_count radio buttons
+            const rowsCountRadios = document.querySelectorAll('input[name="rows_count"]');
+            rowsCountRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    updateRowsCountStyle();
+                    calculatePaperWidth();
+                });
+                
+                // Also listen to click on the label
+                const label = radio.closest('label');
+                if (label) {
+                    label.addEventListener('click', function(e) {
+                        // Prevent double triggering
+                        if (e.target !== radio) {
+                            radio.checked = true;
+                            updateRowsCountStyle();
+                            calculatePaperWidth();
+                        }
+                    });
+                }
+            });
+            
+            // Initialize rows_count styling
+            updateRowsCountStyle();
+            
             // Handle select dropdowns styling and feedback
             const selects = document.querySelectorAll('.form-select');
             selects.forEach(select => {
@@ -1329,6 +1387,38 @@
                 });
             });
         });
+
+        // Update number of colors style
+        function updateNumberOfColorsStyle() {
+            document.querySelectorAll('input[name="number_of_colors"]').forEach(r => {
+                const label = r.closest('label');
+                if (label) {
+                    if (r.checked) {
+                        label.style.borderColor = '#2563eb';
+                        label.style.backgroundColor = '#eff6ff';
+                    } else {
+                        label.style.borderColor = '#d1d5db';
+                        label.style.backgroundColor = 'transparent';
+                    }
+                }
+            });
+        }
+
+        // Update rows count style
+        function updateRowsCountStyle() {
+            document.querySelectorAll('input[name="rows_count"]').forEach(r => {
+                const label = r.closest('label');
+                if (label) {
+                    if (r.checked) {
+                        label.style.borderColor = '#2563eb';
+                        label.style.backgroundColor = '#eff6ff';
+                    } else {
+                        label.style.borderColor = '#d1d5db';
+                        label.style.backgroundColor = 'transparent';
+                    }
+                }
+            });
+        }
 
         // Toggle production fields based on final_product_shape selection
         function toggleProductionFields() {
@@ -1516,12 +1606,12 @@
 
         // Calculate paper width automatically
         function calculatePaperWidth() {
-            const rowsCountInput = document.getElementById('rows_count');
+            const rowsCountRadio = document.querySelector('input[name="rows_count"]:checked');
             const widthInput = document.getElementById('width');
             const paperWidthInput = document.getElementById('paper_width');
             
-            const rowsCount = parseFloat(rowsCountInput.value) || 0;
-            const width = parseFloat(widthInput.value) || 0;
+            const rowsCount = rowsCountRadio ? parseFloat(rowsCountRadio.value) || 0 : 0;
+            const width = parseFloat(widthInput?.value) || 0;
             
             // Formula: (العرض × عدد الصفوف) + (عدد الصفوف - 1) + 0.3 + 1.2
             if (rowsCount > 0 && width > 0) {
@@ -1572,7 +1662,8 @@
 
         // Update sidebar calculations
         function updateSidebarCalculations() {
-            const rowsCount = parseFloat(document.getElementById('rows_count')?.value) || 0;
+            const rowsCountRadio = document.querySelector('input[name="rows_count"]:checked');
+            const rowsCount = rowsCountRadio ? parseFloat(rowsCountRadio.value) || 0 : 0;
             const width = parseFloat(document.getElementById('width')?.value) || 0;
             const length = parseFloat(document.getElementById('length')?.value) || 0;
             const quantity = parseFloat(document.getElementById('quantity')?.value) || 0;
@@ -1719,7 +1810,8 @@
             updateMaterialPrice();
             
             // Add event listeners to update sidebar on input changes
-            const inputsToWatch = ['rows_count', 'width', 'length', 'quantity'];
+            // Note: rows_count is now radio buttons, handled separately above
+            const inputsToWatch = ['width', 'length', 'quantity'];
             inputsToWatch.forEach(inputId => {
                 const input = document.getElementById(inputId);
                 if (input) {
