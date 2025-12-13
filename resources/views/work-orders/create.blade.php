@@ -853,18 +853,21 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="film_count" class="form-label">العدد</label>
-                            <select name="film_count" 
-                                    id="film_count" 
-                                    class="form-select">
-                                <option value="">اختر العدد</option>
-                                <option value="1" {{ old('film_count') == '1' ? 'selected' : '' }}>1</option>
-                                <option value="2" {{ old('film_count') == '2' ? 'selected' : '' }}>2</option>
-                                <option value="3" {{ old('film_count') == '3' ? 'selected' : '' }}>3</option>
-                                <option value="4" {{ old('film_count') == '4' ? 'selected' : '' }}>4</option>
-                                <option value="5" {{ old('film_count') == '5' ? 'selected' : '' }}>5</option>
-                                <option value="6" {{ old('film_count') == '6' ? 'selected' : '' }}>6</option>
-                            </select>
+                            <label class="form-label">العدد</label>
+                            <div style="display: flex; gap: 0.75rem; margin-top: 0.5rem; flex-wrap: wrap;">
+                                @for($i = 1; $i <= 6; $i++)
+                                <label style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; cursor: pointer; padding: 0.875rem 1.25rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; min-width: 50px; text-align: center; {{ old('film_count') == $i ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                                    <input type="radio" 
+                                           name="film_count" 
+                                           value="{{ $i }}" 
+                                           id="film_count_{{ $i }}"
+                                           {{ old('film_count') == $i ? 'checked' : '' }}
+                                           onchange="updateFilmCountStyle()"
+                                           style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                                    <span style="font-size: 0.9375rem; font-weight: 600; color: #111827;">{{ $i }}</span>
+                                </label>
+                                @endfor
+                            </div>
                             @error('film_count')
                                 <p class="error-message">{{ $message }}</p>
                             @enderror
@@ -1354,6 +1357,29 @@
             // Initialize rows_count styling
             updateRowsCountStyle();
             
+            // Handle film_count radio buttons
+            const filmCountRadios = document.querySelectorAll('input[name="film_count"]');
+            filmCountRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    updateFilmCountStyle();
+                });
+                
+                // Also listen to click on the label
+                const label = radio.closest('label');
+                if (label) {
+                    label.addEventListener('click', function(e) {
+                        // Prevent double triggering
+                        if (e.target !== radio) {
+                            radio.checked = true;
+                            updateFilmCountStyle();
+                        }
+                    });
+                }
+            });
+            
+            // Initialize film_count styling
+            updateFilmCountStyle();
+            
             // Handle select dropdowns styling and feedback
             const selects = document.querySelectorAll('.form-select');
             selects.forEach(select => {
@@ -1407,6 +1433,22 @@
         // Update rows count style
         function updateRowsCountStyle() {
             document.querySelectorAll('input[name="rows_count"]').forEach(r => {
+                const label = r.closest('label');
+                if (label) {
+                    if (r.checked) {
+                        label.style.borderColor = '#2563eb';
+                        label.style.backgroundColor = '#eff6ff';
+                    } else {
+                        label.style.borderColor = '#d1d5db';
+                        label.style.backgroundColor = 'transparent';
+                    }
+                }
+            });
+        }
+
+        // Update film count style
+        function updateFilmCountStyle() {
+            document.querySelectorAll('input[name="film_count"]').forEach(r => {
                 const label = r.closest('label');
                 if (label) {
                     if (r.checked) {
