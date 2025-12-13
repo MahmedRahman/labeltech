@@ -34,7 +34,7 @@ class KnifeController extends Controller
             $query->where('dragile_drive', $request->filter_dragile_drive);
         }
 
-        $knives = $query->latest()->get();
+        $knives = $query->latest()->paginate(20)->appends($request->query());
         $totalKnives = Knife::count();
         
         // Get unique values for filter dropdowns
@@ -84,74 +84,35 @@ class KnifeController extends Controller
      */
     public function getFilterValues(Request $request)
     {
-        try {
-            $type = $request->input('type');
-            $length = $request->input('length');
-            $width = $request->input('width');
-            
-            $query = Knife::query();
-            
-            // Apply filters progressively
-            if (!empty($type)) {
-                $query->where('type', $type);
-            }
-            
-            if (!empty($length)) {
-                $query->where('length', $length);
-            }
-            
-            if (!empty($width)) {
-                $query->where('width', $width);
-            }
-            
-            $result = [];
+        $type = $request->input('type');
         
-        // If only type is selected, return lengths
-        if (!empty($type) && empty($length) && empty($width)) {
-            $lengths = $query->distinct()->whereNotNull('length')->pluck('length')->sort()->values()->map(function($length) {
-                return ['value' => $length, 'label' => number_format($length, 2)];
-            });
-            $result['lengths'] = $lengths;
-            $result['widths'] = [];
-            $result['dragileDrives'] = [];
-        }
-        // If type and length are selected, return widths
-        else if (!empty($type) && !empty($length) && empty($width)) {
-            $widths = $query->distinct()->whereNotNull('width')->pluck('width')->sort()->values()->map(function($width) {
-                return ['value' => $width, 'label' => number_format($width, 2)];
-            });
-            $result['lengths'] = [];
-            $result['widths'] = $widths;
-            $result['dragileDrives'] = [];
-        }
-        // If type, length, and width are selected, return dragile drives
-        else if (!empty($type) && !empty($length) && !empty($width)) {
-            $dragileDrives = $query->distinct()->whereNotNull('dragile_drive')->pluck('dragile_drive')->sort()->values()->map(function($drive) {
-                return ['value' => $drive, 'label' => $drive];
-            });
-            $result['lengths'] = [];
-            $result['widths'] = [];
-            $result['dragileDrives'] = $dragileDrives;
-        }
-        // Default: return empty
-        else {
-            $result = [
-                'lengths' => [],
-                'widths' => [],
-                'dragileDrives' => []
-            ];
-        }
-        
-        return response()->json($result);
-        } catch (\Exception $e) {
-            \Log::error('Error in getFilterValues: ' . $e->getMessage());
+        if (empty($type)) {
             return response()->json([
-                'error' => 'حدث خطأ أثناء تحميل الفلاتر',
                 'lengths' => [],
                 'widths' => [],
                 'dragileDrives' => []
-            ], 500);
+            ]);
         }
+
+        $query = Knife::where('type', $type);
+        
+        $lengths = $query->distinct()->whereNotNull('length')->pluck('length')->sort()->values()->map(function($length) {
+            return ['value' => $length, 'label' => number_format($length, 2)];
+        });
+        
+        $widths = $query->distinct()->whereNotNull('width')->pluck('width')->sort()->values()->map(function($width) {
+            return ['value' => $width, 'label' => number_format($width, 2)];
+        });
+        
+        $dragileDrives = $query->distinct()->whereNotNull('dragile_drive')->pluck('dragile_drive')->sort()->values()->map(function($drive) {
+            return ['value' => $drive, 'label' => $drive];
+        });
+        
+        return response()->json([
+            'lengths' => $lengths,
+            'widths' => $widths,
+            'dragileDrives' => $dragileDrives
+        ]);
     }
 
     /**
@@ -193,28 +154,25 @@ class KnifeController extends Controller
      */
     private function generateKnifeCode($type)
     {
-        // Map type to prefix and starting number
-        $typeConfig = [
-            'مستطيل' => ['prefix' => 'A', 'start' => 701],
-            'دائرة' => ['prefix' => 'C', 'start' => 115],
-            'مربع' => ['prefix' => 'S', 'start' => 25],
-            'بيضاوي' => ['prefix' => 'O', 'start' => 0],
-            'شكل خاص' => ['prefix' => 'L', 'start' => 414],
+        // Map type to prefix
+        $prefixMap = [
+            'مستطيل' => 'M',
+            'دائرة' => 'D',
+            'مربع' => 'S',
+            'بيضاوي' => 'O',
+            'شكل خاص' => 'C',
         ];
 
-        $config = $typeConfig[$type] ?? ['prefix' => 'K', 'start' => 1];
-        $prefix = $config['prefix'];
-        $startNumber = $config['start'];
+        $prefix = $prefixMap[$type] ?? 'K';
 
-        // Get all knives with this type
+        // Get all knives with this prefix
         $knives = Knife::where('type', $type)
-            ->where('knife_code', 'like', $prefix . '%')
+            ->where('knife_code', 'like', $prefix . '-%')
             ->get();
 
-        $maxNumber = $startNumber - 1;
+        $maxNumber = 0;
         foreach ($knives as $knife) {
-            // Match pattern like A0701, C0115, S0025, L0414
-            if (preg_match('/^' . preg_quote($prefix, '/') . '(\d+)$/', $knife->knife_code, $matches)) {
+            if (preg_match('/^' . preg_quote($prefix, '/') . '-(\d+)$/', $knife->knife_code, $matches)) {
                 $number = (int)$matches[1];
                 if ($number > $maxNumber) {
                     $maxNumber = $number;
@@ -222,10 +180,9 @@ class KnifeController extends Controller
             }
         }
 
-        // Generate next number (start from startNumber if no existing codes)
-        $nextNumber = $maxNumber >= $startNumber ? $maxNumber + 1 : $startNumber;
-        
-        return $prefix . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        $nextNumber = $maxNumber + 1;
+
+        return $prefix . '-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
     }
 
     /**
@@ -364,75 +321,11 @@ class KnifeController extends Controller
         $file = $request->file('csv_file');
         $path = $file->getRealPath();
         
-        // Read file content with proper encoding handling
-        $content = file_get_contents($path);
-        
-        // Detect encoding (use valid encoding names)
-        $encodings = ['UTF-8', 'ISO-8859-1', 'ASCII'];
-        $encoding = mb_detect_encoding($content, $encodings, true);
-        
-        // Convert to UTF-8 if not already
-        if ($encoding && $encoding !== 'UTF-8') {
-            $content = mb_convert_encoding($content, 'UTF-8', $encoding);
-        } else if (!$encoding) {
-            // If encoding detection failed, try to convert from common Arabic encodings
-            // Try CP1256 (Windows-1256) first, then ISO-8859-6
-            try {
-                $content = mb_convert_encoding($content, 'UTF-8', 'CP1256');
-            } catch (\Exception $e) {
-                try {
-                    $content = mb_convert_encoding($content, 'UTF-8', 'ISO-8859-6');
-                } catch (\Exception $e2) {
-                    // If all else fails, assume UTF-8
-                    $content = mb_convert_encoding($content, 'UTF-8', 'UTF-8');
-                }
-            }
-        }
+        $data = array_map('str_getcsv', file($path));
         
         // Remove BOM if present
-        $content = preg_replace('/^\xEF\xBB\xBF/', '', $content);
-        
-        // Convert content to array of lines
-        $lines = explode("\n", $content);
-        
-        // Parse CSV lines with proper delimiter detection
-        $data = [];
-        foreach ($lines as $line) {
-            if (trim($line) !== '') {
-                // Try to detect delimiter (comma, semicolon, or tab)
-                $delimiter = ',';
-                if (strpos($line, ';') !== false && substr_count($line, ';') > substr_count($line, ',')) {
-                    $delimiter = ';';
-                } elseif (strpos($line, "\t") !== false) {
-                    $delimiter = "\t";
-                }
-                
-                // Parse CSV line with detected delimiter
-                $parsed = str_getcsv($line, $delimiter);
-                
-                // Clean each cell
-                $parsed = array_map(function($cell) {
-                    $cell = trim($cell);
-                    // Remove any remaining BOM or special characters
-                    $cell = preg_replace('/\x{EF}\x{BB}\x{BF}/u', '', $cell);
-                    // Ensure UTF-8 encoding
-                    if (!mb_check_encoding($cell, 'UTF-8')) {
-                        // Try to convert from common Arabic encodings
-                        try {
-                            $cell = mb_convert_encoding($cell, 'UTF-8', 'CP1256');
-                        } catch (\Exception $e) {
-                            try {
-                                $cell = mb_convert_encoding($cell, 'UTF-8', 'ISO-8859-6');
-                            } catch (\Exception $e2) {
-                                // If conversion fails, keep as is
-                            }
-                        }
-                    }
-                    return $cell;
-                }, $parsed);
-                
-                $data[] = $parsed;
-            }
+        if (!empty($data[0][0])) {
+            $data[0][0] = preg_replace('/\x{EF}\x{BB}\x{BF}/u', '', $data[0][0]);
         }
         
         // Remove header row
@@ -441,7 +334,6 @@ class KnifeController extends Controller
         // Find column indices by header name (to support flexible column order)
         $headerMap = [];
         foreach ($header as $idx => $col) {
-            // Clean and normalize the column name (already cleaned in parsing)
             $col = trim($col);
             $headerMap[$col] = $idx;
         }
@@ -459,13 +351,9 @@ class KnifeController extends Controller
             // Helper function to get value by header name or index
             $getValue = function($key, $defaultIndex = null) use ($row, $headerMap) {
                 if (isset($headerMap[$key])) {
-                    $value = isset($row[$headerMap[$key]]) ? trim($row[$headerMap[$key]]) : null;
-                    return $value;
+                    return isset($row[$headerMap[$key]]) ? trim($row[$headerMap[$key]]) : null;
                 }
-                if ($defaultIndex !== null && isset($row[$defaultIndex])) {
-                    return trim($row[$defaultIndex]);
-                }
-                return null;
+                return $defaultIndex !== null && isset($row[$defaultIndex]) ? trim($row[$defaultIndex]) : null;
             };
 
             // Map CSV columns to database fields (without flap_size - it will be calculated)
@@ -536,23 +424,5 @@ class KnifeController extends Controller
         return redirect()->route('knives.index')
             ->with('success', $message)
             ->with('import_errors', $errors);
-    }
-
-    /**
-     * Delete all knives.
-     */
-    public function deleteAll(Request $request)
-    {
-        $count = Knife::count();
-        
-        if ($count === 0) {
-            return redirect()->route('knives.index')
-                ->with('error', 'لا توجد سكاكين للحذف');
-        }
-
-        Knife::truncate();
-
-        return redirect()->route('knives.index')
-            ->with('success', "تم حذف جميع السكاكين بنجاح ({$count} سكينة)");
     }
 }
