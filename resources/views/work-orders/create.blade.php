@@ -413,14 +413,13 @@
                         <label class="form-label required">عدد الألوان</label>
                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; flex-wrap: wrap;">
                             @for($i = 0; $i <= 6; $i++)
-                            <label style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; cursor: pointer; padding: 1rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; min-width: 60px; text-align: center; {{ old('number_of_colors', 4) == $i ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                            <label class="number-of-colors-card" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; cursor: pointer; padding: 1rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; min-width: 60px; text-align: center;">
                                 <input type="radio" 
                                        name="number_of_colors" 
                                        value="{{ $i }}" 
                                        id="number_of_colors_{{ $i }}"
                                        {{ old('number_of_colors', 4) == $i ? 'checked' : '' }}
                                        required
-                                       onchange="updateNumberOfColorsStyle()"
                                        style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
                                 <span style="font-size: 1rem; font-weight: 600; color: #111827;">{{ $i }}</span>
                             </label>
@@ -436,13 +435,12 @@
                     <label class="form-label">عدد الصفوف</label>
                     <div style="display: flex; gap: 0.75rem; margin-top: 0.5rem; flex-wrap: wrap;">
                         @for($i = 1; $i <= 15; $i++)
-                        <label style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; cursor: pointer; padding: 0.875rem 1.25rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; min-width: 50px; text-align: center; {{ old('rows_count', 1) == $i ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                        <label class="rows-count-card" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; cursor: pointer; padding: 0.875rem 1.25rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; min-width: 50px; text-align: center;">
                             <input type="radio" 
                                    name="rows_count" 
                                    value="{{ $i }}" 
                                    id="rows_count_{{ $i }}"
                                    {{ old('rows_count', 1) == $i ? 'checked' : '' }}
-                                   onchange="updateRowsCountStyle(); calculatePaperWidth();"
                                    style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
                             <span style="font-size: 0.9375rem; font-weight: 600; color: #111827;">{{ $i }}</span>
                         </label>
@@ -480,8 +478,7 @@
                                step="0.01"
                                min="0"
                                class="form-input"
-                               placeholder="0.00"
-                               oninput="calculatePaperWidth()">
+                               placeholder="0.00">
                         @error('width')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
@@ -536,8 +533,6 @@
                                step="1"
                                class="form-input"
                                placeholder="أدخل عدد الجاب"
-                               readonly
-                               style="background-color: #f3f4f6; cursor: not-allowed;"
                                oninput="calculateLinearMeter()">
                         @error('gap_count')
                             <p class="error-message">{{ $message }}</p>
@@ -575,7 +570,7 @@
                            style="background-color: #f3f4f6; cursor: not-allowed;"
                            placeholder="سيتم الحساب تلقائياً">
                     <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
-                        يتم الحساب تلقائياً: (عدد الجاب × 1000 × (الطول + الزيادة)) ÷ 100 ÷ عرض الورق
+                        يتم الحساب تلقائياً: (الكمية × 1000 × (الطول + الجاب)) ÷ (100 × عدد الصفوف)
                     </small>
                     @error('linear_meter')
                         <p class="error-message">{{ $message }}</p>
@@ -1312,18 +1307,42 @@
             // Handle number_of_colors radio buttons
             const numberOfColorsRadios = document.querySelectorAll('input[name="number_of_colors"]');
             numberOfColorsRadios.forEach(radio => {
+                // Handle change event
                 radio.addEventListener('change', function() {
-                    updateNumberOfColorsStyle();
+                    // Use setTimeout to ensure the checked state is updated
+                    setTimeout(() => {
+                        updateNumberOfColorsStyle();
+                    }, 0);
+                });
+                
+                // Handle click event to ensure immediate update
+                radio.addEventListener('click', function(e) {
+                    // Use setTimeout to ensure the checked state is updated
+                    setTimeout(() => {
+                        updateNumberOfColorsStyle();
+                    }, 0);
                 });
                 
                 // Also listen to click on the label
                 const label = radio.closest('label');
                 if (label) {
                     label.addEventListener('click', function(e) {
-                        // Prevent double triggering
-                        if (e.target !== radio) {
+                        // If clicking on label (not the radio itself), manually check the radio
+                        if (e.target === label || e.target.tagName === 'SPAN') {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            // Uncheck all other radios first
+                            numberOfColorsRadios.forEach(r => {
+                                if (r !== radio) {
+                                    r.checked = false;
+                                }
+                            });
                             radio.checked = true;
+                            // Update style immediately
                             updateNumberOfColorsStyle();
+                            // Trigger change event manually
+                            const changeEvent = new Event('change', { bubbles: true });
+                            radio.dispatchEvent(changeEvent);
                         }
                     });
                 }
@@ -1335,20 +1354,47 @@
             // Handle rows_count radio buttons
             const rowsCountRadios = document.querySelectorAll('input[name="rows_count"]');
             rowsCountRadios.forEach(radio => {
-                radio.addEventListener('change', function() {
+                // Function to handle calculations
+                const handleRowsCountChange = function() {
                     updateRowsCountStyle();
+                    // Calculate immediately without setTimeout for better responsiveness
                     calculatePaperWidth();
+                    calculateLinearMeter();
+                };
+                
+                // Handle change event
+                radio.addEventListener('change', function() {
+                    handleRowsCountChange();
+                });
+                
+                // Handle click event to ensure immediate update
+                radio.addEventListener('click', function(e) {
+                    // Small delay to ensure checked state is updated
+                    setTimeout(() => {
+                        handleRowsCountChange();
+                    }, 10);
                 });
                 
                 // Also listen to click on the label
                 const label = radio.closest('label');
                 if (label) {
                     label.addEventListener('click', function(e) {
-                        // Prevent double triggering
-                        if (e.target !== radio) {
+                        // If clicking on label (not the radio itself), manually check the radio
+                        if (e.target === label || e.target.tagName === 'SPAN') {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            // Uncheck all other radios first
+                            rowsCountRadios.forEach(r => {
+                                if (r !== radio) {
+                                    r.checked = false;
+                                }
+                            });
                             radio.checked = true;
-                            updateRowsCountStyle();
-                            calculatePaperWidth();
+                            // Update immediately
+                            handleRowsCountChange();
+                            // Trigger change event manually
+                            const changeEvent = new Event('change', { bubbles: true });
+                            radio.dispatchEvent(changeEvent);
                         }
                     });
                 }
@@ -1356,6 +1402,10 @@
             
             // Initialize rows_count styling
             updateRowsCountStyle();
+            
+            // Calculate on page load if rows_count is already selected
+            calculatePaperWidth();
+            calculateLinearMeter();
             
             // Handle film_count radio buttons
             const filmCountRadios = document.querySelectorAll('input[name="film_count"]');
@@ -1416,15 +1466,19 @@
 
         // Update number of colors style
         function updateNumberOfColorsStyle() {
-            document.querySelectorAll('input[name="number_of_colors"]').forEach(r => {
+            const radios = document.querySelectorAll('input[name="number_of_colors"]');
+            radios.forEach(r => {
                 const label = r.closest('label');
                 if (label) {
+                    // Remove all inline styles first to ensure clean state
                     if (r.checked) {
                         label.style.borderColor = '#2563eb';
                         label.style.backgroundColor = '#eff6ff';
+                        label.style.borderWidth = '2px';
                     } else {
                         label.style.borderColor = '#d1d5db';
                         label.style.backgroundColor = 'transparent';
+                        label.style.borderWidth = '2px';
                     }
                 }
             });
@@ -1432,15 +1486,19 @@
 
         // Update rows count style
         function updateRowsCountStyle() {
-            document.querySelectorAll('input[name="rows_count"]').forEach(r => {
+            const radios = document.querySelectorAll('input[name="rows_count"]');
+            radios.forEach(r => {
                 const label = r.closest('label');
                 if (label) {
+                    // Remove all inline styles first to ensure clean state
                     if (r.checked) {
                         label.style.borderColor = '#2563eb';
                         label.style.backgroundColor = '#eff6ff';
+                        label.style.borderWidth = '2px';
                     } else {
                         label.style.borderColor = '#d1d5db';
                         label.style.backgroundColor = 'transparent';
+                        label.style.borderWidth = '2px';
                     }
                 }
             });
@@ -1652,19 +1710,18 @@
             const widthInput = document.getElementById('width');
             const paperWidthInput = document.getElementById('paper_width');
             
+            if (!paperWidthInput) return;
+            
             const rowsCount = rowsCountRadio ? parseFloat(rowsCountRadio.value) || 0 : 0;
             const width = parseFloat(widthInput?.value) || 0;
             
-            // Formula: (العرض × عدد الصفوف) + (عدد الصفوف - 1) + 0.3 + 1.2
+            // Formula: (العرض × عدد الصفوف) + ((عدد الصفوف - 1) × 0.3) + 1.2
             if (rowsCount > 0 && width > 0) {
                 const paperWidth = (width * rowsCount) + (((rowsCount - 1) * 0.3) + 1.2);
-                if (paperWidthInput) {
-                    paperWidthInput.value = paperWidth.toFixed(2);
-                }
+                paperWidthInput.value = paperWidth.toFixed(2);
             } else {
-                if (paperWidthInput) {
-                    paperWidthInput.value = '';
-                }
+                // Clear if either value is missing
+                paperWidthInput.value = '';
             }
             
             // Update sidebar calculations
@@ -1675,22 +1732,29 @@
 
         // Calculate linear meter automatically
         function calculateLinearMeter() {
-            const gapCountInput = document.getElementById('gap_count');
+            const quantityInput = document.getElementById('quantity');
             const lengthInput = document.getElementById('length');
-            const increaseInput = document.getElementById('increase');
-            const paperWidthInput = document.getElementById('paper_width');
+            const gapCountInput = document.getElementById('gap_count');
+            const rowsCountRadio = document.querySelector('input[name="rows_count"]:checked');
             const linearMeterInput = document.getElementById('linear_meter');
             
-            const gapCount = parseFloat(gapCountInput?.value) || 0;
+            const quantity = parseFloat(quantityInput?.value) || 0;
             const length = parseFloat(lengthInput?.value) || 0;
-            const increase = parseFloat(increaseInput?.value) || 0;
-            const paperWidth = parseFloat(paperWidthInput?.value) || 0;
+            const gapCount = parseFloat(gapCountInput?.value) || 0;
+            const rowsCount = rowsCountRadio ? parseFloat(rowsCountRadio.value) || 0 : 0;
             
-            // Formula: (عدد الجاب × 1000 × (الطول + الزيادة)) ÷ 100 ÷ عرض الورق
-            if (gapCount > 0 && length > 0 && paperWidth > 0) {
-                const linearMeter = (gapCount * 1000 * (length + increase)) / 100 / paperWidth;
-                if (linearMeterInput) {
-                    linearMeterInput.value = linearMeter.toFixed(2);
+            // Formula: (الكمية × 1000 × (الطول + الجاب)) ÷ (100 × عدد_الصفوف)
+            if (rowsCount > 0) {
+                if (quantity > 0 && length > 0) {
+                    const linearMeter = (quantity * 1000 * (length + gapCount)) / (100 * rowsCount);
+                    if (linearMeterInput) {
+                        linearMeterInput.value = linearMeter.toFixed(2);
+                    }
+                } else {
+                    // If required fields are not set, clear the linear meter
+                    if (linearMeterInput) {
+                        linearMeterInput.value = '';
+                    }
                 }
             } else {
                 if (linearMeterInput) {
@@ -1788,15 +1852,15 @@
             }
             
             // Update linear meter
+            const quantityForLinearMeter = parseFloat(document.getElementById('quantity')?.value) || 0;
             const gapCount = parseFloat(document.getElementById('gap_count')?.value) || 0;
-            const increase = parseFloat(document.getElementById('increase')?.value) || 0;
-            const paperWidth = parseFloat(document.getElementById('paper_width')?.value) || 0;
+            // rowsCountRadio and rowsCount are already defined above
             
             const linearMeterValue = document.getElementById('calc_linear_meter_value');
             if (linearMeterValue) {
-                if (gapCount > 0 && length > 0 && paperWidth > 0) {
-                    // Formula: (عدد الجاب × 1000 × (الطول + الزيادة)) ÷ 100 ÷ عرض الورق
-                    const linearMeter = (gapCount * 1000 * (length + increase)) / 100 / paperWidth;
+                if (quantityForLinearMeter > 0 && length > 0 && rowsCount > 0) {
+                    // Formula: (الكمية × 1000 × (الطول + الجاب)) ÷ (100 × عدد_الصفوف)
+                    const linearMeter = (quantityForLinearMeter * 1000 * (length + gapCount)) / (100 * rowsCount);
                     linearMeterValue.textContent = linearMeter.toFixed(2);
                     linearMeterValue.classList.remove('empty');
                 } else {
@@ -1867,7 +1931,8 @@
             });
             
             // Add event listeners for linear meter calculation
-            const linearMeterInputs = ['gap_count', 'increase', 'length', 'paper_width'];
+            // Note: rows_count is radio buttons, handled separately above
+            const linearMeterInputs = ['quantity', 'gap_count', 'length'];
             linearMeterInputs.forEach(inputId => {
                 const input = document.getElementById(inputId);
                 if (input) {
