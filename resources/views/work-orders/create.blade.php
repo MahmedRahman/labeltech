@@ -339,19 +339,8 @@
                         @enderror
                     </div>
 
-                    <!-- Order Number -->
-                    <div class="form-group">
-                        <label for="order_number" class="form-label">رقم أمر الشغل</label>
-                        <input type="text" 
-                               name="order_number" 
-                               id="order_number" 
-                               value="{{ old('order_number') }}" 
-                               class="form-input"
-                               placeholder="سيتم توليده تلقائياً إذا تركت فارغاً">
-                        @error('order_number')
-                            <p class="error-message">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    <!-- Order Number (hidden, auto-generated) -->
+                    <input type="hidden" name="order_number" value="">
 
                     <!-- Job Name -->
                     <div class="form-group">
@@ -682,6 +671,78 @@
                     </small>
                 </div>
 
+                <!-- Total Prices Sum (calculated automatically) -->
+                <div class="form-group">
+                    <label for="total_prices_sum" class="form-label">إجمالي المبلغ</label>
+                    <input type="number" 
+                           name="total_prices_sum" 
+                           id="total_prices_sum" 
+                           value="{{ old('total_prices_sum') }}" 
+                           step="0.01"
+                           min="0"
+                           class="form-input"
+                           readonly
+                           style="background-color: #f3f4f6; cursor: not-allowed;"
+                           placeholder="سيتم الحساب تلقائياً">
+                    <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
+                        يتم الحساب تلقائياً: سعر المتر الخام + سعر متر التصنيع + سعر الإضافي + سعر البصمة + سعر التكسير
+                    </small>
+                </div>
+
+                <!-- Total Amount After Square Meter (calculated automatically) -->
+                <div class="form-group">
+                    <label for="total_amount" class="form-label">إجمالي المبلغ</label>
+                    <input type="number" 
+                           name="total_amount" 
+                           id="total_amount" 
+                           value="{{ old('total_amount') }}" 
+                           step="0.01"
+                           min="0"
+                           class="form-input"
+                           readonly
+                           style="background-color: #f3f4f6; cursor: not-allowed;"
+                           placeholder="سيتم الحساب تلقائياً">
+                    <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
+                        يتم الحساب تلقائياً: إجمالي المبلغ × المتر المربع
+                    </small>
+                </div>
+
+                <!-- Total Order (calculated automatically) -->
+                <div class="form-group">
+                    <label for="total_order" class="form-label">إجمالي الطلب</label>
+                    <input type="number" 
+                           name="total_order" 
+                           id="total_order" 
+                           value="{{ old('total_order') }}" 
+                           step="0.01"
+                           min="0"
+                           class="form-input"
+                           readonly
+                           style="background-color: #f3f4f6; cursor: not-allowed;"
+                           placeholder="سيتم الحساب تلقائياً">
+                    <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
+                        يتم الحساب تلقائياً: إجمالي المبلغ + إجمالي التجهيزات
+                    </small>
+                </div>
+
+                <!-- Price Per Thousand (calculated automatically) -->
+                <div class="form-group">
+                    <label for="price_per_thousand" class="form-label">سعر الف</label>
+                    <input type="number" 
+                           name="price_per_thousand" 
+                           id="price_per_thousand" 
+                           value="{{ old('price_per_thousand') }}" 
+                           step="0.01"
+                           min="0"
+                           class="form-input"
+                           readonly
+                           style="background-color: #f3f4f6; cursor: not-allowed;"
+                           placeholder="سيتم الحساب تلقائياً">
+                    <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
+                        يتم الحساب تلقائياً: إجمالي الطلب ÷ 1000
+                    </small>
+                </div>
+
                     <!-- Additions -->
                     <div class="form-group">
                         <label class="form-label">الإضافات المطلوبة</label>
@@ -972,6 +1033,24 @@
                         @error('film_price')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
+                    </div>
+
+                    <!-- Total Preparations (calculated automatically) -->
+                    <div class="form-group">
+                        <label for="total_preparations" class="form-label">إجمالي التجهيزات</label>
+                        <input type="number" 
+                               name="total_preparations" 
+                               id="total_preparations" 
+                               value="{{ old('total_preparations') }}" 
+                               step="0.01"
+                               min="0"
+                               class="form-input"
+                               readonly
+                               style="background-color: #f3f4f6; cursor: not-allowed;"
+                               placeholder="سيتم الحساب تلقائياً">
+                        <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
+                            يتم الحساب تلقائياً: (سعر الفيلم الواحد × العدد) + سعر السكينة
+                        </small>
                     </div>
 
                     <!-- Sales Percentage -->
@@ -1777,6 +1856,9 @@
                     priceInput.removeAttribute('required');
                 }
             }
+            
+            // Recalculate total amount
+            calculateTotalAmount();
         }
 
         // Toggle fingerprint price field
@@ -1801,6 +1883,9 @@
                     priceInput.removeAttribute('required');
                 }
             }
+            
+            // Recalculate total amount
+            calculateTotalAmount();
         }
 
         // Toggle knife price field
@@ -1825,6 +1910,9 @@
                     priceInput.removeAttribute('required');
                 }
             }
+            
+            // Recalculate total preparations
+            calculateTotalPreparations();
         }
 
         // Toggle external breaking price field
@@ -1850,6 +1938,9 @@
                     priceInput.removeAttribute('required');
                 }
             }
+            
+            // Recalculate total amount
+            calculateTotalAmount();
         }
 
         // Calculate paper width automatically
@@ -2004,6 +2095,130 @@
             } else {
                 squareMeterInput.value = '';
             }
+            
+            // Recalculate total amount when square meter changes
+            calculateTotalAmount();
+        }
+
+        // Calculate total amount automatically
+        function calculateTotalAmount() {
+            const totalPricesSumInput = document.getElementById('total_prices_sum');
+            const totalAmountInput = document.getElementById('total_amount');
+            
+            // Get all price values
+            const materialPricePerMeter = parseFloat(document.getElementById('material_price_per_meter')?.value) || 0;
+            const manufacturingPricePerMeter = parseFloat(document.getElementById('manufacturing_price_per_meter')?.value) || 0;
+            
+            // Check if addition exists and get price
+            const additionsRadio = document.querySelector('input[name="additions"]:checked');
+            const additionExists = additionsRadio && additionsRadio.value !== 'لا يوجد';
+            const additionPrice = additionExists ? (parseFloat(document.getElementById('addition_price')?.value) || 0) : 0;
+            
+            // Check if fingerprint exists and get price
+            const fingerprintYes = document.getElementById('fingerprint_yes');
+            const fingerprintPrice = (fingerprintYes && fingerprintYes.checked) ? (parseFloat(document.getElementById('fingerprint_price')?.value) || 0) : 0;
+            
+            // Check if external breaking exists and get price
+            const externalBreakingYes = document.getElementById('external_breaking_yes');
+            const externalBreakingPrice = (externalBreakingYes && externalBreakingYes.checked) ? (parseFloat(document.getElementById('external_breaking_price')?.value) || 0) : 0;
+            
+            // Calculate sum of all prices
+            const sumOfPrices = materialPricePerMeter + manufacturingPricePerMeter + additionPrice + fingerprintPrice + externalBreakingPrice;
+            
+            // Update total prices sum field
+            if (totalPricesSumInput) {
+                if (sumOfPrices > 0) {
+                    totalPricesSumInput.value = parseFloat(sumOfPrices.toFixed(2));
+                } else {
+                    totalPricesSumInput.value = '';
+                }
+            }
+            
+            // Get square meter
+            const squareMeter = parseFloat(document.getElementById('square_meter')?.value) || 0;
+            
+            // Multiply by square meter and update total amount field
+            if (totalAmountInput) {
+                if (sumOfPrices > 0 && squareMeter > 0) {
+                    const totalAmount = sumOfPrices * squareMeter;
+                    totalAmountInput.value = parseFloat(totalAmount.toFixed(2));
+                } else {
+                    totalAmountInput.value = '';
+                }
+            }
+            
+            // Recalculate total order when total amount changes
+            calculateTotalOrder();
+        }
+
+        // Calculate total preparations automatically
+        function calculateTotalPreparations() {
+            const totalPreparationsInput = document.getElementById('total_preparations');
+            if (!totalPreparationsInput) return;
+            
+            // Get film price
+            const filmPrice = parseFloat(document.getElementById('film_price')?.value) || 0;
+            
+            // Get film count (from radio buttons)
+            const filmCountRadio = document.querySelector('input[name="film_count"]:checked');
+            const filmCount = filmCountRadio ? parseFloat(filmCountRadio.value) || 0 : 0;
+            
+            // Get knife price (only if knife exists)
+            const knifeYes = document.getElementById('knife_exists_yes');
+            const knifePrice = (knifeYes && knifeYes.checked) ? (parseFloat(document.getElementById('knife_price')?.value) || 0) : 0;
+            
+            // Calculate: (سعر الفيلم الواحد × العدد) + سعر السكينة
+            const totalPreparations = (filmPrice * filmCount) + knifePrice;
+            
+            if (totalPreparations > 0) {
+                totalPreparationsInput.value = parseFloat(totalPreparations.toFixed(2));
+            } else {
+                totalPreparationsInput.value = '';
+            }
+            
+            // Recalculate total order when preparations change
+            calculateTotalOrder();
+        }
+
+        // Calculate total order automatically
+        function calculateTotalOrder() {
+            const totalOrderInput = document.getElementById('total_order');
+            if (!totalOrderInput) return;
+            
+            // Get total amount
+            const totalAmount = parseFloat(document.getElementById('total_amount')?.value) || 0;
+            
+            // Get total preparations
+            const totalPreparations = parseFloat(document.getElementById('total_preparations')?.value) || 0;
+            
+            // Calculate: إجمالي المبلغ + إجمالي التجهيزات
+            const totalOrder = totalAmount + totalPreparations;
+            
+            if (totalOrder > 0) {
+                totalOrderInput.value = parseFloat(totalOrder.toFixed(2));
+            } else {
+                totalOrderInput.value = '';
+            }
+            
+            // Recalculate price per thousand when total order changes
+            calculatePricePerThousand();
+        }
+
+        // Calculate price per thousand automatically
+        function calculatePricePerThousand() {
+            const pricePerThousandInput = document.getElementById('price_per_thousand');
+            if (!pricePerThousandInput) return;
+            
+            // Get total order
+            const totalOrder = parseFloat(document.getElementById('total_order')?.value) || 0;
+            
+            // Calculate: إجمالي الطلب ÷ 1000
+            if (totalOrder > 0) {
+                const pricePerThousand = totalOrder / 1000;
+                pricePerThousandInput.value = parseFloat(pricePerThousand.toFixed(2));
+            } else {
+                pricePerThousandInput.value = '';
+            }
         }
 
         // Update sidebar calculations
@@ -2136,6 +2351,9 @@
                         materialPriceInput.value = '';
                     }
                 }
+                
+                // Recalculate total amount
+                calculateTotalAmount();
             }
         }
         
@@ -2149,11 +2367,137 @@
                 // Mark as manually changed when user types
                 materialPriceInput.addEventListener('input', function() {
                     this.setAttribute('data-manually-changed', 'true');
+                    calculateTotalAmount();
+                });
+                materialPriceInput.addEventListener('change', function() {
+                    calculateTotalAmount();
                 });
             }
             
             // Initialize material price on page load if material is already selected
             updateMaterialPrice();
+            
+            // Add event listeners for total amount calculation
+            // Manufacturing price per meter
+            const manufacturingPriceInput = document.getElementById('manufacturing_price_per_meter');
+            if (manufacturingPriceInput) {
+                manufacturingPriceInput.addEventListener('input', calculateTotalAmount);
+                manufacturingPriceInput.addEventListener('change', calculateTotalAmount);
+            }
+            
+            // Addition price
+            const additionPriceInput = document.getElementById('addition_price');
+            if (additionPriceInput) {
+                additionPriceInput.addEventListener('input', calculateTotalAmount);
+                additionPriceInput.addEventListener('change', calculateTotalAmount);
+            }
+            
+            // Fingerprint price
+            const fingerprintPriceInput = document.getElementById('fingerprint_price');
+            if (fingerprintPriceInput) {
+                fingerprintPriceInput.addEventListener('input', calculateTotalAmount);
+                fingerprintPriceInput.addEventListener('change', calculateTotalAmount);
+            }
+            
+            // External breaking price
+            const externalBreakingPriceInput = document.getElementById('external_breaking_price');
+            if (externalBreakingPriceInput) {
+                externalBreakingPriceInput.addEventListener('input', calculateTotalAmount);
+                externalBreakingPriceInput.addEventListener('change', calculateTotalAmount);
+            }
+            
+            // Square meter (already calculated, but we need to recalculate total when it changes)
+            const squareMeterInput = document.getElementById('square_meter');
+            if (squareMeterInput) {
+                squareMeterInput.addEventListener('input', calculateTotalAmount);
+                squareMeterInput.addEventListener('change', calculateTotalAmount);
+            }
+            
+            // Additions radio buttons
+            const additionsRadios = document.querySelectorAll('input[name="additions"]');
+            additionsRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    setTimeout(calculateTotalAmount, 100); // Small delay to ensure UI updates
+                });
+            });
+            
+            // Fingerprint radio buttons
+            const fingerprintRadios = document.querySelectorAll('input[name="fingerprint"]');
+            fingerprintRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    setTimeout(calculateTotalAmount, 100); // Small delay to ensure UI updates
+                });
+            });
+            
+            // External breaking radio buttons
+            const externalBreakingRadios = document.querySelectorAll('input[name="external_breaking"]');
+            externalBreakingRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    setTimeout(calculateTotalAmount, 100); // Small delay to ensure UI updates
+                });
+            });
+            
+            // Film price
+            const filmPriceInput = document.getElementById('film_price');
+            if (filmPriceInput) {
+                filmPriceInput.addEventListener('input', calculateTotalPreparations);
+                filmPriceInput.addEventListener('change', calculateTotalPreparations);
+            }
+            
+            // Film count radio buttons
+            const filmCountRadios = document.querySelectorAll('input[name="film_count"]');
+            filmCountRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    calculateTotalPreparations();
+                });
+            });
+            
+            // Knife price
+            const knifePriceInput = document.getElementById('knife_price');
+            if (knifePriceInput) {
+                knifePriceInput.addEventListener('input', calculateTotalPreparations);
+                knifePriceInput.addEventListener('change', calculateTotalPreparations);
+            }
+            
+            // Knife exists radio buttons
+            const knifeExistsRadios = document.querySelectorAll('input[name="knife_exists"]');
+            knifeExistsRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    setTimeout(calculateTotalPreparations, 100); // Small delay to ensure UI updates
+                });
+            });
+            
+            // Total amount and total preparations (for total order calculation)
+            const totalAmountInput = document.getElementById('total_amount');
+            if (totalAmountInput) {
+                totalAmountInput.addEventListener('input', calculateTotalOrder);
+                totalAmountInput.addEventListener('change', calculateTotalOrder);
+            }
+            
+            const totalPreparationsInput = document.getElementById('total_preparations');
+            if (totalPreparationsInput) {
+                totalPreparationsInput.addEventListener('input', calculateTotalOrder);
+                totalPreparationsInput.addEventListener('change', calculateTotalOrder);
+            }
+            
+            // Total order (for price per thousand calculation)
+            const totalOrderInput = document.getElementById('total_order');
+            if (totalOrderInput) {
+                totalOrderInput.addEventListener('input', calculatePricePerThousand);
+                totalOrderInput.addEventListener('change', calculatePricePerThousand);
+            }
+            
+            // Initialize total amount calculation on page load
+            calculateTotalAmount();
+            
+            // Initialize total preparations calculation on page load
+            calculateTotalPreparations();
+            
+            // Initialize total order calculation on page load
+            calculateTotalOrder();
+            
+            // Initialize price per thousand calculation on page load
+            calculatePricePerThousand();
             
             // Add event listeners to update sidebar on input changes
             // Note: rows_count is now radio buttons, handled separately above

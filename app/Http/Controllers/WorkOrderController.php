@@ -92,7 +92,7 @@ class WorkOrderController extends Controller
     {
         $validated = $request->validate([
             'client_id' => 'required|exists:clients,id',
-            'order_number' => 'nullable|string|max:255|unique:work_orders,order_number',
+            // order_number is auto-generated, so we don't validate it from request
             'job_name' => 'nullable|string|max:255',
             'number_of_colors' => 'required|integer|min:0|max:6',
             'rows_count' => 'nullable|integer|min:1',
@@ -167,10 +167,12 @@ class WorkOrderController extends Controller
             'status' => 'nullable|in:pending,in_progress,completed,cancelled',
         ]);
 
-        // Generate order number if not provided
-        if (empty($validated['order_number'])) {
-            $validated['order_number'] = 'WO-' . str_pad(WorkOrder::count() + 1, 6, '0', STR_PAD_LEFT);
-        }
+        // Generate order number automatically
+        do {
+            $orderNumber = 'WO-' . str_pad(WorkOrder::count() + 1, 6, '0', STR_PAD_LEFT);
+        } while (WorkOrder::where('order_number', $orderNumber)->exists());
+        
+        $validated['order_number'] = $orderNumber;
 
         // Get the current authenticated user (admin or employee)
         if (auth('employee')->check()) {
