@@ -3,6 +3,10 @@
         $title = 'إضافة أمر شغل جديد';
     @endphp
 
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+
     <style>
         .page-wrapper {
             display: flex;
@@ -13,78 +17,147 @@
             padding: 0 1rem;
         }
 
-        .calculations-sidebar {
-            position: sticky;
-            top: 2rem;
-            width: 300px;
-            background-color: white;
-            border-radius: 0.5rem;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            height: fit-content;
-            max-height: calc(100vh - 4rem);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
 
-        .calculations-sidebar h3 {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: #111827;
-            margin: 0;
-            padding: 1.5rem 1.5rem 1rem 1.5rem;
-            border-bottom: 2px solid #2563eb;
-            background-color: white;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        .calculations-content {
-            padding: 0 1.5rem 1.5rem 1.5rem;
-            overflow-y: auto;
-            flex: 1;
-        }
-
-        .calculation-item {
-            margin-bottom: 1.25rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .calculation-item:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-
-        .calculation-label {
-            font-size: 0.75rem;
-            font-weight: 500;
-            color: #6b7280;
+        /* Select2 styling for client and material fields */
+        #client_id + .select2-container,
+        #material + .select2-container {
+            width: 100% !important;
+            direction: rtl;
             margin-bottom: 0.5rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
-
-        .calculation-value {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #111827;
-            direction: ltr;
-            text-align: right;
+        
+        #client_id + .select2-container .select2-selection--single,
+        #material + .select2-container .select2-selection--single {
+            height: 56px !important;
+            border: 2px solid #d1d5db !important;
+            border-radius: 0.5rem !important;
+            padding: 0 !important;
+            font-size: 1rem !important;
+            line-height: 1.5 !important;
+            direction: rtl !important;
+            background-color: white !important;
+            transition: all 0.2s ease !important;
         }
-
-        .calculation-value.empty {
-            color: #9ca3af;
-            font-weight: 400;
+        
+        #client_id + .select2-container .select2-selection--single:hover,
+        #material + .select2-container .select2-selection--single:hover {
+            border-color: #9ca3af !important;
         }
-
-        .calculation-unit {
-            font-size: 0.875rem;
-            color: #6b7280;
-            margin-right: 0.25rem;
+        
+        #client_id + .select2-container.select2-container--focus .select2-selection--single,
+        #material + .select2-container.select2-container--focus .select2-selection--single {
+            border-color: #2563eb !important;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+            outline: none !important;
+        }
+        
+        #client_id + .select2-container .select2-selection--single .select2-selection__rendered,
+        #material + .select2-container .select2-selection--single .select2-selection__rendered {
+            line-height: 56px !important;
+            padding-right: 1rem !important;
+            padding-left: 3rem !important;
+            font-size: 1rem !important;
+            font-weight: 500 !important;
+            text-align: right !important;
+            color: #111827 !important;
+        }
+        
+        #client_id + .select2-container .select2-selection--single .select2-selection__placeholder,
+        #material + .select2-container .select2-selection--single .select2-selection__placeholder {
+            color: #9ca3af !important;
+            font-weight: 400 !important;
+        }
+        
+        #client_id + .select2-container .select2-selection--single .select2-selection__arrow,
+        #material + .select2-container .select2-selection--single .select2-selection__arrow {
+            height: 54px !important;
+            right: auto !important;
+            left: 12px !important;
+            width: 20px !important;
+        }
+        
+        #client_id + .select2-container .select2-selection--single .select2-selection__arrow b,
+        #material + .select2-container .select2-selection--single .select2-selection__arrow b {
+            border-color: #6b7280 transparent transparent transparent !important;
+            border-width: 6px 6px 0 6px !important;
+            margin-top: -3px !important;
+        }
+        
+        #client_id + .select2-container.select2-container--open .select2-selection--single .select2-selection__arrow b,
+        #material + .select2-container.select2-container--open .select2-selection--single .select2-selection__arrow b {
+            border-color: transparent transparent #6b7280 transparent !important;
+            border-width: 0 6px 6px 6px !important;
+            margin-top: -9px !important;
+        }
+        
+        .select2-dropdown {
+            direction: rtl !important;
+            border: 1px solid #d1d5db !important;
+            border-radius: 0.5rem !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+            margin-top: 0.25rem !important;
+        }
+        
+        .select2-search--dropdown {
+            padding: 0.75rem !important;
+            border-bottom: 1px solid #e5e7eb !important;
+        }
+        
+        .select2-search--dropdown .select2-search__field {
+            direction: rtl !important;
+            padding: 0.625rem 0.875rem !important;
+            font-size: 1rem !important;
+            border: 2px solid #d1d5db !important;
+            border-radius: 0.375rem !important;
+            width: 100% !important;
+            outline: none !important;
+            font-family: inherit !important;
+        }
+        
+        .select2-search--dropdown .select2-search__field:focus {
+            border-color: #2563eb !important;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+        }
+        
+        .select2-search--dropdown .select2-search__field::placeholder {
+            color: #9ca3af !important;
+            font-size: 0.875rem !important;
+        }
+        
+        .select2-results__options {
+            max-height: 300px !important;
+            overflow-y: auto !important;
+        }
+        
+        .select2-results__option {
+            padding: 0.875rem 1rem !important;
+            font-size: 1rem !important;
+            direction: rtl !important;
+            text-align: right !important;
+            transition: all 0.15s ease !important;
+        }
+        
+        .select2-results__option--highlighted {
+            background-color: #eff6ff !important;
+            color: #2563eb !important;
+        }
+        
+        .select2-results__option[aria-selected="true"] {
+            background-color: #dbeafe !important;
+            color: #1e40af !important;
+            font-weight: 600 !important;
+        }
+        
+        .select2-results__option--highlighted[aria-selected="true"] {
+            background-color: #2563eb !important;
+            color: white !important;
+        }
+        
+        .select2-results__message {
+            padding: 0.875rem 1rem !important;
+            font-size: 0.875rem !important;
+            color: #6b7280 !important;
+            text-align: right !important;
         }
 
         .form-container {
@@ -150,6 +223,13 @@
             outline: none;
             border-color: #2563eb;
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        /* Client select field specific styling */
+        .form-group:has(#client_id) .form-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
         }
         
         .form-textarea {
@@ -227,13 +307,6 @@
             .page-wrapper {
                 flex-direction: column;
             }
-
-            .calculations-sidebar {
-                position: relative;
-                top: 0;
-                width: 100%;
-                max-height: none;
-            }
         }
 
         @media (max-width: 768px) {
@@ -248,107 +321,6 @@
     </style>
 
     <div class="page-wrapper">
-        <!-- Calculations Sidebar -->
-        <div class="calculations-sidebar">
-            <h3>البيانات المحسوبة</h3>
-            
-            <div class="calculations-content">
-                <div class="calculation-item">
-                    <div class="calculation-label">عرض الورق</div>
-                    <div class="calculation-value" id="calc_paper_width">
-                        <span class="calculation-unit">سم</span>
-                        <span id="calc_paper_width_value" class="empty">-</span>
-                    </div>
-                </div>
-
-                <div class="calculation-item">
-                    <div class="calculation-label">المتر الطولي</div>
-                    <div class="calculation-value" id="calc_linear_meter">
-                        <span class="calculation-unit">م</span>
-                        <span id="calc_linear_meter_value" class="empty">-</span>
-                    </div>
-                </div>
-
-                <div class="calculation-item">
-                    <div class="calculation-label">عدد البكر</div>
-                    <div class="calculation-value" id="calc_rolls_count">
-                        <span id="calc_rolls_count_value" class="empty">-</span>
-                    </div>
-                </div>
-
-                <div class="calculation-item">
-                    <div class="calculation-label">الهالك</div>
-                    <div class="calculation-value" id="calc_waste">
-                        <span id="calc_waste_value" class="empty">-</span>
-                    </div>
-                </div>
-
-                <div class="calculation-item">
-                    <div class="calculation-label">نسبة الهالك</div>
-                    <div class="calculation-value" id="calc_waste_percentage">
-                        <span class="calculation-unit">%</span>
-                        <span id="calc_waste_percentage_value" class="empty">-</span>
-                    </div>
-                </div>
-
-                <div class="calculation-item">
-                    <div class="calculation-label">المتر الطولي + الهالك</div>
-                    <div class="calculation-value" id="calc_linear_meter_with_waste">
-                        <span class="calculation-unit">م</span>
-                        <span id="calc_linear_meter_with_waste_value" class="empty">-</span>
-                    </div>
-                </div>
-
-                <div class="calculation-item">
-                    <div class="calculation-label">المتر المربع</div>
-                    <div class="calculation-value" id="calc_square_meter">
-                        <span class="calculation-unit">م²</span>
-                        <span id="calc_square_meter_value" class="empty">-</span>
-                    </div>
-                </div>
-
-                <div class="calculation-item">
-                    <div class="calculation-label">إجمالي المبلغ (الأسعار)</div>
-                    <div class="calculation-value" id="calc_total_prices_sum">
-                        <span class="calculation-unit">ج.م</span>
-                        <span id="calc_total_prices_sum_value" class="empty">-</span>
-                    </div>
-                </div>
-
-                <div class="calculation-item">
-                    <div class="calculation-label">إجمالي المبلغ</div>
-                    <div class="calculation-value" id="calc_total_amount">
-                        <span class="calculation-unit">ج.م</span>
-                        <span id="calc_total_amount_value" class="empty">-</span>
-                    </div>
-                </div>
-
-                <div class="calculation-item">
-                    <div class="calculation-label">إجمالي التجهيزات</div>
-                    <div class="calculation-value" id="calc_total_preparations">
-                        <span class="calculation-unit">ج.م</span>
-                        <span id="calc_total_preparations_value" class="empty">-</span>
-                    </div>
-                </div>
-
-                <div class="calculation-item">
-                    <div class="calculation-label">إجمالي الطلب</div>
-                    <div class="calculation-value" id="calc_total_order">
-                        <span class="calculation-unit">ج.م</span>
-                        <span id="calc_total_order_value" class="empty">-</span>
-                    </div>
-                </div>
-
-                <div class="calculation-item">
-                    <div class="calculation-label">سعر الف</div>
-                    <div class="calculation-value" id="calc_price_per_thousand">
-                        <span class="calculation-unit">ج.م</span>
-                        <span id="calc_price_per_thousand_value" class="empty">-</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <div class="form-container">
         <div class="form-card">
             <div class="form-header">
@@ -375,7 +347,7 @@
                     <!-- Client Selection -->
                     <div class="form-group">
                         <label for="client_id" class="form-label required">العميل</label>
-                        <select name="client_id" id="client_id" required class="form-select">
+                        <select name="client_id" id="client_id" required class="form-select client-select">
                             <option value="">اختر العميل</option>
                             @foreach($clients as $client)
                                 <option value="{{ $client->id }}" {{ old('client_id') == $client->id ? 'selected' : '' }}>
@@ -449,8 +421,7 @@
                         <select name="material" 
                                 id="material" 
                                 required
-                                class="form-select"
-                                onchange="updateMaterialPrice()">
+                                class="form-select client-select">
                             <option value="">اختر الخامة</option>
                             @foreach($materials as $material)
                                 <option value="{{ $material->name }}" 
@@ -1604,8 +1575,6 @@
             // Update linear meter with waste after waste percentage is updated
             calculateLinearMeterWithWaste();
             
-            // Update sidebar calculations
-            updateSidebarCalculations();
         }
 
         // Update rows count style
@@ -1860,16 +1829,11 @@
                 paperWidthInput.value = '';
             }
             
-            // Update sidebar calculations
-            updateSidebarCalculations();
             // Also calculate linear meter
             calculateLinearMeter();
             
             // Update square meter after paper width is calculated
             calculateSquareMeter();
-            
-            // Update sidebar after all calculations
-            updateSidebarCalculations();
         }
 
         // Calculate linear meter automatically
@@ -1911,8 +1875,6 @@
             // Update linear meter with waste after linear meter is calculated
             calculateLinearMeterWithWaste();
             
-            // Update sidebar calculations
-            updateSidebarCalculations();
         }
 
         // Calculate rolls count automatically
@@ -1931,8 +1893,6 @@
                 calculateWaste(0);
             }
             
-            // Update sidebar calculations
-            updateSidebarCalculations();
         }
 
         // Calculate waste automatically
@@ -1954,8 +1914,6 @@
             // Update linear meter with waste after waste is calculated
             calculateLinearMeterWithWaste();
             
-            // Update sidebar calculations
-            updateSidebarCalculations();
         }
 
         // Calculate linear meter with waste automatically
@@ -1982,8 +1940,6 @@
             // Update square meter after linear meter with waste is calculated
             calculateSquareMeter();
             
-            // Update sidebar calculations
-            updateSidebarCalculations();
         }
 
         // Calculate square meter automatically
@@ -2008,8 +1964,6 @@
             // Recalculate total amount when square meter changes
             calculateTotalAmount();
             
-            // Update sidebar calculations
-            updateSidebarCalculations();
         }
 
         // Calculate total amount automatically
@@ -2062,8 +2016,6 @@
             // Recalculate total order when total amount changes
             calculateTotalOrder();
             
-            // Update sidebar calculations
-            updateSidebarCalculations();
         }
 
         // Calculate total preparations automatically
@@ -2094,8 +2046,6 @@
             // Recalculate total order when preparations change
             calculateTotalOrder();
             
-            // Update sidebar calculations
-            updateSidebarCalculations();
         }
 
         // Calculate total order automatically
@@ -2121,8 +2071,6 @@
             // Recalculate price per thousand when total order changes
             calculatePricePerThousand();
             
-            // Update sidebar calculations
-            updateSidebarCalculations();
         }
 
         // Calculate price per thousand automatically
@@ -2148,183 +2096,6 @@
             updateSidebarCalculations();
         }
 
-        // Update sidebar calculations
-        function updateSidebarCalculations() {
-            const rowsCountRadio = document.querySelector('input[name="rows_count"]:checked');
-            const rowsCount = rowsCountRadio ? parseFloat(rowsCountRadio.value) || 0 : 0;
-            const width = parseFloat(document.getElementById('width')?.value) || 0;
-            const length = parseFloat(document.getElementById('length')?.value) || 0;
-            const quantity = parseFloat(document.getElementById('quantity')?.value) || 0;
-            const gapCount = parseFloat(document.getElementById('gap_count')?.value) || 0;
-            
-            // Update paper width
-            const paperWidthValue = document.getElementById('calc_paper_width_value');
-            const paperWidthInput = document.getElementById('paper_width');
-            if (paperWidthValue && paperWidthInput) {
-                const paperWidth = parseFloat(paperWidthInput.value) || 0;
-                if (paperWidth > 0) {
-                    paperWidthValue.textContent = paperWidth.toFixed(2);
-                    paperWidthValue.classList.remove('empty');
-                } else {
-                    paperWidthValue.textContent = '-';
-                    paperWidthValue.classList.add('empty');
-                }
-            }
-            
-            // Update linear meter
-            const linearMeterValue = document.getElementById('calc_linear_meter_value');
-            const linearMeterInput = document.getElementById('linear_meter');
-            if (linearMeterValue && linearMeterInput) {
-                const linearMeter = parseFloat(linearMeterInput.value) || 0;
-                if (linearMeter > 0) {
-                    linearMeterValue.textContent = linearMeter.toFixed(2);
-                    linearMeterValue.classList.remove('empty');
-                } else {
-                    linearMeterValue.textContent = '-';
-                    linearMeterValue.classList.add('empty');
-                }
-            }
-            
-            // Update rolls count
-            const rollsCountValue = document.getElementById('calc_rolls_count_value');
-            const rollsCountInput = document.getElementById('rolls_count');
-            if (rollsCountValue && rollsCountInput) {
-                const rollsCount = parseFloat(rollsCountInput.value) || 0;
-                if (rollsCount > 0) {
-                    rollsCountValue.textContent = rollsCount;
-                    rollsCountValue.classList.remove('empty');
-                } else {
-                    rollsCountValue.textContent = '-';
-                    rollsCountValue.classList.add('empty');
-                }
-            }
-            
-            // Update waste
-            const wasteValue = document.getElementById('calc_waste_value');
-            const wasteInput = document.getElementById('waste');
-            if (wasteValue && wasteInput) {
-                const waste = parseFloat(wasteInput.value) || 0;
-                if (waste > 0) {
-                    wasteValue.textContent = waste;
-                    wasteValue.classList.remove('empty');
-                } else {
-                    wasteValue.textContent = '-';
-                    wasteValue.classList.add('empty');
-                }
-            }
-            
-            // Update waste percentage
-            const wastePercentageValue = document.getElementById('calc_waste_percentage_value');
-            const wastePercentageInput = document.getElementById('waste_percentage');
-            if (wastePercentageValue && wastePercentageInput) {
-                const wastePercentage = parseFloat(wastePercentageInput.value) || 0;
-                if (wastePercentage > 0) {
-                    wastePercentageValue.textContent = wastePercentage.toFixed(2);
-                    wastePercentageValue.classList.remove('empty');
-                } else {
-                    wastePercentageValue.textContent = '-';
-                    wastePercentageValue.classList.add('empty');
-                }
-            }
-            
-            // Update linear meter with waste
-            const linearMeterWithWasteValue = document.getElementById('calc_linear_meter_with_waste_value');
-            const linearMeterWithWasteInput = document.getElementById('linear_meter_with_waste');
-            if (linearMeterWithWasteValue && linearMeterWithWasteInput) {
-                const linearMeterWithWaste = parseFloat(linearMeterWithWasteInput.value) || 0;
-                if (linearMeterWithWaste > 0) {
-                    linearMeterWithWasteValue.textContent = linearMeterWithWaste.toFixed(2);
-                    linearMeterWithWasteValue.classList.remove('empty');
-                } else {
-                    linearMeterWithWasteValue.textContent = '-';
-                    linearMeterWithWasteValue.classList.add('empty');
-                }
-            }
-            
-            // Update square meter
-            const squareMeterValue = document.getElementById('calc_square_meter_value');
-            const squareMeterInput = document.getElementById('square_meter');
-            if (squareMeterValue && squareMeterInput) {
-                const squareMeter = parseFloat(squareMeterInput.value) || 0;
-                if (squareMeter > 0) {
-                    squareMeterValue.textContent = squareMeter.toFixed(2);
-                    squareMeterValue.classList.remove('empty');
-                } else {
-                    squareMeterValue.textContent = '-';
-                    squareMeterValue.classList.add('empty');
-                }
-            }
-            
-            // Update total prices sum
-            const totalPricesSumValue = document.getElementById('calc_total_prices_sum_value');
-            const totalPricesSumInput = document.getElementById('total_prices_sum');
-            if (totalPricesSumValue && totalPricesSumInput) {
-                const totalPricesSum = parseFloat(totalPricesSumInput.value) || 0;
-                if (totalPricesSum > 0) {
-                    totalPricesSumValue.textContent = totalPricesSum.toFixed(2);
-                    totalPricesSumValue.classList.remove('empty');
-                } else {
-                    totalPricesSumValue.textContent = '-';
-                    totalPricesSumValue.classList.add('empty');
-                }
-            }
-            
-            // Update total amount
-            const totalAmountValue = document.getElementById('calc_total_amount_value');
-            const totalAmountInput = document.getElementById('total_amount');
-            if (totalAmountValue && totalAmountInput) {
-                const totalAmount = parseFloat(totalAmountInput.value) || 0;
-                if (totalAmount > 0) {
-                    totalAmountValue.textContent = totalAmount.toFixed(2);
-                    totalAmountValue.classList.remove('empty');
-                } else {
-                    totalAmountValue.textContent = '-';
-                    totalAmountValue.classList.add('empty');
-                }
-            }
-            
-            // Update total preparations
-            const totalPreparationsValue = document.getElementById('calc_total_preparations_value');
-            const totalPreparationsInput = document.getElementById('total_preparations');
-            if (totalPreparationsValue && totalPreparationsInput) {
-                const totalPreparations = parseFloat(totalPreparationsInput.value) || 0;
-                if (totalPreparations > 0) {
-                    totalPreparationsValue.textContent = totalPreparations.toFixed(2);
-                    totalPreparationsValue.classList.remove('empty');
-                } else {
-                    totalPreparationsValue.textContent = '-';
-                    totalPreparationsValue.classList.add('empty');
-                }
-            }
-            
-            // Update total order
-            const totalOrderValue = document.getElementById('calc_total_order_value');
-            const totalOrderInput = document.getElementById('total_order');
-            if (totalOrderValue && totalOrderInput) {
-                const totalOrder = parseFloat(totalOrderInput.value) || 0;
-                if (totalOrder > 0) {
-                    totalOrderValue.textContent = totalOrder.toFixed(2);
-                    totalOrderValue.classList.remove('empty');
-                } else {
-                    totalOrderValue.textContent = '-';
-                    totalOrderValue.classList.add('empty');
-                }
-            }
-            
-            // Update price per thousand
-            const pricePerThousandValue = document.getElementById('calc_price_per_thousand_value');
-            const pricePerThousandInput = document.getElementById('price_per_thousand');
-            if (pricePerThousandValue && pricePerThousandInput) {
-                const pricePerThousand = parseFloat(pricePerThousandInput.value) || 0;
-                if (pricePerThousand > 0) {
-                    pricePerThousandValue.textContent = pricePerThousand.toFixed(2);
-                    pricePerThousandValue.classList.remove('empty');
-                } else {
-                    pricePerThousandValue.textContent = '-';
-                    pricePerThousandValue.classList.add('empty');
-                }
-            }
-        }
 
         // Update material price per meter based on selected material
         function updateMaterialPrice() {
@@ -2332,7 +2103,11 @@
             const materialPriceInput = document.getElementById('material_price_per_meter');
             
             if (materialSelect && materialPriceInput) {
-                const selectedOption = materialSelect.options[materialSelect.selectedIndex];
+                // Get selected value (works with both native select and Select2)
+                const selectedValue = materialSelect.value;
+                
+                // Find the option with matching value
+                const selectedOption = materialSelect.querySelector(`option[value="${selectedValue}"]`);
                 const price = selectedOption ? selectedOption.getAttribute('data-price') : null;
                 
                 if (price && price !== '' && price !== 'null') {
@@ -2543,10 +2318,86 @@
                 });
             }
             
-            // Initialize sidebar calculations on page load
-            updateSidebarCalculations();
         });
 
+    </script>
+
+    <!-- Select2 JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // Initialize Select2 on client field
+            $('#client_id').select2({
+                dir: 'rtl',
+                placeholder: 'ابحث عن العميل أو اختر من القائمة',
+                allowClear: true,
+                width: '100%',
+                language: {
+                    noResults: function() {
+                        return "لا توجد نتائج";
+                    },
+                    searching: function() {
+                        return "جاري البحث...";
+                    },
+                    inputTooShort: function() {
+                        return "أدخل حرف واحد على الأقل للبحث";
+                    }
+                },
+                minimumResultsForSearch: 0,
+                dropdownAutoWidth: false
+            });
+            
+            // Initialize Select2 on material field
+            $('#material').select2({
+                dir: 'rtl',
+                placeholder: 'ابحث عن الخامة أو اختر من القائمة',
+                allowClear: true,
+                width: '100%',
+                language: {
+                    noResults: function() {
+                        return "لا توجد نتائج";
+                    },
+                    searching: function() {
+                        return "جاري البحث...";
+                    },
+                    inputTooShort: function() {
+                        return "أدخل حرف واحد على الأقل للبحث";
+                    }
+                },
+                minimumResultsForSearch: 0,
+                dropdownAutoWidth: false
+            });
+            
+            // Fix Select2 container styling and add placeholder on open for client
+            $('#client_id').on('select2:open', function() {
+                $('.select2-search__field').attr('placeholder', 'اكتب للبحث...');
+                $('.select2-search__field').focus();
+            });
+            
+            // Fix Select2 container styling and add placeholder on open for material
+            $('#material').on('select2:open', function() {
+                $('.select2-search__field').attr('placeholder', 'اكتب للبحث...');
+                $('.select2-search__field').focus();
+            });
+            
+            // Ensure proper RTL direction for client
+            $('#client_id').on('select2:select select2:clear', function() {
+                $(this).trigger('change');
+            });
+            
+            // Handle material selection change to update price
+            $('#material').on('select2:select', function() {
+                updateMaterialPrice();
+                $(this).trigger('change');
+            });
+            
+            $('#material').on('select2:clear', function() {
+                updateMaterialPrice();
+                $(this).trigger('change');
+            });
+        });
     </script>
 </x-app-layout>
 
