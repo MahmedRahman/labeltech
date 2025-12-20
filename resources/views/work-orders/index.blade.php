@@ -1,6 +1,7 @@
 <x-app-layout>
     @php
-        $title = 'قائمة أوامر الشغل';
+        $isSalesEmployee = auth('employee')->check() && auth('employee')->user()->account_type === 'مبيعات';
+        $title = $isSalesEmployee ? 'قائمة عروض الأسعار' : 'قائمة أوامر الشغل';
     @endphp
 
     <style>
@@ -153,24 +154,234 @@
             background-color: #fee2e2;
             color: #991b1b;
         }
+
+        /* Table Styles for Sales View */
+        .data-table {
+            width: 100%;
+            background: white;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .data-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table thead {
+            background-color: #f9fafb;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .data-table th {
+            padding: 1rem;
+            text-align: right;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #374151;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 0.875rem;
+            color: #111827;
+        }
+
+        .data-table tbody tr:hover {
+            background-color: #f9fafb;
+        }
+
+        .data-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .table-actions a {
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.375rem;
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .table-actions .btn-view {
+            background-color: #eff6ff;
+            color: #2563eb;
+        }
+
+        .table-actions .btn-view:hover {
+            background-color: #dbeafe;
+        }
+
+        .table-actions .btn-edit {
+            background-color: #f0fdf4;
+            color: #10b981;
+        }
+
+        .table-actions .btn-edit:hover {
+            background-color: #dcfce7;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .production-status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .production-status-badge.بدون-حالة {
+            background-color: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .production-status-badge.طباعة {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .production-status-badge.قص {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .production-status-badge.تقفيل {
+            background-color: #ede9fe;
+            color: #5b21b6;
+        }
     </style>
 
     <!-- Header Actions -->
     <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
         <div>
-            <h2 style="font-size: 1.75rem; font-weight: 700; color: #111827; margin: 0 0 0.25rem 0;">قائمة أوامر الشغل</h2>
-            <p style="font-size: 1rem; color: #6b7280; margin: 0;">إدارة جميع أوامر الشغل من مكان واحد</p>
+            <h2 style="font-size: 1.75rem; font-weight: 700; color: #111827; margin: 0 0 0.25rem 0;">
+                {{ $isSalesEmployee ? 'قائمة عروض الأسعار' : 'قائمة أوامر الشغل' }}
+            </h2>
+            <p style="font-size: 1rem; color: #6b7280; margin: 0;">
+                {{ $isSalesEmployee ? 'إدارة جميع عروض الأسعار من مكان واحد' : 'إدارة جميع أوامر الشغل من مكان واحد' }}
+            </p>
         </div>
         <a href="{{ route('work-orders.create') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #2563eb; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
             <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
-            إضافة أمر شغل جديد
+            {{ $isSalesEmployee ? 'إضافة عرض سعر جديد' : 'إضافة أمر شغل جديد' }}
         </a>
     </div>
 
     @if($workOrders->count() > 0)
-        <div class="kanban-board">
+        @if($isSalesEmployee)
+            <!-- Table View for Sales Employees -->
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>رقم عرض السعر</th>
+                            <th>اسم العمل</th>
+                            <th>العميل</th>
+                            <th>الخامة</th>
+                            <th>الكمية</th>
+                            <th>عدد الألوان</th>
+                            <th>الأبعاد</th>
+                            <th>حالة الإنتاج</th>
+                            <th>الحالة</th>
+                            <th>تاريخ الإنشاء</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($workOrders as $workOrder)
+                            @if(isset($workOrder->id) && !is_null($workOrder->id))
+                            @php
+                                $statusColors = [
+                                    'pending' => '#f59e0b',
+                                    'in_progress' => '#2563eb',
+                                    'completed' => '#10b981',
+                                    'cancelled' => '#dc2626'
+                                ];
+                                $statusLabels = [
+                                    'pending' => 'قيد الانتظار',
+                                    'in_progress' => 'قيد التنفيذ',
+                                    'completed' => 'مكتمل',
+                                    'cancelled' => 'ملغي'
+                                ];
+                                $color = $statusColors[$workOrder->status] ?? '#6b7280';
+                                $label = $statusLabels[$workOrder->status] ?? $workOrder->status;
+                                $productionStatus = $workOrder->production_status ?? 'بدون حالة';
+                            @endphp
+                            <tr>
+                                <td>
+                                    <strong style="color: #111827;">{{ $workOrder->order_number ?? 'بدون رقم' }}</strong>
+                                </td>
+                                <td>
+                                    @if($workOrder->job_name)
+                                        <span style="color: #2563eb; font-weight: 500;">{{ $workOrder->job_name }}</span>
+                                    @else
+                                        <span style="color: #9ca3af;">-</span>
+                                    @endif
+                                </td>
+                                <td>{{ $workOrder->client->name ?? 'غير محدد' }}</td>
+                                <td>{{ $workOrder->material ?? '-' }}</td>
+                                <td>{{ number_format($workOrder->quantity ?? 0) }}</td>
+                                <td>{{ $workOrder->number_of_colors ?? '-' }}</td>
+                                <td>
+                                    @if($workOrder->width && $workOrder->length)
+                                        {{ number_format($workOrder->width, 2) }} × {{ number_format($workOrder->length, 2) }}
+                                    @else
+                                        <span style="color: #9ca3af;">-</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <span class="production-status-badge {{ str_replace(' ', '-', $productionStatus) }}">
+                                        {{ $productionStatus }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="status-badge status-{{ $workOrder->status }}" style="background-color: {{ $color }}20; color: {{ $color }};">
+                                        {{ $label }}
+                                    </span>
+                                </td>
+                                <td>
+                                    @if($workOrder->created_at)
+                                        {{ $workOrder->created_at->format('Y-m-d') }}
+                                        <br>
+                                        <small style="color: #9ca3af; font-size: 0.75rem;">{{ $workOrder->created_at->format('H:i') }}</small>
+                                    @else
+                                        <span style="color: #9ca3af;">-</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <div class="table-actions">
+                                        <a href="{{ route('work-orders.show', $workOrder->id) }}" class="btn-view">عرض</a>
+                                        <a href="{{ route('work-orders.edit', $workOrder->id) }}" class="btn-edit">تعديل</a>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endif
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @else
+            <!-- Kanban Board View for Other Users -->
+            <div class="kanban-board">
             @php
                 $statuses = [
                     'بدون حالة' => $groupedOrders['بدون حالة'],
@@ -295,24 +506,30 @@
                     </div>
                 </div>
             @endforeach
-        </div>
+            </div>
+        @endif
     @else
         <div style="text-align: center; padding: 4rem 2rem; background: white; border-radius: 0.75rem; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);">
             <svg style="width: 64px; height: 64px; color: #9ca3af; margin: 0 auto 1.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
             </svg>
-            <h3 style="font-size: 1.125rem; font-weight: 600; color: #111827; margin-bottom: 0.5rem;">لا توجد أوامر شغل</h3>
-            <p style="font-size: 1rem; color: #6b7280; margin-bottom: 2rem;">ابدأ بإضافة أمر شغل جديد</p>
+            <h3 style="font-size: 1.125rem; font-weight: 600; color: #111827; margin-bottom: 0.5rem;">
+                {{ $isSalesEmployee ? 'لا توجد عروض أسعار' : 'لا توجد أوامر شغل' }}
+            </h3>
+            <p style="font-size: 1rem; color: #6b7280; margin-bottom: 2rem;">
+                {{ $isSalesEmployee ? 'ابدأ بإضافة عرض سعر جديد' : 'ابدأ بإضافة أمر شغل جديد' }}
+            </p>
             <a href="{{ route('work-orders.create') }}" style="display: inline-flex; align-items: center; padding: 0.75rem 1.5rem; background-color: #2563eb; color: white; text-decoration: none; border-radius: 0.5rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
                 <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
-                إضافة أمر شغل جديد
+                {{ $isSalesEmployee ? 'إضافة عرض سعر جديد' : 'إضافة أمر شغل جديد' }}
             </a>
         </div>
     @endif
 
     <script>
+        @if(!$isSalesEmployee)
         let draggedOrderId = null;
         let draggedElement = null;
 
@@ -510,6 +727,7 @@
                 }
             });
         }
+        @endif
     </script>
 
 </x-app-layout>

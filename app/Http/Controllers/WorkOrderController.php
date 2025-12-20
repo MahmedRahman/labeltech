@@ -193,7 +193,93 @@ class WorkOrderController extends Controller
     public function show(WorkOrder $workOrder)
     {
         $workOrder->load('client', 'designKnife');
-        return view('work-orders.show', compact('workOrder'));
+        
+        // Calculate all values dynamically
+        $calculations = $this->calculateAllValues($workOrder);
+        
+        return view('work-orders.show', compact('workOrder', 'calculations'));
+    }
+
+    /**
+     * Calculate all values dynamically from work order data
+     */
+    private function calculateAllValues(WorkOrder $workOrder)
+    {
+        $calculations = [];
+        
+        // 1. Paper Width: (العرض × عدد الصفوف) + ((عدد الصفوف - 1) × 0.3) + 1.2
+        if ($workOrder->width && $workOrder->rows_count) {
+            $calculations['paper_width'] = ($workOrder->width * $workOrder->rows_count) + (($workOrder->rows_count - 1) * 0.3) + 1.2;
+        } else {
+            $calculations['paper_width'] = $workOrder->paper_width ?? 0;
+        }
+        
+        // 2. Linear Meter: (الكمية × 1000 × (الطول + الجاب)) ÷ (100 × عدد الصفوف)
+        if ($workOrder->quantity && $workOrder->length && $workOrder->rows_count) {
+            $gapCount = $workOrder->gap_count ?? 0.4;
+            $calculations['linear_meter'] = ($workOrder->quantity * 1000 * ($workOrder->length + $gapCount)) / (100 * $workOrder->rows_count);
+        } else {
+            $calculations['linear_meter'] = $workOrder->linear_meter ?? 0;
+        }
+        
+        // 3. Rolls Count: ceil(المتر الطولي ÷ 1000)
+        if ($calculations['linear_meter'] > 0) {
+            $calculations['rolls_count'] = ceil($calculations['linear_meter'] / 1000);
+        } else {
+            $calculations['rolls_count'] = 0;
+        }
+        
+        // 4. Waste: عدد البكر × عدد الهالك للبكره
+        $wastePerRoll = $workOrder->waste_per_roll ?? 0;
+        if ($calculations['rolls_count'] > 0 && $wastePerRoll > 0) {
+            $calculations['waste'] = $calculations['rolls_count'] * $wastePerRoll;
+        } else {
+            $calculations['waste'] = 0;
+        }
+        
+        // 5. Waste Percentage: from wastes table based on number_of_colors
+        if ($workOrder->number_of_colors !== null) {
+            $waste = \App\Models\Waste::where('number_of_colors', $workOrder->number_of_colors)->first();
+            $calculations['waste_percentage'] = $waste ? $waste->waste_percentage : 0;
+        } else {
+            $calculations['waste_percentage'] = 0;
+        }
+        
+        // 6. Linear Meter with Waste: المتر الطولي + الهالك + نسبة الهالك
+        $calculations['linear_meter_with_waste'] = $calculations['linear_meter'] + $calculations['waste'] + $calculations['waste_percentage'];
+        
+        // 7. Square Meter: (المتر الطولي مضاف اليه الهالك × عرض الورق) ÷ 100
+        if ($calculations['linear_meter_with_waste'] > 0 && $calculations['paper_width'] > 0) {
+            $calculations['square_meter'] = ($calculations['linear_meter_with_waste'] * $calculations['paper_width']) / 100;
+        } else {
+            $calculations['square_meter'] = 0;
+        }
+        
+        // 8. Total Prices Sum: سعر المتر الخام + سعر متر التصنيع + سعر الإضافي + سعر البصمة + سعر التكسير
+        $materialPricePerMeter = $workOrder->material_price_per_meter ?? 0;
+        $manufacturingPricePerMeter = $workOrder->manufacturing_price_per_meter ?? 0;
+        $additionPrice = ($workOrder->additions && $workOrder->additions != 'لا يوجد') ? ($workOrder->addition_price ?? 0) : 0;
+        $fingerprintPrice = ($workOrder->fingerprint == 'yes') ? ($workOrder->fingerprint_price ?? 0) : 0;
+        $externalBreakingPrice = ($workOrder->external_breaking == 'yes') ? ($workOrder->external_breaking_price ?? 0) : 0;
+        
+        $calculations['total_prices_sum'] = $materialPricePerMeter + $manufacturingPricePerMeter + $additionPrice + $fingerprintPrice + $externalBreakingPrice;
+        
+        // 9. Total Amount: إجمالي المبلغ (الأسعار) × المتر المربع
+        $calculations['total_amount'] = $calculations['total_prices_sum'] * $calculations['square_meter'];
+        
+        // 10. Total Preparations: (سعر الفيلم الواحد × العدد) + سعر السكينة
+        $filmPrice = $workOrder->film_price ?? 0;
+        $filmCount = $workOrder->film_count ?? 0;
+        $knifePrice = ($workOrder->knife_exists == 'yes') ? ($workOrder->knife_price ?? 0) : 0;
+        $calculations['total_preparations'] = ($filmPrice * $filmCount) + $knifePrice;
+        
+        // 11. Total Order: إجمالي المبلغ + إجمالي التجهيزات
+        $calculations['total_order'] = $calculations['total_amount'] + $calculations['total_preparations'];
+        
+        // 12. Price Per Thousand: إجمالي الطلب ÷ 1000
+        $calculations['price_per_thousand'] = $calculations['total_order'] / 1000;
+        
+        return $calculations;
     }
 
     /**
