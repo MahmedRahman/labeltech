@@ -593,7 +593,7 @@
                         <input type="number" 
                                name="waste_per_roll" 
                                id="waste_per_roll" 
-                               value="{{ old('waste_per_roll') }}" 
+                               value="{{ old('waste_per_roll', 20) }}" 
                                min="0"
                                step="1"
                                class="form-input"

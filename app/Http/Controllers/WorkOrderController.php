@@ -468,17 +468,6 @@ class WorkOrderController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(WorkOrder $workOrder)
-    {
-        $workOrder->delete();
-
-        return redirect()->route('work-orders.index')
-            ->with('success', 'تم حذف أمر الشغل بنجاح');
-    }
-
-    /**
      * Show the form for adding/editing design data.
      */
     public function showDesignForm(WorkOrder $workOrder)
