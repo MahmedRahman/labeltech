@@ -363,40 +363,14 @@
                 <div style="margin-bottom: 2rem; padding: 1.5rem; background-color: #f9fafb; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
                     <h3 style="font-size: 1rem; font-weight: 600; color: #111827; margin-bottom: 1.5rem;">معلومات أساسية</h3>
                     
-                    <!-- Order Number (readonly, auto-generated) -->
-                    <div class="form-group">
-                        <label for="order_number" class="form-label">رقم أمر الشغل</label>
-                        <input type="text" 
-                               name="order_number" 
-                               id="order_number" 
-                               value="{{ old('order_number') }}" 
-                               class="form-input"
-                               readonly
-                               style="background-color: #f3f4f6; cursor: not-allowed;"
-                               placeholder="سيتم إنشاؤه تلقائياً">
-                        <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
-                            سيتم إنشاء رقم أمر الشغل تلقائياً عند الحفظ
-                        </small>
-                        @error('order_number')
-                            <p class="error-message">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Created Date (readonly) -->
-                    <div class="form-group">
-                        <label for="created_at" class="form-label">تاريخ الإدخال</label>
-                        <input type="text" 
-                               name="created_at_display" 
-                               id="created_at_display" 
-                               value="{{ now()->format('Y-m-d H:i:s') }}" 
-                               class="form-input"
-                               readonly
-                               style="background-color: #f3f4f6; cursor: not-allowed;"
-                               placeholder="تاريخ الإدخال">
-                        <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
-                            تاريخ إنشاء أمر الشغل
-                        </small>
-                    </div>
+                    <!-- Order Number (hidden, auto-generated) -->
+                    <input type="hidden" 
+                           name="order_number" 
+                           id="order_number" 
+                           value="{{ old('order_number') }}">
+                    @error('order_number')
+                        <p class="error-message">{{ $message }}</p>
+                    @enderror
 
                     <!-- Client Selection -->
                     <div class="form-group">
@@ -603,21 +577,14 @@
                         @enderror
                     </div>
 
-                    <div class="form-group">
-                        <label for="increase" class="form-label">الزيادة (سم)</label>
-                        <input type="number" 
-                               name="increase" 
-                               id="increase" 
-                               value="{{ old('increase') }}" 
-                               step="0.01"
-                               min="0"
-                               class="form-input"
-                               placeholder="0.00"
-                               oninput="calculateLinearMeter()">
-                        @error('increase')
-                            <p class="error-message">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    <!-- Increase field (hidden) -->
+                    <input type="hidden" 
+                           name="increase" 
+                           id="increase" 
+                           value="{{ old('increase', 0) }}">
+                    @error('increase')
+                        <p class="error-message">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <!-- Linear Meter (calculated automatically, hidden, shown in sidebar) -->
