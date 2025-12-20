@@ -563,4 +563,20 @@ class WorkOrderController extends Controller
         ]);
     }
 
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(WorkOrder $workOrder)
+    {
+        try {
+            $workOrder->delete();
+            
+            return redirect()->route('work-orders.index')
+                ->with('success', 'تم حذف أمر الشغل بنجاح');
+        } catch (\Exception $e) {
+            return redirect()->route('work-orders.index')
+                ->with('error', 'حدث خطأ أثناء حذف أمر الشغل: ' . $e->getMessage());
+        }
+    }
+
 }

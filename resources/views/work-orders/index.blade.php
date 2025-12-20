@@ -231,6 +231,15 @@
             background-color: #dcfce7;
         }
 
+        .table-actions .btn-delete {
+            background-color: #fee2e2;
+            color: #dc2626;
+        }
+
+        .table-actions .btn-delete:hover {
+            background-color: #fecaca;
+        }
+
         .status-badge {
             display: inline-block;
             padding: 0.25rem 0.75rem;
@@ -371,6 +380,11 @@
                                     <div class="table-actions">
                                         <a href="{{ route('work-orders.show', $workOrder->id) }}" class="btn-view">عرض</a>
                                         <a href="{{ route('work-orders.edit', $workOrder->id) }}" class="btn-edit">تعديل</a>
+                                        <form action="{{ route('work-orders.destroy', $workOrder->id) }}" method="POST" style="display: inline;" onsubmit="return confirmDelete(event)">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn-delete" style="padding: 0.375rem 0.75rem; border-radius: 0.375rem; text-decoration: none; font-size: 0.75rem; font-weight: 500; transition: all 0.2s; background-color: #fee2e2; color: #dc2626; border: none; cursor: pointer;">حذف</button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>
@@ -498,6 +512,13 @@
                                     <a href="{{ route('work-orders.edit', $workOrder->id) }}" style="flex: 1; text-align: center; padding: 0.5rem; background-color: #f0fdf4; color: #10b981; text-decoration: none; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 500;">
                                         تعديل
                                     </a>
+                                    <form action="{{ route('work-orders.destroy', $workOrder->id) }}" method="POST" style="flex: 1; display: inline;" onsubmit="return confirmDelete(event)">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" style="width: 100%; padding: 0.5rem; background-color: #fee2e2; color: #dc2626; border: none; border-radius: 0.375rem; font-size: 0.75rem; font-weight: 500; cursor: pointer;">
+                                            حذف
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                             @endif
@@ -728,6 +749,27 @@
             });
         }
         @endif
+
+        // Confirm delete function
+        function confirmDelete(event) {
+            if (!confirm('هل أنت متأكد من حذف هذا الأمر؟ لا يمكن التراجع عن هذه العملية.')) {
+                event.preventDefault();
+                return false;
+            }
+            return true;
+        }
     </script>
+
+    @if(session('success'))
+    <script>
+        alert('{{ session('success') }}');
+    </script>
+    @endif
+
+    @if(session('error'))
+    <script>
+        alert('{{ session('error') }}');
+    </script>
+    @endif
 
 </x-app-layout>
