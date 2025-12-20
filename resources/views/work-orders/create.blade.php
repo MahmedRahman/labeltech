@@ -506,7 +506,7 @@
                     @enderror
                 </div>
 
-                <!-- Paper Width (calculated automatically, hidden, shown in sidebar) -->
+                <!-- Paper Width (calculated automatically, hidden) -->
                 <input type="hidden" 
                        name="paper_width" 
                        id="paper_width" 

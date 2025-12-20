@@ -207,11 +207,15 @@ class WorkOrderController extends Controller
     {
         $calculations = [];
         
-        // 1. Paper Width: (العرض × عدد الصفوف) + ((عدد الصفوف - 1) × 0.3) + 1.2
-        if ($workOrder->width && $workOrder->rows_count) {
+        // 1. Paper Width: Use value from database if exists, otherwise calculate
+        if ($workOrder->paper_width && $workOrder->paper_width > 0) {
+            // Use the value stored in database
+            $calculations['paper_width'] = $workOrder->paper_width;
+        } elseif ($workOrder->width && $workOrder->rows_count) {
+            // Fallback: Calculate if not stored in database
             $calculations['paper_width'] = ($workOrder->width * $workOrder->rows_count) + (($workOrder->rows_count - 1) * 0.3) + 1.2;
         } else {
-            $calculations['paper_width'] = $workOrder->paper_width ?? 0;
+            $calculations['paper_width'] = 0;
         }
         
         // 2. Linear Meter: (الكمية × 1000 × (الطول + الجاب)) ÷ (100 × عدد الصفوف)

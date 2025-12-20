@@ -507,14 +507,24 @@
                     @enderror
                 </div>
 
-                <!-- Paper Width (calculated automatically, hidden, shown in sidebar) -->
-                <input type="hidden" 
-                       name="paper_width" 
-                       id="paper_width" 
-                       value="{{ old('paper_width', $workOrder->paper_width ?? null) }}">
-                @error('paper_width')
-                    <p class="error-message">{{ $message }}</p>
-                @enderror
+                <!-- Paper Width (editable) -->
+                <div class="form-group">
+                    <label for="paper_width" class="form-label">عرض الورق (سم)</label>
+                    <input type="number" 
+                           name="paper_width" 
+                           id="paper_width" 
+                           value="{{ old('paper_width', $workOrder->paper_width ?? null) }}"
+                           step="0.01"
+                           min="0"
+                           class="form-input"
+                           placeholder="أدخل عرض الورق">
+                    <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
+                        يمكنك تعديل القيمة يدوياً. سيتم استخدام القيمة المحفوظة في قاعدة البيانات.
+                    </small>
+                    @error('paper_width')
+                        <p class="error-message">{{ $message }}</p>
+                    @enderror
+                </div>
 
                 <!-- Gap Count, Waste Per Roll and Increase -->
                 <div class="form-grid">
@@ -580,11 +590,14 @@
                        id="waste" 
                        value="{{ old('waste', $workOrder->waste ?? null) }}">
 
-                <!-- Waste Percentage (calculated automatically, hidden, shown in sidebar) -->
+                <!-- Waste Percentage (hidden, calculated automatically) -->
                 <input type="hidden" 
                        name="waste_percentage" 
                        id="waste_percentage" 
                        value="{{ old('waste_percentage', $workOrder->waste_percentage ?? null) }}">
+                @error('waste_percentage')
+                    <p class="error-message">{{ $message }}</p>
+                @enderror
 
                 <!-- Linear Meter with Waste (calculated automatically, hidden, shown in sidebar) -->
                 <input type="hidden" 
@@ -1426,8 +1439,7 @@
                 // Function to handle calculations
                 const handleRowsCountChange = function() {
                     updateRowsCountStyle();
-                    // Calculate immediately without setTimeout for better responsiveness
-                    calculatePaperWidth();
+                    // Calculate linear meter only (paper width is not auto-calculated in edit page)
                     calculateLinearMeter();
                 };
                 
@@ -1473,7 +1485,7 @@
             updateRowsCountStyle();
             
             // Calculate on page load if rows_count is already selected
-            calculatePaperWidth();
+            // Note: paper width is not auto-calculated in edit page, only linear meter
             calculateLinearMeter();
             
             // Handle film_count radio buttons
@@ -1560,17 +1572,23 @@
             
             if (!wastePercentageInput) return;
             
-            if (numberOfColorsRadio) {
-                const numberOfColors = parseInt(numberOfColorsRadio.value) || 0;
-                const wastePercentage = wastePercentages[numberOfColors];
-                
-                if (wastePercentage !== undefined) {
-                    wastePercentageInput.value = parseFloat(wastePercentage).toFixed(2);
+            // Check if user manually changed the waste percentage
+            const isManuallyChanged = wastePercentageInput.getAttribute('data-manually-changed') === 'true';
+            
+            // Only auto-calculate if user hasn't manually changed it
+            if (!isManuallyChanged) {
+                if (numberOfColorsRadio) {
+                    const numberOfColors = parseInt(numberOfColorsRadio.value) || 0;
+                    const wastePercentage = wastePercentages[numberOfColors];
+                    
+                    if (wastePercentage !== undefined) {
+                        wastePercentageInput.value = parseFloat(wastePercentage).toFixed(2);
+                    } else {
+                        wastePercentageInput.value = '';
+                    }
                 } else {
                     wastePercentageInput.value = '';
                 }
-            } else {
-                wastePercentageInput.value = '';
             }
             
             // Update linear meter with waste after waste percentage is updated
@@ -1818,16 +1836,22 @@
             
             if (!paperWidthInput) return;
             
-            const rowsCount = rowsCountRadio ? parseFloat(rowsCountRadio.value) || 0 : 0;
-            const width = parseFloat(widthInput?.value) || 0;
+            // Check if user manually changed the paper width
+            const isManuallyChanged = paperWidthInput.getAttribute('data-manually-changed') === 'true';
             
-            // Formula: (العرض × عدد الصفوف) + ((عدد الصفوف - 1) × 0.3) + 1.2
-            if (rowsCount > 0 && width > 0) {
-                const paperWidth = (width * rowsCount) + (((rowsCount - 1) * 0.3) + 1.2);
-                paperWidthInput.value = paperWidth.toFixed(2);
-            } else {
-                // Clear if either value is missing
-                paperWidthInput.value = '';
+            // Only auto-calculate if user hasn't manually changed it
+            if (!isManuallyChanged) {
+                const rowsCount = rowsCountRadio ? parseFloat(rowsCountRadio.value) || 0 : 0;
+                const width = parseFloat(widthInput?.value) || 0;
+                
+                // Formula: (العرض × عدد الصفوف) + ((عدد الصفوف - 1) × 0.3) + 1.2
+                if (rowsCount > 0 && width > 0) {
+                    const paperWidth = (width * rowsCount) + (((rowsCount - 1) * 0.3) + 1.2);
+                    paperWidthInput.value = paperWidth.toFixed(2);
+                } else {
+                    // Clear if either value is missing
+                    paperWidthInput.value = '';
+                }
             }
             
             // Also calculate linear meter
@@ -2136,7 +2160,32 @@
         
         // Initialize calculations on page load
         document.addEventListener('DOMContentLoaded', function() {
-            calculatePaperWidth();
+            // Note: paper width is not auto-calculated in edit page, only displayed from database
+            
+            // Track manual changes to paper width field
+            const paperWidthInput = document.getElementById('paper_width');
+            if (paperWidthInput) {
+                // Update square meter when paper width is manually changed (no auto-calculation of paper width)
+                paperWidthInput.addEventListener('input', function() {
+                    calculateSquareMeter();
+                });
+                paperWidthInput.addEventListener('change', function() {
+                    calculateSquareMeter();
+                });
+            }
+            
+            // Track manual changes to waste percentage field
+            const wastePercentageInput = document.getElementById('waste_percentage');
+            if (wastePercentageInput) {
+                // Mark as manually changed when user types
+                wastePercentageInput.addEventListener('input', function() {
+                    this.setAttribute('data-manually-changed', 'true');
+                    calculateLinearMeterWithWaste();
+                });
+                wastePercentageInput.addEventListener('change', function() {
+                    calculateLinearMeterWithWaste();
+                });
+            }
             
             // Track manual changes to material price field
             const materialPriceInput = document.getElementById('material_price_per_meter');
@@ -2276,20 +2325,32 @@
             // Initialize price per thousand calculation on page load
             calculatePricePerThousand();
             
-            // Add event listeners to update sidebar on input changes
+            // Add event listeners to update calculations on input changes
+            // Note: paper width is not auto-calculated in edit page
             // Note: rows_count is now radio buttons, handled separately above
-            const inputsToWatch = ['width', 'length', 'quantity'];
+            const inputsToWatch = ['length', 'quantity'];
             inputsToWatch.forEach(inputId => {
                 const input = document.getElementById(inputId);
                 if (input) {
                     input.addEventListener('input', function() {
-                        calculatePaperWidth();
+                        calculateLinearMeter();
                     });
                     input.addEventListener('change', function() {
-                        calculatePaperWidth();
+                        calculateLinearMeter();
                     });
                 }
             });
+            
+            // Width input only triggers linear meter calculation, not paper width
+            const widthInput = document.getElementById('width');
+            if (widthInput) {
+                widthInput.addEventListener('input', function() {
+                    calculateLinearMeter();
+                });
+                widthInput.addEventListener('change', function() {
+                    calculateLinearMeter();
+                });
+            }
             
             // Add event listeners for linear meter calculation
             // Note: rows_count is radio buttons, handled separately above
