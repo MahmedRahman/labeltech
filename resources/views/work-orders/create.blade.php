@@ -262,48 +262,88 @@
                 </div>
 
                 <div class="calculation-item">
-                    <div class="calculation-label">عدد الصفوف</div>
-                    <div class="calculation-value" id="calc_rows_count">
-                        <span id="calc_rows_count_value" class="empty">-</span>
-                    </div>
-                </div>
-
-                <div class="calculation-item">
-                    <div class="calculation-label">عرض القطعة</div>
-                    <div class="calculation-value" id="calc_width">
-                        <span class="calculation-unit">سم</span>
-                        <span id="calc_width_value" class="empty">-</span>
-                    </div>
-                </div>
-
-                <div class="calculation-item">
-                    <div class="calculation-label">الطول</div>
-                    <div class="calculation-value" id="calc_length">
-                        <span class="calculation-unit">سم</span>
-                        <span id="calc_length_value" class="empty">-</span>
-                    </div>
-                </div>
-
-                <div class="calculation-item">
-                    <div class="calculation-label">الكمية</div>
-                    <div class="calculation-value" id="calc_quantity">
-                        <span id="calc_quantity_value" class="empty">-</span>
-                    </div>
-                </div>
-
-                <div class="calculation-item">
-                    <div class="calculation-label">المساحة الإجمالية</div>
-                    <div class="calculation-value" id="calc_total_area">
-                        <span class="calculation-unit">سم²</span>
-                        <span id="calc_total_area_value" class="empty">-</span>
-                    </div>
-                </div>
-
-                <div class="calculation-item">
-                    <div class="calculation-label">المتر الطولي 🔥</div>
+                    <div class="calculation-label">المتر الطولي</div>
                     <div class="calculation-value" id="calc_linear_meter">
                         <span class="calculation-unit">م</span>
                         <span id="calc_linear_meter_value" class="empty">-</span>
+                    </div>
+                </div>
+
+                <div class="calculation-item">
+                    <div class="calculation-label">عدد البكر</div>
+                    <div class="calculation-value" id="calc_rolls_count">
+                        <span id="calc_rolls_count_value" class="empty">-</span>
+                    </div>
+                </div>
+
+                <div class="calculation-item">
+                    <div class="calculation-label">الهالك</div>
+                    <div class="calculation-value" id="calc_waste">
+                        <span id="calc_waste_value" class="empty">-</span>
+                    </div>
+                </div>
+
+                <div class="calculation-item">
+                    <div class="calculation-label">نسبة الهالك</div>
+                    <div class="calculation-value" id="calc_waste_percentage">
+                        <span class="calculation-unit">%</span>
+                        <span id="calc_waste_percentage_value" class="empty">-</span>
+                    </div>
+                </div>
+
+                <div class="calculation-item">
+                    <div class="calculation-label">المتر الطولي + الهالك</div>
+                    <div class="calculation-value" id="calc_linear_meter_with_waste">
+                        <span class="calculation-unit">م</span>
+                        <span id="calc_linear_meter_with_waste_value" class="empty">-</span>
+                    </div>
+                </div>
+
+                <div class="calculation-item">
+                    <div class="calculation-label">المتر المربع</div>
+                    <div class="calculation-value" id="calc_square_meter">
+                        <span class="calculation-unit">م²</span>
+                        <span id="calc_square_meter_value" class="empty">-</span>
+                    </div>
+                </div>
+
+                <div class="calculation-item">
+                    <div class="calculation-label">إجمالي المبلغ (الأسعار)</div>
+                    <div class="calculation-value" id="calc_total_prices_sum">
+                        <span class="calculation-unit">ج.م</span>
+                        <span id="calc_total_prices_sum_value" class="empty">-</span>
+                    </div>
+                </div>
+
+                <div class="calculation-item">
+                    <div class="calculation-label">إجمالي المبلغ</div>
+                    <div class="calculation-value" id="calc_total_amount">
+                        <span class="calculation-unit">ج.م</span>
+                        <span id="calc_total_amount_value" class="empty">-</span>
+                    </div>
+                </div>
+
+                <div class="calculation-item">
+                    <div class="calculation-label">إجمالي التجهيزات</div>
+                    <div class="calculation-value" id="calc_total_preparations">
+                        <span class="calculation-unit">ج.م</span>
+                        <span id="calc_total_preparations_value" class="empty">-</span>
+                    </div>
+                </div>
+
+                <div class="calculation-item">
+                    <div class="calculation-label">إجمالي الطلب</div>
+                    <div class="calculation-value" id="calc_total_order">
+                        <span class="calculation-unit">ج.م</span>
+                        <span id="calc_total_order_value" class="empty">-</span>
+                    </div>
+                </div>
+
+                <div class="calculation-item">
+                    <div class="calculation-label">سعر الف</div>
+                    <div class="calculation-value" id="calc_price_per_thousand">
+                        <span class="calculation-unit">ج.م</span>
+                        <span id="calc_price_per_thousand_value" class="empty">-</span>
                     </div>
                 </div>
             </div>
@@ -323,6 +363,41 @@
                 <div style="margin-bottom: 2rem; padding: 1.5rem; background-color: #f9fafb; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
                     <h3 style="font-size: 1rem; font-weight: 600; color: #111827; margin-bottom: 1.5rem;">معلومات أساسية</h3>
                     
+                    <!-- Order Number (readonly, auto-generated) -->
+                    <div class="form-group">
+                        <label for="order_number" class="form-label">رقم أمر الشغل</label>
+                        <input type="text" 
+                               name="order_number" 
+                               id="order_number" 
+                               value="{{ old('order_number') }}" 
+                               class="form-input"
+                               readonly
+                               style="background-color: #f3f4f6; cursor: not-allowed;"
+                               placeholder="سيتم إنشاؤه تلقائياً">
+                        <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
+                            سيتم إنشاء رقم أمر الشغل تلقائياً عند الحفظ
+                        </small>
+                        @error('order_number')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Created Date (readonly) -->
+                    <div class="form-group">
+                        <label for="created_at" class="form-label">تاريخ الإدخال</label>
+                        <input type="text" 
+                               name="created_at_display" 
+                               id="created_at_display" 
+                               value="{{ now()->format('Y-m-d H:i:s') }}" 
+                               class="form-input"
+                               readonly
+                               style="background-color: #f3f4f6; cursor: not-allowed;"
+                               placeholder="تاريخ الإدخال">
+                        <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
+                            تاريخ إنشاء أمر الشغل
+                        </small>
+                    </div>
+
                     <!-- Client Selection -->
                     <div class="form-group">
                         <label for="client_id" class="form-label required">العميل</label>
@@ -339,9 +414,6 @@
                         @enderror
                     </div>
 
-                    <!-- Order Number (hidden, auto-generated) -->
-                    <input type="hidden" name="order_number" value="">
-
                     <!-- Job Name -->
                     <div class="form-group">
                         <label for="job_name" class="form-label">اسم الشغلانه</label>
@@ -356,8 +428,8 @@
                         @enderror
                     </div>
 
-                    <!-- Status -->
-                    <div class="form-group">
+                    <!-- Status (hidden) -->
+                    <div class="form-group" style="display: none;">
                         <label for="status" class="form-label">الحالة</label>
                         <select name="status" id="status" class="form-select">
                             <option value="pending" {{ old('status', 'pending') == 'pending' ? 'selected' : '' }}>قيد الانتظار</option>
@@ -375,28 +447,6 @@
                 <div style="margin-bottom: 2rem; padding: 1.5rem; background-color: #f9fafb; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
                     <h3 style="font-size: 1rem; font-weight: 600; color: #111827; margin-bottom: 1.5rem;">معلومات المنتج</h3>
                     
-                    <!-- Material -->
-                    <div class="form-group">
-                        <label for="material" class="form-label required">الخامة</label>
-                        <select name="material" 
-                                id="material" 
-                                required
-                                class="form-select"
-                                onchange="updateMaterialPrice()">
-                            <option value="">اختر الخامة</option>
-                            @foreach($materials as $material)
-                                <option value="{{ $material->name }}" 
-                                        data-price="{{ $material->price ?? '' }}" 
-                                        {{ old('material') == $material->name ? 'selected' : '' }}>
-                                    {{ $material->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('material')
-                            <p class="error-message">{{ $message }}</p>
-                        @enderror
-                    </div>
-
                     <!-- Number of Colors -->
                     <div class="form-group">
                         <label class="form-label required">عدد الألوان</label>
@@ -419,26 +469,27 @@
                         @enderror
                     </div>
 
-                <!-- Rows Count -->
-                <div class="form-group">
-                    <label class="form-label">عدد الصفوف</label>
-                    <div style="display: flex; gap: 0.75rem; margin-top: 0.5rem; flex-wrap: wrap;">
-                        @for($i = 1; $i <= 15; $i++)
-                        <label class="rows-count-card" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; cursor: pointer; padding: 0.875rem 1.25rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; min-width: 50px; text-align: center;">
-                            <input type="radio" 
-                                   name="rows_count" 
-                                   value="{{ $i }}" 
-                                   id="rows_count_{{ $i }}"
-                                   {{ old('rows_count', 1) == $i ? 'checked' : '' }}
-                                   style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
-                            <span style="font-size: 0.9375rem; font-weight: 600; color: #111827;">{{ $i }}</span>
-                        </label>
-                        @endfor
+                    <!-- Material -->
+                    <div class="form-group">
+                        <label for="material" class="form-label required">الخامة</label>
+                        <select name="material" 
+                                id="material" 
+                                required
+                                class="form-select"
+                                onchange="updateMaterialPrice()">
+                            <option value="">اختر الخامة</option>
+                            @foreach($materials as $material)
+                                <option value="{{ $material->name }}" 
+                                        data-price="{{ $material->price ?? '' }}" 
+                                        {{ old('material') == $material->name ? 'selected' : '' }}>
+                                    {{ $material->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('material')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
                     </div>
-                    @error('rows_count')
-                        <p class="error-message">{{ $message }}</p>
-                    @enderror
-                </div>
 
                 <!-- Quantity -->
                 <div class="form-group">
@@ -489,26 +540,35 @@
                     </div>
                 </div>
 
-                <!-- Paper Width (calculated automatically) -->
+                <!-- Rows Count -->
                 <div class="form-group">
-                    <label for="paper_width" class="form-label">عرض الورق (سم)</label>
-                    <input type="number" 
-                           name="paper_width" 
-                           id="paper_width" 
-                           value="{{ old('paper_width') }}" 
-                           step="0.01"
-                           min="0"
-                           class="form-input"
-                           readonly
-                           style="background-color: #f3f4f6; cursor: not-allowed;"
-                           placeholder="سيتم الحساب تلقائياً">
-                    <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
-                        يتم الحساب تلقائياً: (العرض × عدد الصفوف) + ((عدد الصفوف - 1) × 0.3) + 1.2
-                    </small>
-                    @error('paper_width')
+                    <label class="form-label">عدد الصفوف</label>
+                    <div style="display: flex; gap: 0.75rem; margin-top: 0.5rem; flex-wrap: wrap;">
+                        @for($i = 1; $i <= 15; $i++)
+                        <label class="rows-count-card" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; cursor: pointer; padding: 0.875rem 1.25rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; min-width: 50px; text-align: center;">
+                            <input type="radio" 
+                                   name="rows_count" 
+                                   value="{{ $i }}" 
+                                   id="rows_count_{{ $i }}"
+                                   {{ old('rows_count', 1) == $i ? 'checked' : '' }}
+                                   style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                            <span style="font-size: 0.9375rem; font-weight: 600; color: #111827;">{{ $i }}</span>
+                        </label>
+                        @endfor
+                    </div>
+                    @error('rows_count')
                         <p class="error-message">{{ $message }}</p>
                     @enderror
                 </div>
+
+                <!-- Paper Width (calculated automatically, hidden, shown in sidebar) -->
+                <input type="hidden" 
+                       name="paper_width" 
+                       id="paper_width" 
+                       value="{{ old('paper_width') }}">
+                @error('paper_width')
+                    <p class="error-message">{{ $message }}</p>
+                @enderror
 
                 <!-- Gap Count, Waste Per Roll and Increase -->
                 <div class="form-grid">
@@ -560,188 +620,133 @@
                     </div>
                 </div>
 
-                <!-- Linear Meter (calculated automatically) -->
-                <div class="form-group">
-                    <label for="linear_meter" class="form-label">المتر الطولي 🔥</label>
-                    <input type="number" 
-                           name="linear_meter" 
-                           id="linear_meter" 
-                           value="{{ old('linear_meter') }}" 
-                           step="0.01"
-                           min="0"
-                           class="form-input"
-                           readonly
-                           style="background-color: #f3f4f6; cursor: not-allowed;"
-                           placeholder="سيتم الحساب تلقائياً">
-                    <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
-                        يتم الحساب تلقائياً: (الكمية × 1000 × (الطول + الجاب)) ÷ (100 × عدد الصفوف)
-                    </small>
-                    @error('linear_meter')
-                        <p class="error-message">{{ $message }}</p>
-                    @enderror
-                </div>
+                <!-- Linear Meter (calculated automatically, hidden, shown in sidebar) -->
+                <input type="hidden" 
+                       name="linear_meter" 
+                       id="linear_meter" 
+                       value="{{ old('linear_meter') }}">
+                @error('linear_meter')
+                    <p class="error-message">{{ $message }}</p>
+                @enderror
 
-                <!-- Rolls Count (calculated automatically) -->
-                <div class="form-group">
-                    <label for="rolls_count" class="form-label">عدد البكر</label>
-                    <input type="number" 
-                           name="rolls_count" 
-                           id="rolls_count" 
-                           value="{{ old('rolls_count') }}" 
-                           min="0"
-                           step="1"
-                           class="form-input"
-                           readonly
-                           style="background-color: #f3f4f6; cursor: not-allowed;"
-                           placeholder="سيتم الحساب تلقائياً">
-                    <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
-                        يتم الحساب تلقائياً: (المتر الطولي ÷ 1000) ثم التقريب إلى الرقم الأعلى
-                    </small>
-                </div>
+                <!-- Rolls Count (calculated automatically, hidden, shown in sidebar) -->
+                <input type="hidden" 
+                       name="rolls_count" 
+                       id="rolls_count" 
+                       value="{{ old('rolls_count') }}">
 
-                <!-- Waste (calculated automatically) -->
-                <div class="form-group">
-                    <label for="waste" class="form-label">الهالك</label>
-                    <input type="number" 
-                           name="waste" 
-                           id="waste" 
-                           value="{{ old('waste') }}" 
-                           min="0"
-                           step="1"
-                           class="form-input"
-                           readonly
-                           style="background-color: #f3f4f6; cursor: not-allowed;"
-                           placeholder="سيتم الحساب تلقائياً">
-                    <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
-                        يتم الحساب تلقائياً: عدد البكر × عدد الهالك للبكره
-                    </small>
-                </div>
+                <!-- Waste (calculated automatically, hidden, shown in sidebar) -->
+                <input type="hidden" 
+                       name="waste" 
+                       id="waste" 
+                       value="{{ old('waste') }}">
 
-                <!-- Waste Percentage (calculated automatically from wastes table) -->
-                <div class="form-group">
-                    <label for="waste_percentage" class="form-label">نسبة الهالك</label>
-                    <input type="number" 
-                           name="waste_percentage" 
-                           id="waste_percentage" 
-                           value="{{ old('waste_percentage') }}" 
-                           step="0.01"
-                           min="0"
-                           class="form-input"
-                           readonly
-                           style="background-color: #f3f4f6; cursor: not-allowed;"
-                           placeholder="سيتم الحساب تلقائياً">
-                    <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
-                        يتم الحساب تلقائياً بناءً على عدد الألوان المختار
-                    </small>
-                </div>
+                <!-- Waste Percentage (calculated automatically, hidden, shown in sidebar) -->
+                <input type="hidden" 
+                       name="waste_percentage" 
+                       id="waste_percentage" 
+                       value="{{ old('waste_percentage') }}">
 
-                <!-- Linear Meter with Waste (calculated automatically) -->
-                <div class="form-group">
-                    <label for="linear_meter_with_waste" class="form-label">المتر الطولي مضاف اليه الهالك</label>
-                    <input type="number" 
-                           name="linear_meter_with_waste" 
-                           id="linear_meter_with_waste" 
-                           value="{{ old('linear_meter_with_waste') }}" 
-                           step="0.01"
-                           min="0"
-                           class="form-input"
-                           readonly
-                           style="background-color: #f3f4f6; cursor: not-allowed;"
-                           placeholder="سيتم الحساب تلقائياً">
-                    <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
-                        يتم الحساب تلقائياً: المتر الطولي + الهالك + نسبة الهالك
-                    </small>
-                </div>
+                <!-- Linear Meter with Waste (calculated automatically, hidden, shown in sidebar) -->
+                <input type="hidden" 
+                       name="linear_meter_with_waste" 
+                       id="linear_meter_with_waste" 
+                       value="{{ old('linear_meter_with_waste') }}">
 
-                <!-- Square Meter (calculated automatically) -->
-                <div class="form-group">
-                    <label for="square_meter" class="form-label">المتر المربع</label>
-                    <input type="number" 
-                           name="square_meter" 
-                           id="square_meter" 
-                           value="{{ old('square_meter') }}" 
-                           step="0.01"
-                           min="0"
-                           class="form-input"
-                           readonly
-                           style="background-color: #f3f4f6; cursor: not-allowed;"
-                           placeholder="سيتم الحساب تلقائياً">
-                    <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
-                        يتم الحساب تلقائياً: (المتر الطولي مضاف اليه الهالك × عرض الورق) ÷ 100
-                    </small>
-                </div>
+                <!-- Square Meter (calculated automatically, hidden, shown in sidebar) -->
+                <input type="hidden" 
+                       name="square_meter" 
+                       id="square_meter" 
+                       value="{{ old('square_meter') }}">
 
-                <!-- Total Prices Sum (calculated automatically) -->
-                <div class="form-group">
-                    <label for="total_prices_sum" class="form-label">إجمالي المبلغ</label>
-                    <input type="number" 
-                           name="total_prices_sum" 
-                           id="total_prices_sum" 
-                           value="{{ old('total_prices_sum') }}" 
-                           step="0.01"
-                           min="0"
-                           class="form-input"
-                           readonly
-                           style="background-color: #f3f4f6; cursor: not-allowed;"
-                           placeholder="سيتم الحساب تلقائياً">
-                    <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
-                        يتم الحساب تلقائياً: سعر المتر الخام + سعر متر التصنيع + سعر الإضافي + سعر البصمة + سعر التكسير
-                    </small>
-                </div>
+                <!-- Total Prices Sum (calculated automatically, hidden, shown in sidebar) -->
+                <input type="hidden" 
+                       name="total_prices_sum" 
+                       id="total_prices_sum" 
+                       value="{{ old('total_prices_sum') }}">
 
-                <!-- Total Amount After Square Meter (calculated automatically) -->
-                <div class="form-group">
-                    <label for="total_amount" class="form-label">إجمالي المبلغ</label>
-                    <input type="number" 
-                           name="total_amount" 
-                           id="total_amount" 
-                           value="{{ old('total_amount') }}" 
-                           step="0.01"
-                           min="0"
-                           class="form-input"
-                           readonly
-                           style="background-color: #f3f4f6; cursor: not-allowed;"
-                           placeholder="سيتم الحساب تلقائياً">
-                    <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
-                        يتم الحساب تلقائياً: إجمالي المبلغ × المتر المربع
-                    </small>
-                </div>
+                <!-- Total Amount (calculated automatically, hidden, shown in sidebar) -->
+                <input type="hidden" 
+                       name="total_amount" 
+                       id="total_amount" 
+                       value="{{ old('total_amount') }}">
 
-                <!-- Total Order (calculated automatically) -->
-                <div class="form-group">
-                    <label for="total_order" class="form-label">إجمالي الطلب</label>
-                    <input type="number" 
-                           name="total_order" 
-                           id="total_order" 
-                           value="{{ old('total_order') }}" 
-                           step="0.01"
-                           min="0"
-                           class="form-input"
-                           readonly
-                           style="background-color: #f3f4f6; cursor: not-allowed;"
-                           placeholder="سيتم الحساب تلقائياً">
-                    <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
-                        يتم الحساب تلقائياً: إجمالي المبلغ + إجمالي التجهيزات
-                    </small>
-                </div>
+                <!-- Total Order (calculated automatically, hidden, shown in sidebar) -->
+                <input type="hidden" 
+                       name="total_order" 
+                       id="total_order" 
+                       value="{{ old('total_order') }}">
 
-                <!-- Price Per Thousand (calculated automatically) -->
-                <div class="form-group">
-                    <label for="price_per_thousand" class="form-label">سعر الف</label>
-                    <input type="number" 
-                           name="price_per_thousand" 
-                           id="price_per_thousand" 
-                           value="{{ old('price_per_thousand') }}" 
-                           step="0.01"
-                           min="0"
-                           class="form-input"
-                           readonly
-                           style="background-color: #f3f4f6; cursor: not-allowed;"
-                           placeholder="سيتم الحساب تلقائياً">
-                    <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
-                        يتم الحساب تلقائياً: إجمالي الطلب ÷ 1000
-                    </small>
-                </div>
+                <!-- Price Per Thousand (calculated automatically, hidden, shown in sidebar) -->
+                <input type="hidden" 
+                       name="price_per_thousand" 
+                       id="price_per_thousand" 
+                       value="{{ old('price_per_thousand') }}">
+
+                <!-- Total Preparations (calculated automatically, hidden, shown in sidebar) -->
+                <input type="hidden" 
+                       name="total_preparations" 
+                       id="total_preparations" 
+                       value="{{ old('total_preparations') }}">
+
+                <!-- التجهيزات والإضافات -->
+                <div style="margin-bottom: 2rem; padding: 1.5rem; background-color: #f9fafb; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
+                    <h3 style="font-size: 1rem; font-weight: 600; color: #111827; margin-bottom: 1.5rem;">التجهيزات والإضافات</h3>
+                    
+                    <!-- العدد -->
+                    <div class="form-group">
+                        <label class="form-label">العدد</label>
+                        <div style="display: flex; gap: 0.75rem; margin-top: 0.5rem; flex-wrap: wrap;">
+                            @for($i = 1; $i <= 6; $i++)
+                            <label style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; cursor: pointer; padding: 0.875rem 1.25rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; min-width: 50px; text-align: center; {{ old('film_count') == $i ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                                <input type="radio" 
+                                       name="film_count" 
+                                       value="{{ $i }}" 
+                                       id="film_count_{{ $i }}"
+                                       {{ old('film_count') == $i ? 'checked' : '' }}
+                                       onchange="updateFilmCountStyle()"
+                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                                <span style="font-size: 0.9375rem; font-weight: 600; color: #111827;">{{ $i }}</span>
+                            </label>
+                            @endfor
+                        </div>
+                        @error('film_count')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- سعر الفيلم الواحد -->
+                    <div class="form-group">
+                        <label for="film_price" class="form-label">سعر الفيلم الواحد</label>
+                        <input type="number" 
+                               name="film_price" 
+                               id="film_price" 
+                               value="{{ old('film_price', 850) }}" 
+                               step="0.01"
+                               min="0"
+                               class="form-input"
+                               placeholder="0.00">
+                        @error('film_price')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Sales Percentage -->
+                    <div class="form-group">
+                        <label for="sales_percentage" class="form-label">نسبة المبيعات</label>
+                        <input type="number" 
+                               name="sales_percentage" 
+                               id="sales_percentage" 
+                               value="{{ old('sales_percentage', 10) }}" 
+                               step="0.01"
+                               min="0"
+                               max="100"
+                               class="form-input"
+                               placeholder="0.00">
+                        @error('sales_percentage')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
 
                     <!-- Additions -->
                     <div class="form-group">
@@ -988,84 +993,6 @@
                                data-default-price="{{ $externalBreakingPrice ?? 4 }}"
                                {{ old('external_breaking') == 'yes' ? 'required' : '' }}>
                         @error('external_breaking_price')
-                            <p class="error-message">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
-
-                <!-- التجهيزات -->
-                <div style="margin-bottom: 2rem; padding: 1.5rem; background-color: #f9fafb; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
-                    <h3 style="font-size: 1rem; font-weight: 600; color: #111827; margin-bottom: 1.5rem;">التجهيزات</h3>
-                    
-                    <!-- العدد -->
-                    <div class="form-group">
-                        <label class="form-label">العدد</label>
-                        <div style="display: flex; gap: 0.75rem; margin-top: 0.5rem; flex-wrap: wrap;">
-                            @for($i = 1; $i <= 6; $i++)
-                            <label style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; cursor: pointer; padding: 0.875rem 1.25rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; min-width: 50px; text-align: center; {{ old('film_count') == $i ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
-                                <input type="radio" 
-                                       name="film_count" 
-                                       value="{{ $i }}" 
-                                       id="film_count_{{ $i }}"
-                                       {{ old('film_count') == $i ? 'checked' : '' }}
-                                       onchange="updateFilmCountStyle()"
-                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
-                                <span style="font-size: 0.9375rem; font-weight: 600; color: #111827;">{{ $i }}</span>
-                            </label>
-                            @endfor
-                        </div>
-                        @error('film_count')
-                            <p class="error-message">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- سعر الفيلم الواحد -->
-                    <div class="form-group">
-                        <label for="film_price" class="form-label">سعر الفيلم الواحد</label>
-                        <input type="number" 
-                               name="film_price" 
-                               id="film_price" 
-                               value="{{ old('film_price', 850) }}" 
-                               step="0.01"
-                               min="0"
-                               class="form-input"
-                               placeholder="0.00">
-                        @error('film_price')
-                            <p class="error-message">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Total Preparations (calculated automatically) -->
-                    <div class="form-group">
-                        <label for="total_preparations" class="form-label">إجمالي التجهيزات</label>
-                        <input type="number" 
-                               name="total_preparations" 
-                               id="total_preparations" 
-                               value="{{ old('total_preparations') }}" 
-                               step="0.01"
-                               min="0"
-                               class="form-input"
-                               readonly
-                               style="background-color: #f3f4f6; cursor: not-allowed;"
-                               placeholder="سيتم الحساب تلقائياً">
-                        <small style="display: block; margin-top: 0.5rem; font-size: 0.75rem; color: #6b7280;">
-                            يتم الحساب تلقائياً: (سعر الفيلم الواحد × العدد) + سعر السكينة
-                        </small>
-                    </div>
-
-                    <!-- Sales Percentage -->
-                    <div class="form-group">
-                        <label for="sales_percentage" class="form-label">نسبة المبيعات</label>
-                        <input type="number" 
-                               name="sales_percentage" 
-                               id="sales_percentage" 
-                               value="{{ old('sales_percentage', 10) }}" 
-                               step="0.01"
-                               min="0"
-                               max="100"
-                               class="form-input"
-                               placeholder="0.00">
-                        @error('sales_percentage')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
                     </div>
@@ -1709,6 +1636,9 @@
             
             // Update linear meter with waste after waste percentage is updated
             calculateLinearMeterWithWaste();
+            
+            // Update sidebar calculations
+            updateSidebarCalculations();
         }
 
         // Update rows count style
@@ -1970,6 +1900,9 @@
             
             // Update square meter after paper width is calculated
             calculateSquareMeter();
+            
+            // Update sidebar after all calculations
+            updateSidebarCalculations();
         }
 
         // Calculate linear meter automatically
@@ -2030,6 +1963,9 @@
                 rollsCountInput.value = '';
                 calculateWaste(0);
             }
+            
+            // Update sidebar calculations
+            updateSidebarCalculations();
         }
 
         // Calculate waste automatically
@@ -2050,6 +1986,9 @@
             
             // Update linear meter with waste after waste is calculated
             calculateLinearMeterWithWaste();
+            
+            // Update sidebar calculations
+            updateSidebarCalculations();
         }
 
         // Calculate linear meter with waste automatically
@@ -2075,6 +2014,9 @@
             
             // Update square meter after linear meter with waste is calculated
             calculateSquareMeter();
+            
+            // Update sidebar calculations
+            updateSidebarCalculations();
         }
 
         // Calculate square meter automatically
@@ -2098,6 +2040,9 @@
             
             // Recalculate total amount when square meter changes
             calculateTotalAmount();
+            
+            // Update sidebar calculations
+            updateSidebarCalculations();
         }
 
         // Calculate total amount automatically
@@ -2149,6 +2094,9 @@
             
             // Recalculate total order when total amount changes
             calculateTotalOrder();
+            
+            // Update sidebar calculations
+            updateSidebarCalculations();
         }
 
         // Calculate total preparations automatically
@@ -2178,6 +2126,9 @@
             
             // Recalculate total order when preparations change
             calculateTotalOrder();
+            
+            // Update sidebar calculations
+            updateSidebarCalculations();
         }
 
         // Calculate total order automatically
@@ -2202,6 +2153,9 @@
             
             // Recalculate price per thousand when total order changes
             calculatePricePerThousand();
+            
+            // Update sidebar calculations
+            updateSidebarCalculations();
         }
 
         // Calculate price per thousand automatically
@@ -2219,6 +2173,9 @@
             } else {
                 pricePerThousandInput.value = '';
             }
+            
+            // Update sidebar calculations
+            updateSidebarCalculations();
         }
 
         // Update sidebar calculations
@@ -2228,99 +2185,173 @@
             const width = parseFloat(document.getElementById('width')?.value) || 0;
             const length = parseFloat(document.getElementById('length')?.value) || 0;
             const quantity = parseFloat(document.getElementById('quantity')?.value) || 0;
+            const gapCount = parseFloat(document.getElementById('gap_count')?.value) || 0;
             
             // Update paper width
             const paperWidthValue = document.getElementById('calc_paper_width_value');
-            if (rowsCount > 0 && width > 0) {
-                // Formula: (العرض × عدد الصفوف) + (عدد الصفوف - 1) + 0.3 + 1.2
-                const paperWidth = (width * rowsCount) + (((rowsCount - 1) * 0.3) + 1.2);
-                if (paperWidthValue) {
+            const paperWidthInput = document.getElementById('paper_width');
+            if (paperWidthValue && paperWidthInput) {
+                const paperWidth = parseFloat(paperWidthInput.value) || 0;
+                if (paperWidth > 0) {
                     paperWidthValue.textContent = paperWidth.toFixed(2);
                     paperWidthValue.classList.remove('empty');
-                }
-            } else {
-                if (paperWidthValue) {
+                } else {
                     paperWidthValue.textContent = '-';
                     paperWidthValue.classList.add('empty');
                 }
             }
             
-            // Update rows count
-            const rowsCountValue = document.getElementById('calc_rows_count_value');
-            if (rowsCountValue) {
-                if (rowsCount > 0) {
-                    rowsCountValue.textContent = rowsCount;
-                    rowsCountValue.classList.remove('empty');
-                } else {
-                    rowsCountValue.textContent = '-';
-                    rowsCountValue.classList.add('empty');
-                }
-            }
-            
-            // Update width
-            const widthValue = document.getElementById('calc_width_value');
-            if (widthValue) {
-                if (width > 0) {
-                    widthValue.textContent = width.toFixed(2);
-                    widthValue.classList.remove('empty');
-                } else {
-                    widthValue.textContent = '-';
-                    widthValue.classList.add('empty');
-                }
-            }
-            
-            // Update length
-            const lengthValue = document.getElementById('calc_length_value');
-            if (lengthValue) {
-                if (length > 0) {
-                    lengthValue.textContent = length.toFixed(2);
-                    lengthValue.classList.remove('empty');
-                } else {
-                    lengthValue.textContent = '-';
-                    lengthValue.classList.add('empty');
-                }
-            }
-            
-            // Update quantity
-            const quantityValue = document.getElementById('calc_quantity_value');
-            if (quantityValue) {
-                if (quantity > 0) {
-                    quantityValue.textContent = quantity.toLocaleString('ar-EG');
-                    quantityValue.classList.remove('empty');
-                } else {
-                    quantityValue.textContent = '-';
-                    quantityValue.classList.add('empty');
-                }
-            }
-            
-            // Calculate and update total area (width * length * quantity)
-            const totalAreaValue = document.getElementById('calc_total_area_value');
-            if (totalAreaValue) {
-                if (width > 0 && length > 0 && quantity > 0) {
-                    const totalArea = (width * length * quantity).toFixed(2);
-                    totalAreaValue.textContent = parseFloat(totalArea).toLocaleString('ar-EG');
-                    totalAreaValue.classList.remove('empty');
-                } else {
-                    totalAreaValue.textContent = '-';
-                    totalAreaValue.classList.add('empty');
-                }
-            }
-            
             // Update linear meter
-            const quantityForLinearMeter = parseFloat(document.getElementById('quantity')?.value) || 0;
-            const gapCount = parseFloat(document.getElementById('gap_count')?.value) || 0;
-            // rowsCountRadio and rowsCount are already defined above
-            
             const linearMeterValue = document.getElementById('calc_linear_meter_value');
-            if (linearMeterValue) {
-                if (quantityForLinearMeter > 0 && length > 0 && rowsCount > 0) {
-                    // Formula: (الكمية × 1000 × (الطول + الجاب)) ÷ (100 × عدد_الصفوف)
-                    const linearMeter = (quantityForLinearMeter * 1000 * (length + gapCount)) / (100 * rowsCount);
+            const linearMeterInput = document.getElementById('linear_meter');
+            if (linearMeterValue && linearMeterInput) {
+                const linearMeter = parseFloat(linearMeterInput.value) || 0;
+                if (linearMeter > 0) {
                     linearMeterValue.textContent = linearMeter.toFixed(2);
                     linearMeterValue.classList.remove('empty');
                 } else {
                     linearMeterValue.textContent = '-';
                     linearMeterValue.classList.add('empty');
+                }
+            }
+            
+            // Update rolls count
+            const rollsCountValue = document.getElementById('calc_rolls_count_value');
+            const rollsCountInput = document.getElementById('rolls_count');
+            if (rollsCountValue && rollsCountInput) {
+                const rollsCount = parseFloat(rollsCountInput.value) || 0;
+                if (rollsCount > 0) {
+                    rollsCountValue.textContent = rollsCount;
+                    rollsCountValue.classList.remove('empty');
+                } else {
+                    rollsCountValue.textContent = '-';
+                    rollsCountValue.classList.add('empty');
+                }
+            }
+            
+            // Update waste
+            const wasteValue = document.getElementById('calc_waste_value');
+            const wasteInput = document.getElementById('waste');
+            if (wasteValue && wasteInput) {
+                const waste = parseFloat(wasteInput.value) || 0;
+                if (waste > 0) {
+                    wasteValue.textContent = waste;
+                    wasteValue.classList.remove('empty');
+                } else {
+                    wasteValue.textContent = '-';
+                    wasteValue.classList.add('empty');
+                }
+            }
+            
+            // Update waste percentage
+            const wastePercentageValue = document.getElementById('calc_waste_percentage_value');
+            const wastePercentageInput = document.getElementById('waste_percentage');
+            if (wastePercentageValue && wastePercentageInput) {
+                const wastePercentage = parseFloat(wastePercentageInput.value) || 0;
+                if (wastePercentage > 0) {
+                    wastePercentageValue.textContent = wastePercentage.toFixed(2);
+                    wastePercentageValue.classList.remove('empty');
+                } else {
+                    wastePercentageValue.textContent = '-';
+                    wastePercentageValue.classList.add('empty');
+                }
+            }
+            
+            // Update linear meter with waste
+            const linearMeterWithWasteValue = document.getElementById('calc_linear_meter_with_waste_value');
+            const linearMeterWithWasteInput = document.getElementById('linear_meter_with_waste');
+            if (linearMeterWithWasteValue && linearMeterWithWasteInput) {
+                const linearMeterWithWaste = parseFloat(linearMeterWithWasteInput.value) || 0;
+                if (linearMeterWithWaste > 0) {
+                    linearMeterWithWasteValue.textContent = linearMeterWithWaste.toFixed(2);
+                    linearMeterWithWasteValue.classList.remove('empty');
+                } else {
+                    linearMeterWithWasteValue.textContent = '-';
+                    linearMeterWithWasteValue.classList.add('empty');
+                }
+            }
+            
+            // Update square meter
+            const squareMeterValue = document.getElementById('calc_square_meter_value');
+            const squareMeterInput = document.getElementById('square_meter');
+            if (squareMeterValue && squareMeterInput) {
+                const squareMeter = parseFloat(squareMeterInput.value) || 0;
+                if (squareMeter > 0) {
+                    squareMeterValue.textContent = squareMeter.toFixed(2);
+                    squareMeterValue.classList.remove('empty');
+                } else {
+                    squareMeterValue.textContent = '-';
+                    squareMeterValue.classList.add('empty');
+                }
+            }
+            
+            // Update total prices sum
+            const totalPricesSumValue = document.getElementById('calc_total_prices_sum_value');
+            const totalPricesSumInput = document.getElementById('total_prices_sum');
+            if (totalPricesSumValue && totalPricesSumInput) {
+                const totalPricesSum = parseFloat(totalPricesSumInput.value) || 0;
+                if (totalPricesSum > 0) {
+                    totalPricesSumValue.textContent = totalPricesSum.toFixed(2);
+                    totalPricesSumValue.classList.remove('empty');
+                } else {
+                    totalPricesSumValue.textContent = '-';
+                    totalPricesSumValue.classList.add('empty');
+                }
+            }
+            
+            // Update total amount
+            const totalAmountValue = document.getElementById('calc_total_amount_value');
+            const totalAmountInput = document.getElementById('total_amount');
+            if (totalAmountValue && totalAmountInput) {
+                const totalAmount = parseFloat(totalAmountInput.value) || 0;
+                if (totalAmount > 0) {
+                    totalAmountValue.textContent = totalAmount.toFixed(2);
+                    totalAmountValue.classList.remove('empty');
+                } else {
+                    totalAmountValue.textContent = '-';
+                    totalAmountValue.classList.add('empty');
+                }
+            }
+            
+            // Update total preparations
+            const totalPreparationsValue = document.getElementById('calc_total_preparations_value');
+            const totalPreparationsInput = document.getElementById('total_preparations');
+            if (totalPreparationsValue && totalPreparationsInput) {
+                const totalPreparations = parseFloat(totalPreparationsInput.value) || 0;
+                if (totalPreparations > 0) {
+                    totalPreparationsValue.textContent = totalPreparations.toFixed(2);
+                    totalPreparationsValue.classList.remove('empty');
+                } else {
+                    totalPreparationsValue.textContent = '-';
+                    totalPreparationsValue.classList.add('empty');
+                }
+            }
+            
+            // Update total order
+            const totalOrderValue = document.getElementById('calc_total_order_value');
+            const totalOrderInput = document.getElementById('total_order');
+            if (totalOrderValue && totalOrderInput) {
+                const totalOrder = parseFloat(totalOrderInput.value) || 0;
+                if (totalOrder > 0) {
+                    totalOrderValue.textContent = totalOrder.toFixed(2);
+                    totalOrderValue.classList.remove('empty');
+                } else {
+                    totalOrderValue.textContent = '-';
+                    totalOrderValue.classList.add('empty');
+                }
+            }
+            
+            // Update price per thousand
+            const pricePerThousandValue = document.getElementById('calc_price_per_thousand_value');
+            const pricePerThousandInput = document.getElementById('price_per_thousand');
+            if (pricePerThousandValue && pricePerThousandInput) {
+                const pricePerThousand = parseFloat(pricePerThousandInput.value) || 0;
+                if (pricePerThousand > 0) {
+                    pricePerThousandValue.textContent = pricePerThousand.toFixed(2);
+                    pricePerThousandValue.classList.remove('empty');
+                } else {
+                    pricePerThousandValue.textContent = '-';
+                    pricePerThousandValue.classList.add('empty');
                 }
             }
         }
@@ -2541,6 +2572,9 @@
                     calculateWaste(rollsCount);
                 });
             }
+            
+            // Initialize sidebar calculations on page load
+            updateSidebarCalculations();
         });
 
     </script>
