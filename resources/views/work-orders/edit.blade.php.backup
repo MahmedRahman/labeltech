@@ -1,6 +1,6 @@
 <x-app-layout>
     @php
-        $title = 'تعديل أمر الشغل';
+        $title = 'إضافة أمر شغل جديد';
     @endphp
 
     <!-- Select2 CSS -->
@@ -324,13 +324,12 @@
         <div class="form-container">
         <div class="form-card">
             <div class="form-header">
-                <h2>تعديل أمر الشغل</h2>
-                <p>تعديل بيانات أمر الشغل رقم: {{ $workOrder->order_number }}</p>
+                <h2>إضافة أمر شغل جديد</h2>
+                <p>املأ البيانات التالية لإضافة أمر شغل جديد</p>
             </div>
 
-            <form action="{{ route('work-orders.update', $workOrder) }}" method="POST">
+            <form action="{{ route('work-orders.store') }}" method="POST">
                 @csrf
-                @method('PUT')
 
                 <!-- معلومات أساسية -->
                 <div style="margin-bottom: 2rem; padding: 1.5rem; background-color: #f9fafb; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
@@ -340,7 +339,7 @@
                     <input type="hidden" 
                            name="order_number" 
                            id="order_number" 
-                           value="{{ old('order_number', $workOrder->order_number ?? null) }}">
+                           value="{{ old('order_number') }}">
                     @error('order_number')
                         <p class="error-message">{{ $message }}</p>
                     @enderror
@@ -351,7 +350,7 @@
                         <select name="client_id" id="client_id" required class="form-select client-select">
                             <option value="">اختر العميل</option>
                             @foreach($clients as $client)
-                                <option value="{{ $client->id }}" {{ old('client_id', $workOrder->client_id ?? null) == $client->id ? 'selected' : '' }}>
+                                <option value="{{ $client->id }}" {{ old('client_id') == $client->id ? 'selected' : '' }}>
                                     {{ $client->name }} @if($client->company) - {{ $client->company }} @endif
                                 </option>
                             @endforeach
@@ -367,7 +366,7 @@
                         <input type="text" 
                                name="job_name" 
                                id="job_name" 
-                               value="{{ old('job_name', $workOrder->job_name ?? null) }}" 
+                               value="{{ old('job_name') }}" 
                                class="form-input"
                                placeholder="أدخل اسم الشغلانه">
                         @error('job_name')
@@ -379,10 +378,10 @@
                     <div class="form-group" style="display: none;">
                         <label for="status" class="form-label">الحالة</label>
                         <select name="status" id="status" class="form-select">
-                            <option value="pending" {{ old('status', $workOrder->status ?? 'pending') == 'pending' ? 'selected' : '' }}>قيد الانتظار</option>
-                            <option value="in_progress" {{ old('status', $workOrder->status ?? null) == 'in_progress' ? 'selected' : '' }}>قيد التنفيذ</option>
-                            <option value="completed" {{ old('status', $workOrder->status ?? null) == 'completed' ? 'selected' : '' }}>مكتمل</option>
-                            <option value="cancelled" {{ old('status', $workOrder->status ?? null) == 'cancelled' ? 'selected' : '' }}>ملغي</option>
+                            <option value="pending" {{ old('status', 'pending') == 'pending' ? 'selected' : '' }}>قيد الانتظار</option>
+                            <option value="in_progress" {{ old('status') == 'in_progress' ? 'selected' : '' }}>قيد التنفيذ</option>
+                            <option value="completed" {{ old('status') == 'completed' ? 'selected' : '' }}>مكتمل</option>
+                            <option value="cancelled" {{ old('status') == 'cancelled' ? 'selected' : '' }}>ملغي</option>
                         </select>
                         @error('status')
                             <p class="error-message">{{ $message }}</p>
@@ -404,7 +403,7 @@
                                        name="number_of_colors" 
                                        value="{{ $i }}" 
                                        id="number_of_colors_{{ $i }}"
-                                       {{ old('number_of_colors', $workOrder->number_of_colors ?? 4) == $i ? 'checked' : '' }}
+                                       {{ old('number_of_colors', 4) == $i ? 'checked' : '' }}
                                        required
                                        style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
                                 <span style="font-size: 1rem; font-weight: 600; color: #111827;">{{ $i }}</span>
@@ -427,7 +426,7 @@
                             @foreach($materials as $material)
                                 <option value="{{ $material->name }}" 
                                         data-price="{{ $material->price ?? '' }}" 
-                                        {{ old('material', $workOrder->material ?? null) == $material->name ? 'selected' : '' }}>
+                                        {{ old('material') == $material->name ? 'selected' : '' }}>
                                     {{ $material->name }}
                                 </option>
                             @endforeach
@@ -443,7 +442,7 @@
                     <input type="number" 
                            name="quantity" 
                            id="quantity" 
-                           value="{{ old('quantity', $workOrder->quantity ?? null) }}" 
+                           value="{{ old('quantity') }}" 
                            required
                            min="1"
                            class="form-input"
@@ -460,7 +459,7 @@
                         <input type="number" 
                                name="width" 
                                id="width" 
-                               value="{{ old('width', $workOrder->width ?? null) }}" 
+                               value="{{ old('width') }}" 
                                step="0.01"
                                min="0"
                                class="form-input"
@@ -475,7 +474,7 @@
                         <input type="number" 
                                name="length" 
                                id="length" 
-                               value="{{ old('length', $workOrder->length ?? null) }}" 
+                               value="{{ old('length') }}" 
                                step="0.01"
                                min="0"
                                class="form-input"
@@ -496,7 +495,7 @@
                                    name="rows_count" 
                                    value="{{ $i }}" 
                                    id="rows_count_{{ $i }}"
-                                   {{ old('rows_count', $workOrder->rows_count ?? 1) == $i ? 'checked' : '' }}
+                                   {{ old('rows_count', 1) == $i ? 'checked' : '' }}
                                    style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
                             <span style="font-size: 0.9375rem; font-weight: 600; color: #111827;">{{ $i }}</span>
                         </label>
@@ -511,7 +510,7 @@
                 <input type="hidden" 
                        name="paper_width" 
                        id="paper_width" 
-                       value="{{ old('paper_width', $workOrder->paper_width ?? null) }}">
+                       value="{{ old('paper_width') }}">
                 @error('paper_width')
                     <p class="error-message">{{ $message }}</p>
                 @enderror
@@ -523,7 +522,7 @@
                         <input type="number" 
                                name="gap_count" 
                                id="gap_count" 
-                               value="{{ old('gap_count', $workOrder->gap_count ?? 0.4) }}" 
+                               value="{{ old('gap_count', 0.4) }}" 
                                min="0"
                                step="0.01"
                                class="form-input"
@@ -539,7 +538,7 @@
                         <input type="number" 
                                name="waste_per_roll" 
                                id="waste_per_roll" 
-                               value="{{ old('waste_per_roll', $workOrder->waste_per_roll ?? 20) }}" 
+                               value="{{ old('waste_per_roll', 20) }}" 
                                min="0"
                                step="1"
                                class="form-input"
@@ -563,7 +562,7 @@
                 <input type="hidden" 
                        name="linear_meter" 
                        id="linear_meter" 
-                       value="{{ old('linear_meter', $workOrder->linear_meter ?? null) }}">
+                       value="{{ old('linear_meter') }}">
                 @error('linear_meter')
                     <p class="error-message">{{ $message }}</p>
                 @enderror
@@ -572,61 +571,61 @@
                 <input type="hidden" 
                        name="rolls_count" 
                        id="rolls_count" 
-                       value="{{ old('rolls_count', $workOrder->rolls_count ?? null) }}">
+                       value="{{ old('rolls_count') }}">
 
                 <!-- Waste (calculated automatically, hidden, shown in sidebar) -->
                 <input type="hidden" 
                        name="waste" 
                        id="waste" 
-                       value="{{ old('waste', $workOrder->waste ?? null) }}">
+                       value="{{ old('waste') }}">
 
                 <!-- Waste Percentage (calculated automatically, hidden, shown in sidebar) -->
                 <input type="hidden" 
                        name="waste_percentage" 
                        id="waste_percentage" 
-                       value="{{ old('waste_percentage', $workOrder->waste_percentage ?? null) }}">
+                       value="{{ old('waste_percentage') }}">
 
                 <!-- Linear Meter with Waste (calculated automatically, hidden, shown in sidebar) -->
                 <input type="hidden" 
                        name="linear_meter_with_waste" 
                        id="linear_meter_with_waste" 
-                       value="{{ old('linear_meter_with_waste', $workOrder->linear_meter_with_waste ?? null) }}">
+                       value="{{ old('linear_meter_with_waste') }}">
 
                 <!-- Square Meter (calculated automatically, hidden, shown in sidebar) -->
                 <input type="hidden" 
                        name="square_meter" 
                        id="square_meter" 
-                       value="{{ old('square_meter', $workOrder->square_meter ?? null) }}">
+                       value="{{ old('square_meter') }}">
 
                 <!-- Total Prices Sum (calculated automatically, hidden, shown in sidebar) -->
                 <input type="hidden" 
                        name="total_prices_sum" 
                        id="total_prices_sum" 
-                       value="{{ old('total_prices_sum', $workOrder->total_prices_sum ?? null) }}">
+                       value="{{ old('total_prices_sum') }}">
 
                 <!-- Total Amount (calculated automatically, hidden, shown in sidebar) -->
                 <input type="hidden" 
                        name="total_amount" 
                        id="total_amount" 
-                       value="{{ old('total_amount', $workOrder->total_amount ?? null) }}">
+                       value="{{ old('total_amount') }}">
 
                 <!-- Total Order (calculated automatically, hidden, shown in sidebar) -->
                 <input type="hidden" 
                        name="total_order" 
                        id="total_order" 
-                       value="{{ old('total_order', $workOrder->total_order ?? null) }}">
+                       value="{{ old('total_order') }}">
 
                 <!-- Price Per Thousand (calculated automatically, hidden, shown in sidebar) -->
                 <input type="hidden" 
                        name="price_per_thousand" 
                        id="price_per_thousand" 
-                       value="{{ old('price_per_thousand', $workOrder->price_per_thousand ?? null) }}">
+                       value="{{ old('price_per_thousand') }}">
 
                 <!-- Total Preparations (calculated automatically, hidden, shown in sidebar) -->
                 <input type="hidden" 
                        name="total_preparations" 
                        id="total_preparations" 
-                       value="{{ old('total_preparations', $workOrder->total_preparations ?? null) }}">
+                       value="{{ old('total_preparations') }}">
 
                 <!-- التجهيزات والإضافات -->
                 <div style="margin-bottom: 2rem; padding: 1.5rem; background-color: #f9fafb; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
@@ -637,12 +636,12 @@
                         <label class="form-label">العدد</label>
                         <div style="display: flex; gap: 0.75rem; margin-top: 0.5rem; flex-wrap: wrap;">
                             @for($i = 1; $i <= 6; $i++)
-                            <label style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; cursor: pointer; padding: 0.875rem 1.25rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; min-width: 50px; text-align: center; {{ old('film_count', $workOrder->film_count ?? null) == $i ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                            <label style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; cursor: pointer; padding: 0.875rem 1.25rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; min-width: 50px; text-align: center; {{ old('film_count') == $i ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
                                 <input type="radio" 
                                        name="film_count" 
                                        value="{{ $i }}" 
                                        id="film_count_{{ $i }}"
-                                       {{ old('film_count', $workOrder->film_count ?? null) == $i ? 'checked' : '' }}
+                                       {{ old('film_count') == $i ? 'checked' : '' }}
                                        onchange="updateFilmCountStyle()"
                                        style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
                                 <span style="font-size: 0.9375rem; font-weight: 600; color: #111827;">{{ $i }}</span>
@@ -660,7 +659,7 @@
                         <input type="number" 
                                name="film_price" 
                                id="film_price" 
-                               value="{{ old('film_price', $workOrder->film_price ?? 850) }}" 
+                               value="{{ old('film_price', 850) }}" 
                                step="0.01"
                                min="0"
                                class="form-input"
@@ -676,7 +675,7 @@
                         <input type="number" 
                                name="sales_percentage" 
                                id="sales_percentage" 
-                               value="{{ old('sales_percentage', $workOrder->sales_percentage ?? 10) }}" 
+                               value="{{ old('sales_percentage', 10) }}" 
                                step="0.01"
                                min="0"
                                max="100"
@@ -691,23 +690,23 @@
                     <div class="form-group">
                         <label class="form-label">الإضافات المطلوبة</label>
                         <div style="display: flex; gap: 1rem; margin-top: 0.5rem; flex-wrap: wrap;">
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('additions', $workOrder->additions ?? 'لا يوجد') == 'لا يوجد' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('additions', 'لا يوجد') == 'لا يوجد' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
                                 <input type="radio" 
                                        name="additions" 
                                        value="لا يوجد" 
                                        data-price="0"
-                                       {{ old('additions', $workOrder->additions ?? 'لا يوجد') == 'لا يوجد' ? 'checked' : '' }}
+                                       {{ old('additions', 'لا يوجد') == 'لا يوجد' ? 'checked' : '' }}
                                        onchange="updateAdditionPrice()"
                                        style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
                                 <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">لا يوجد</span>
                             </label>
                             @foreach($additions as $addition)
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('additions', $workOrder->additions ?? null) == $addition->name ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('additions') == $addition->name ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
                                 <input type="radio" 
                                        name="additions" 
                                        value="{{ $addition->name }}" 
                                        data-price="{{ $addition->price }}"
-                                       {{ old('additions', $workOrder->additions ?? null) == $addition->name ? 'checked' : '' }}
+                                       {{ old('additions') == $addition->name ? 'checked' : '' }}
                                        onchange="updateAdditionPrice()"
                                        style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
                                 <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">{{ $addition->name }}</span>
@@ -720,12 +719,12 @@
                     </div>
 
                     <!-- Addition Price (shown when addition is selected) -->
-                    <div id="addition_price_group" class="form-group" style="display: {{ old('additions', $workOrder->additions ?? 'لا يوجد') != 'لا يوجد' ? 'block' : 'none' }};">
+                    <div id="addition_price_group" class="form-group" style="display: {{ old('additions', 'لا يوجد') != 'لا يوجد' ? 'block' : 'none' }};">
                         <label for="addition_price" class="form-label">سعر الإضافة</label>
                         <input type="number" 
                                name="addition_price" 
                                id="addition_price" 
-                               value="{{ old('addition_price', $workOrder->addition_price ?? null) }}" 
+                               value="{{ old('addition_price') }}" 
                                step="0.01"
                                min="0"
                                class="form-input"
@@ -744,22 +743,22 @@
                     <div class="form-group">
                         <label class="form-label">البصمة</label>
                         <div style="display: flex; gap: 2rem; margin-top: 0.5rem;">
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('fingerprint', $workOrder->fingerprint ?? 'no') == 'no' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('fingerprint', 'no') == 'no' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
                                 <input type="radio" 
                                        name="fingerprint" 
                                        value="no" 
                                        id="fingerprint_no"
-                                       {{ old('fingerprint', $workOrder->fingerprint ?? 'no') == 'no' ? 'checked' : '' }}
+                                       {{ old('fingerprint', 'no') == 'no' ? 'checked' : '' }}
                                        onchange="toggleFingerprintPrice()"
                                        style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
                                 <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">لا يوجد</span>
                             </label>
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('fingerprint', $workOrder->fingerprint ?? null) == 'yes' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('fingerprint') == 'yes' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
                                 <input type="radio" 
                                        name="fingerprint" 
                                        value="yes" 
                                        id="fingerprint_yes"
-                                       {{ old('fingerprint', $workOrder->fingerprint ?? null) == 'yes' ? 'checked' : '' }}
+                                       {{ old('fingerprint') == 'yes' ? 'checked' : '' }}
                                        onchange="toggleFingerprintPrice()"
                                        style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
                                 <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">موجود</span>
@@ -771,17 +770,17 @@
                     </div>
 
                     <!-- Fingerprint Price (shown when fingerprint is yes) -->
-                    <div id="fingerprint_price_group" class="form-group" style="display: {{ old('fingerprint', $workOrder->fingerprint ?? null) == 'yes' ? 'block' : 'none' }};">
+                    <div id="fingerprint_price_group" class="form-group" style="display: {{ old('fingerprint') == 'yes' ? 'block' : 'none' }};">
                         <label for="fingerprint_price" class="form-label">سعر البصمة</label>
                         <input type="number" 
                                name="fingerprint_price" 
                                id="fingerprint_price" 
-                               value="{{ old('fingerprint_price', $workOrder->fingerprint_price ?? 16) }}" 
+                               value="{{ old('fingerprint_price', 16) }}" 
                                step="0.01"
                                min="0"
                                class="form-input"
                                placeholder="0.00"
-                               {{ old('fingerprint', $workOrder->fingerprint ?? null) == 'yes' ? 'required' : '' }}>
+                               {{ old('fingerprint') == 'yes' ? 'required' : '' }}>
                         @error('fingerprint_price')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
@@ -791,22 +790,22 @@
                     <div class="form-group">
                         <label class="form-label">اتجاه اللف</label>
                         <div style="display: flex; gap: 2rem; margin-top: 0.5rem; flex-wrap: wrap;">
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ !in_array(old('winding_direction', $workOrder->winding_direction ?? null), ['clockwise', 'counterclockwise']) ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ !in_array(old('winding_direction'), ['clockwise', 'counterclockwise']) ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
                                 <input type="radio" 
                                        name="winding_direction" 
                                        value="no" 
                                        id="winding_direction_no"
-                                       {{ !in_array(old('winding_direction', $workOrder->winding_direction ?? null), ['clockwise', 'counterclockwise']) ? 'checked' : '' }}
+                                       {{ !in_array(old('winding_direction'), ['clockwise', 'counterclockwise']) ? 'checked' : '' }}
                                        onchange="toggleWindingDirectionOptions()"
                                        style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
                                 <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">لا يوجد</span>
                             </label>
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ in_array(old('winding_direction', $workOrder->winding_direction ?? null), ['clockwise', 'counterclockwise']) ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ in_array(old('winding_direction'), ['clockwise', 'counterclockwise']) ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
                                 <input type="radio" 
                                        name="winding_direction" 
                                        value="yes" 
                                        id="winding_direction_yes"
-                                       {{ in_array(old('winding_direction', $workOrder->winding_direction ?? null), ['clockwise', 'counterclockwise']) ? 'checked' : '' }}
+                                       {{ in_array(old('winding_direction'), ['clockwise', 'counterclockwise']) ? 'checked' : '' }}
                                        onchange="toggleWindingDirectionOptions()"
                                        style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
                                 <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">يوجد</span>
@@ -814,23 +813,23 @@
                         </div>
                         
                         <!-- Winding Direction Options (shown when "يوجد" is selected) -->
-                        <div id="winding_direction_options" style="display: {{ in_array(old('winding_direction', $workOrder->winding_direction ?? null), ['clockwise', 'counterclockwise']) ? 'flex' : 'none' }}; gap: 2rem; margin-top: 1rem; padding-right: 1.5rem;">
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('winding_direction', $workOrder->winding_direction ?? null) == 'clockwise' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                        <div id="winding_direction_options" style="display: {{ in_array(old('winding_direction'), ['clockwise', 'counterclockwise']) ? 'flex' : 'none' }}; gap: 2rem; margin-top: 1rem; padding-right: 1.5rem;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('winding_direction') == 'clockwise' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
                                 <input type="radio" 
                                        name="winding_direction" 
                                        value="clockwise" 
                                        id="winding_direction_clockwise"
-                                       {{ old('winding_direction', $workOrder->winding_direction ?? null) == 'clockwise' ? 'checked' : '' }}
+                                       {{ old('winding_direction') == 'clockwise' ? 'checked' : '' }}
                                        onchange="handleWindingDirectionChange()"
                                        style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
                                 <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">في اتجاه عقارب الساعة</span>
                             </label>
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('winding_direction', $workOrder->winding_direction ?? null) == 'counterclockwise' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('winding_direction') == 'counterclockwise' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
                                 <input type="radio" 
                                        name="winding_direction" 
                                        value="counterclockwise" 
                                        id="winding_direction_counterclockwise"
-                                       {{ old('winding_direction', $workOrder->winding_direction ?? null) == 'counterclockwise' ? 'checked' : '' }}
+                                       {{ old('winding_direction') == 'counterclockwise' ? 'checked' : '' }}
                                        onchange="handleWindingDirectionChange()"
                                        style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
                                 <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">عكس عقارب الساعة</span>
@@ -845,22 +844,22 @@
                     <div class="form-group">
                         <label class="form-label">السكينة</label>
                         <div style="display: flex; gap: 2rem; margin-top: 0.5rem;">
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('knife_exists', $workOrder->knife_exists ?? 'no') == 'no' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('knife_exists', 'no') == 'no' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
                                 <input type="radio" 
                                        name="knife_exists" 
                                        value="no" 
                                        id="knife_exists_no"
-                                       {{ old('knife_exists', $workOrder->knife_exists ?? 'no') == 'no' ? 'checked' : '' }}
+                                       {{ old('knife_exists', 'no') == 'no' ? 'checked' : '' }}
                                        onchange="toggleKnifePrice()"
                                        style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
                                 <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">لا يوجد</span>
                             </label>
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('knife_exists', $workOrder->knife_exists ?? null) == 'yes' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('knife_exists') == 'yes' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
                                 <input type="radio" 
                                        name="knife_exists" 
                                        value="yes" 
                                        id="knife_exists_yes"
-                                       {{ old('knife_exists', $workOrder->knife_exists ?? null) == 'yes' ? 'checked' : '' }}
+                                       {{ old('knife_exists') == 'yes' ? 'checked' : '' }}
                                        onchange="toggleKnifePrice()"
                                        style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
                                 <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">يوجد</span>
@@ -872,17 +871,17 @@
                     </div>
 
                     <!-- Knife Price (shown when knife_exists is yes) -->
-                    <div id="knife_price_group" class="form-group" style="display: {{ old('knife_exists', $workOrder->knife_exists ?? null) == 'yes' ? 'block' : 'none' }};">
+                    <div id="knife_price_group" class="form-group" style="display: {{ old('knife_exists') == 'yes' ? 'block' : 'none' }};">
                         <label for="knife_price" class="form-label">سعر السكينة</label>
                         <input type="number" 
                                name="knife_price" 
                                id="knife_price" 
-                               value="{{ old('knife_price', $workOrder->knife_price ?? 600) }}" 
+                               value="{{ old('knife_price', 600) }}" 
                                step="0.01"
                                min="0"
                                class="form-input"
                                placeholder="0.00"
-                               {{ old('knife_exists', $workOrder->knife_exists ?? null) == 'yes' ? 'required' : '' }}>
+                               {{ old('knife_exists') == 'yes' ? 'required' : '' }}>
                         @error('knife_price')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
@@ -892,22 +891,22 @@
                     <div class="form-group">
                         <label class="form-label">التكسير الخارجي</label>
                         <div style="display: flex; gap: 2rem; margin-top: 0.5rem;">
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('external_breaking', $workOrder->external_breaking ?? 'no') == 'no' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('external_breaking', 'no') == 'no' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
                                 <input type="radio" 
                                        name="external_breaking" 
                                        value="no" 
                                        id="external_breaking_no"
-                                       {{ old('external_breaking', $workOrder->external_breaking ?? 'no') == 'no' ? 'checked' : '' }}
+                                       {{ old('external_breaking', 'no') == 'no' ? 'checked' : '' }}
                                        onchange="toggleExternalBreakingPrice()"
                                        style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
                                 <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">لا يوجد</span>
                             </label>
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('external_breaking', $workOrder->external_breaking ?? null) == 'yes' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('external_breaking') == 'yes' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
                                 <input type="radio" 
                                        name="external_breaking" 
                                        value="yes" 
                                        id="external_breaking_yes"
-                                       {{ old('external_breaking', $workOrder->external_breaking ?? null) == 'yes' ? 'checked' : '' }}
+                                       {{ old('external_breaking') == 'yes' ? 'checked' : '' }}
                                        onchange="toggleExternalBreakingPrice()"
                                        style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
                                 <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">يوجد</span>
@@ -919,7 +918,7 @@
                     </div>
 
                     <!-- External Breaking Price (shown when external_breaking is yes) -->
-                    <div id="external_breaking_price_group" class="form-group" style="display: {{ old('external_breaking', $workOrder->external_breaking ?? null) == 'yes' ? 'block' : 'none' }};">
+                    <div id="external_breaking_price_group" class="form-group" style="display: {{ old('external_breaking') == 'yes' ? 'block' : 'none' }};">
                         <label for="external_breaking_price" class="form-label">سعر التكسير الخارجي</label>
                         <input type="number" 
                                name="external_breaking_price" 
@@ -930,7 +929,7 @@
                                class="form-input"
                                placeholder="0.00"
                                data-default-price="{{ $externalBreakingPrice ?? 4 }}"
-                               {{ old('external_breaking', $workOrder->external_breaking ?? null) == 'yes' ? 'required' : '' }}>
+                               {{ old('external_breaking') == 'yes' ? 'required' : '' }}>
                         @error('external_breaking_price')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
@@ -943,7 +942,7 @@
                             <input type="number" 
                                    name="material_price_per_meter" 
                                    id="material_price_per_meter" 
-                                   value="{{ old('material_price_per_meter', $workOrder->material_price_per_meter ?? null) }}" 
+                                   value="{{ old('material_price_per_meter') }}" 
                                    step="0.01"
                                    min="0"
                                    class="form-input"
@@ -958,7 +957,7 @@
                             <input type="number" 
                                    name="manufacturing_price_per_meter" 
                                    id="manufacturing_price_per_meter" 
-                                   value="{{ old('manufacturing_price_per_meter', $workOrder->manufacturing_price_per_meter ?? 10) }}" 
+                                   value="{{ old('manufacturing_price_per_meter', 10) }}" 
                                    step="0.01"
                                    min="0"
                                    class="form-input"
@@ -978,22 +977,22 @@
                     <div class="form-group">
                         <label class="form-label">شكل المنتج النهائي</label>
                         <div style="display: flex; gap: 2rem; margin-top: 0.5rem;">
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('final_product_shape', $workOrder->final_product_shape ?? 'بكر') == 'بكر' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('final_product_shape', 'بكر') == 'بكر' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
                                 <input type="radio" 
                                        name="final_product_shape" 
                                        value="بكر" 
                                        id="final_product_shape_roll"
-                                       {{ old('final_product_shape', $workOrder->final_product_shape ?? 'بكر') == 'بكر' ? 'checked' : '' }}
+                                       {{ old('final_product_shape', 'بكر') == 'بكر' ? 'checked' : '' }}
                                        onchange="toggleProductionFields()"
                                        style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
                                 <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">بكر</span>
                             </label>
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('final_product_shape', $workOrder->final_product_shape ?? 'بكر') == 'شيت' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('final_product_shape', 'بكر') == 'شيت' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
                                 <input type="radio" 
                                        name="final_product_shape" 
                                        value="شيت" 
                                        id="final_product_shape_sheet"
-                                       {{ old('final_product_shape', $workOrder->final_product_shape ?? 'بكر') == 'شيت' ? 'checked' : '' }}
+                                       {{ old('final_product_shape', 'بكر') == 'شيت' ? 'checked' : '' }}
                                        onchange="toggleProductionFields()"
                                        style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
                                 <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">شيت</span>
@@ -1009,14 +1008,14 @@
                         <h4 style="font-size: 0.875rem; font-weight: 600; color: #6b7280; margin-bottom: 1rem;">بيانات طريقة التشغيل</h4>
                         
                         <!-- Roll Fields (بكر) -->
-                        <div id="roll-production-fields" style="display: {{ old('final_product_shape', $workOrder->final_product_shape ?? 'بكر') == 'بكر' ? 'block' : 'none' }};">
+                        <div id="roll-production-fields" style="display: {{ old('final_product_shape', 'بكر') == 'بكر' ? 'block' : 'none' }};">
                             <div class="form-grid">
                                 <div class="form-group">
                                     <label for="number_of_rolls" class="form-label">عدد التكت في البكره</label>
                                     <input type="number"
                                            name="number_of_rolls"
                                            id="number_of_rolls"
-                                           value="{{ old('number_of_rolls', $workOrder->number_of_rolls ?? null) }}"
+                                           value="{{ old('number_of_rolls') }}"
                                            min="1"
                                            class="form-input"
                                            placeholder="أدخل عدد التكت في البكره">
@@ -1031,9 +1030,9 @@
                                             id="core_size" 
                                             class="form-select">
                                         <option value="">اختر مقاس الكور</option>
-                                        <option value="76" {{ old('core_size', $workOrder->core_size ?? null) == '76' ? 'selected' : '' }}>76</option>
-                                        <option value="40" {{ old('core_size', $workOrder->core_size ?? null) == '40' ? 'selected' : '' }}>40</option>
-                                        <option value="25" {{ old('core_size', $workOrder->core_size ?? null) == '25' ? 'selected' : '' }}>25</option>
+                                        <option value="76" {{ old('core_size') == '76' ? 'selected' : '' }}>76</option>
+                                        <option value="40" {{ old('core_size') == '40' ? 'selected' : '' }}>40</option>
+                                        <option value="25" {{ old('core_size') == '25' ? 'selected' : '' }}>25</option>
                                     </select>
                                     @error('core_size')
                                         <p class="error-message">{{ $message }}</p>
@@ -1043,14 +1042,14 @@
                         </div>
 
                         <!-- Sheet Fields (شيت) -->
-                        <div id="sheet-production-fields" style="display: {{ old('final_product_shape', $workOrder->final_product_shape ?? 'بكر') == 'شيت' ? 'block' : 'none' }};">
+                        <div id="sheet-production-fields" style="display: {{ old('final_product_shape', 'بكر') == 'شيت' ? 'block' : 'none' }};">
                             <div class="form-grid">
                                 <div class="form-group">
                                     <label for="pieces_per_sheet" class="form-label">عدد التكت في الشيت</label>
                                     <input type="number"
                                            name="pieces_per_sheet"
                                            id="pieces_per_sheet"
-                                           value="{{ old('pieces_per_sheet', $workOrder->pieces_per_sheet ?? null) }}"
+                                           value="{{ old('pieces_per_sheet') }}"
                                            min="1"
                                            class="form-input"
                                            placeholder="أدخل عدد التكت في الشيت">
@@ -1064,7 +1063,7 @@
                                     <input type="number"
                                            name="sheets_per_stack"
                                            id="sheets_per_stack"
-                                           value="{{ old('sheets_per_stack', $workOrder->sheets_per_stack ?? null) }}"
+                                           value="{{ old('sheets_per_stack') }}"
                                            min="1"
                                            class="form-input"
                                            placeholder="أدخل عدد الشيت في الراكوة">
@@ -1088,7 +1087,7 @@
                                   id="notes" 
                                   rows="3"
                                   class="form-textarea"
-                                  placeholder="أي ملاحظات إضافية">{{ old('notes', $workOrder->notes ?? null) }}</textarea>
+                                  placeholder="أي ملاحظات إضافية">{{ old('notes') }}</textarea>
                         @error('notes')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
@@ -1101,7 +1100,7 @@
                         إلغاء
                     </a>
                     <button type="submit" class="btn btn-primary">
-                        حفظ التعديلات
+                        حفظ أمر الشغل
                     </button>
                 </div>
             </form>
