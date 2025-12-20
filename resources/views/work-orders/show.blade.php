@@ -272,7 +272,7 @@
     </div>
 
     <!-- التجهيزات -->
-    @if($workOrder->film_price || $workOrder->film_count || $workOrder->sales_percentage || $workOrder->material_price_per_meter || $workOrder->manufacturing_price_per_meter)
+    @if($workOrder->film_price || $workOrder->film_count || $workOrder->sales_percentage || $workOrder->material_price_per_meter || $workOrder->manufacturing_price_per_meter || $workOrder->waste_per_roll)
     <div class="card" style="margin-bottom: 1.5rem;">
         <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid #e5e7eb;">
             <svg style="width: 24px; height: 24px; color: #f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -313,6 +313,13 @@
             <div>
                 <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">سعر متر التصنيع</dt>
                 <dd style="font-size: 0.875rem; color: #111827; margin: 0; font-weight: 600;">{{ number_format($workOrder->manufacturing_price_per_meter, 2) }} ج.م</dd>
+            </div>
+            @endif
+
+            @if($workOrder->waste_per_roll)
+            <div>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">عدد الهالك للبكره</dt>
+                <dd style="font-size: 0.875rem; color: #111827; margin: 0; font-weight: 600;">{{ number_format($workOrder->waste_per_roll, 0) }}</dd>
             </div>
             @endif
         </div>
@@ -515,17 +522,19 @@
                 </dd>
             </div>
 
+            @if($workOrder->waste_per_roll)
             <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 0.5rem; backdrop-filter: blur(10px);">
-                <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">الهالك</dt>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">عدد الهالك للبكره</dt>
                 <dd style="font-size: 1.25rem; color: white; margin: 0; font-weight: 700;">
-                    {{ number_format($calculations['waste'], 0) }}
+                    {{ number_format($workOrder->waste_per_roll, 0) }}
                 </dd>
             </div>
+            @endif
 
             <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 0.5rem; backdrop-filter: blur(10px);">
-                <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">نسبة الهالك</dt>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">الهالك + نسبة الهالك</dt>
                 <dd style="font-size: 1.25rem; color: white; margin: 0; font-weight: 700;">
-                    {{ number_format($calculations['waste_percentage'], 2) }} <span style="font-size: 0.875rem; opacity: 0.8;">%</span>
+                    {{ number_format($calculations['waste'] + $calculations['waste_percentage'], 2) }}
                 </dd>
             </div>
 
@@ -556,6 +565,25 @@
                     {{ number_format($calculations['total_amount'], 2) }} <span style="font-size: 0.875rem; opacity: 0.8;">ج.م</span>
                 </dd>
             </div>
+
+            @if($workOrder->sales_percentage && $workOrder->sales_percentage > 0)
+            <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 0.5rem; backdrop-filter: blur(10px);">
+                <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">نسبة المبيعات</dt>
+                <dd style="font-size: 1.25rem; color: white; margin: 0; font-weight: 700;">
+                    {{ number_format($calculations['sales_percentage_amount'], 2) }} <span style="font-size: 0.875rem; opacity: 0.8;">ج.م</span>
+                </dd>
+                <small style="font-size: 0.75rem; color: rgba(255, 255, 255, 0.8); margin-top: 0.25rem; display: block;">
+                    ({{ number_format($workOrder->sales_percentage, 2) }}% من إجمالي المبلغ)
+                </small>
+            </div>
+
+            <div style="background: rgba(255, 255, 255, 0.15); padding: 1rem; border-radius: 0.5rem; backdrop-filter: blur(10px);">
+                <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">إجمالي المبلغ + نسبة المبيعات</dt>
+                <dd style="font-size: 1.25rem; color: white; margin: 0; font-weight: 700;">
+                    {{ number_format($calculations['total_amount_with_sales'], 2) }} <span style="font-size: 0.875rem; opacity: 0.8;">ج.م</span>
+                </dd>
+            </div>
+            @endif
 
             <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 0.5rem; backdrop-filter: blur(10px);">
                 <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">إجمالي التجهيزات</dt>

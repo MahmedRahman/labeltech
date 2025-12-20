@@ -267,17 +267,33 @@ class WorkOrderController extends Controller
         // 9. Total Amount: إجمالي المبلغ (الأسعار) × المتر المربع
         $calculations['total_amount'] = $calculations['total_prices_sum'] * $calculations['square_meter'];
         
-        // 10. Total Preparations: (سعر الفيلم الواحد × العدد) + سعر السكينة
+        // 10. Sales Percentage Amount: إجمالي المبلغ × نسبة المبيعات / 100
+        $salesPercentage = $workOrder->sales_percentage ?? 0;
+        if ($calculations['total_amount'] > 0 && $salesPercentage > 0) {
+            $calculations['sales_percentage_amount'] = $calculations['total_amount'] * $salesPercentage / 100;
+        } else {
+            $calculations['sales_percentage_amount'] = 0;
+        }
+        
+        // 11. Total Amount with Sales Percentage: إجمالي المبلغ + نسبة المبيعات
+        $calculations['total_amount_with_sales'] = $calculations['total_amount'] + $calculations['sales_percentage_amount'];
+        
+        // 12. Total Preparations: (سعر الفيلم الواحد × العدد) + سعر السكينة
         $filmPrice = $workOrder->film_price ?? 0;
         $filmCount = $workOrder->film_count ?? 0;
         $knifePrice = ($workOrder->knife_exists == 'yes') ? ($workOrder->knife_price ?? 0) : 0;
         $calculations['total_preparations'] = ($filmPrice * $filmCount) + $knifePrice;
         
-        // 11. Total Order: إجمالي المبلغ + إجمالي التجهيزات
-        $calculations['total_order'] = $calculations['total_amount'] + $calculations['total_preparations'];
+        // 13. Total Order: (إجمالي المبلغ + نسبة المبيعات) + إجمالي التجهيزات
+        $calculations['total_order'] = $calculations['total_amount_with_sales'] + $calculations['total_preparations'];
         
-        // 12. Price Per Thousand: إجمالي الطلب ÷ 1000
-        $calculations['price_per_thousand'] = $calculations['total_order'] / 1000;
+        // 14. Price Per Thousand: إجمالي الطلب ÷ الكمية
+        $quantity = $workOrder->quantity ?? 0;
+        if ($calculations['total_order'] > 0 && $quantity > 0) {
+            $calculations['price_per_thousand'] = $calculations['total_order'] / $quantity;
+        } else {
+            $calculations['price_per_thousand'] = 0;
+        }
         
         return $calculations;
     }

@@ -2166,9 +2166,12 @@
             // Get total order
             const totalOrder = parseFloat(document.getElementById('total_order')?.value) || 0;
             
-            // Calculate: إجمالي الطلب ÷ 1000
-            if (totalOrder > 0) {
-                const pricePerThousand = totalOrder / 1000;
+            // Get quantity
+            const quantity = parseFloat(document.getElementById('quantity')?.value) || 0;
+            
+            // Calculate: إجمالي الطلب ÷ الكمية
+            if (totalOrder > 0 && quantity > 0) {
+                const pricePerThousand = totalOrder / quantity;
                 pricePerThousandInput.value = parseFloat(pricePerThousand.toFixed(2));
             } else {
                 pricePerThousandInput.value = '';
