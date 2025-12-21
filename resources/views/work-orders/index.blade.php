@@ -292,12 +292,20 @@
                 {{ $isSalesEmployee ? 'إدارة جميع عروض الأسعار من مكان واحد' : 'إدارة جميع أوامر الشغل من مكان واحد' }}
             </p>
         </div>
-        <a href="{{ route('work-orders.create') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #2563eb; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
-            <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-            {{ $isSalesEmployee ? 'إضافة عرض سعر جديد' : 'إضافة أمر شغل جديد' }}
-        </a>
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <a href="{{ route('work-orders.list') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #2563eb; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
+                <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                أمر شغل
+            </a>
+            <a href="{{ route('work-orders.create') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #10b981; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
+                <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                {{ $isSalesEmployee ? 'إضافة عرض سعر جديد' : 'إضافة أمر شغل جديد' }}
+            </a>
+        </div>
     </div>
 
     <!-- Filters -->
@@ -343,6 +351,53 @@
     </div>
 
     @if($workOrders->count() > 0)
+        <!-- Sent Status Summary Cards -->
+        <div style="margin-bottom: 2rem;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                <!-- Total Orders Card -->
+                <div style="background: white; border-radius: 0.5rem; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); overflow: hidden; transition: all 0.2s;">
+                    <div style="background: #f8fafc; padding: 1rem; text-align: center;">
+                        <div style="width: 45px; height: 45px; background: #e0e7ff; border-radius: 0.375rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem;">
+                            <svg style="width: 24px; height: 24px; color: #6366f1;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                        <h4 style="font-size: 0.875rem; font-weight: 600; color: #64748b; margin: 0 0 0.5rem 0;">إجمالي العروض</h4>
+                        <p style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin: 0;">{{ $workOrders->count() }}</p>
+                        <p style="font-size: 0.75rem; color: #94a3b8; margin: 0.25rem 0 0 0;">عرض سعر</p>
+                    </div>
+                </div>
+
+                <!-- Sent to Client Card -->
+                <div style="background: white; border-radius: 0.5rem; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); overflow: hidden; transition: all 0.2s;">
+                    <div style="background: #f0fdf4; padding: 1rem; text-align: center;">
+                        <div style="width: 45px; height: 45px; background: #dcfce7; border-radius: 0.375rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem;">
+                            <svg style="width: 24px; height: 24px; color: #22c55e;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                        <h4 style="font-size: 0.875rem; font-weight: 600; color: #64748b; margin: 0 0 0.5rem 0;">تم الإرسال</h4>
+                        <p style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin: 0;">{{ $sentCount ?? 0 }}</p>
+                        <p style="font-size: 0.75rem; color: #94a3b8; margin: 0.25rem 0 0 0;">عرض سعر</p>
+                    </div>
+                </div>
+
+                <!-- Not Sent to Client Card -->
+                <div style="background: white; border-radius: 0.5rem; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); overflow: hidden; transition: all 0.2s;">
+                    <div style="background: #fffbeb; padding: 1rem; text-align: center;">
+                        <div style="width: 45px; height: 45px; background: #fef3c7; border-radius: 0.375rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem;">
+                            <svg style="width: 24px; height: 24px; color: #f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <h4 style="font-size: 0.875rem; font-weight: 600; color: #64748b; margin: 0 0 0.5rem 0;">لم يتم الإرسال</h4>
+                        <p style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin: 0;">{{ $notSentCount ?? 0 }}</p>
+                        <p style="font-size: 0.75rem; color: #94a3b8; margin: 0.25rem 0 0 0;">عرض سعر</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         @if($isSalesEmployee)
             <!-- Table View for Sales Employees -->
             <div class="data-table">
@@ -373,7 +428,8 @@
                                     'cancelled' => '#dc2626',
                                     'client_approved' => '#10b981',
                                     'client_rejected' => '#dc2626',
-                                    'client_no_response' => '#6b7280'
+                                    'client_no_response' => '#6b7280',
+                                    'work_order' => '#2563eb'
                                 ];
                                 $statusLabels = [
                                     'draft' => 'مسودة',
@@ -383,7 +439,8 @@
                                     'cancelled' => 'ملغي',
                                     'client_approved' => 'العميل موافق',
                                     'client_rejected' => 'العميل رفض',
-                                    'client_no_response' => 'العميل لم يرد'
+                                    'client_no_response' => 'العميل لم يرد',
+                                    'work_order' => 'أمر شغل'
                                 ];
                                 $color = $statusColors[$workOrder->status] ?? '#6b7280';
                                 $label = $statusLabels[$workOrder->status] ?? $workOrder->status;
@@ -561,7 +618,8 @@
                                     'cancelled' => '#dc2626',
                                     'client_approved' => '#10b981',
                                     'client_rejected' => '#dc2626',
-                                    'client_no_response' => '#6b7280'
+                                    'client_no_response' => '#6b7280',
+                                    'work_order' => '#2563eb'
                                 ];
                                 $statusLabels = [
                                     'draft' => 'مسودة',
@@ -571,7 +629,8 @@
                                     'cancelled' => 'ملغي',
                                     'client_approved' => 'العميل موافق',
                                     'client_rejected' => 'العميل رفض',
-                                    'client_no_response' => 'العميل لم يرد'
+                                    'client_no_response' => 'العميل لم يرد',
+                                    'work_order' => 'أمر شغل'
                                 ];
                                 $color = $statusColors[$workOrder->status] ?? '#6b7280';
                                 $label = $statusLabels[$workOrder->status] ?? $workOrder->status;

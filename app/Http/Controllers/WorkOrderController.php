@@ -19,6 +19,12 @@ class WorkOrderController extends Controller
                 $q->whereNull('production_status')
                   ->orWhere('production_status', 'بدون حالة')
                   ->orWhereIn('production_status', ['طباعة', 'قص', 'تقفيل']);
+            })
+            ->where(function($q) {
+                // Exclude work_order and cancelled statuses from main index (they have their own pages)
+                $q->where('status', '!=', 'work_order')
+                  ->where('status', '!=', 'cancelled')
+                  ->orWhereNull('status');
             });
 
         // Filter work orders based on user type:
@@ -81,6 +87,9 @@ class WorkOrderController extends Controller
             'client_no_response' => $workOrders->filter(function($order) {
                 return ($order->status ?? '') === 'client_no_response';
             })->values(),
+            'work_order' => $workOrders->filter(function($order) {
+                return ($order->status ?? '') === 'work_order';
+            })->values(),
             'in_progress' => $workOrders->filter(function($order) {
                 return ($order->status ?? '') === 'in_progress';
             })->values(),
@@ -92,23 +101,91 @@ class WorkOrderController extends Controller
             })->values(),
         ];
 
+        // Count sent and not sent orders
+        $sentCount = $workOrders->filter(function($order) {
+            return ($order->sent_to_client ?? 'no') === 'yes';
+        })->count();
+        
+        $notSentCount = $workOrders->filter(function($order) {
+            return ($order->sent_to_client ?? 'no') === 'no';
+        })->count();
+
         // Get all clients for filter dropdown
         $clients = Client::orderBy('name')->get();
 
-        return view('work-orders.index', compact('groupedOrders', 'workOrders', 'clients', 'statusGroups'));
+        return view('work-orders.index', compact('groupedOrders', 'workOrders', 'clients', 'statusGroups', 'sentCount', 'notSentCount'));
     }
 
     /**
-     * Display archived work orders.
+     * Display archived work orders (cancelled status).
      */
-    public function archive()
+    public function archive(Request $request)
     {
-        $workOrders = WorkOrder::with('client')
-            ->where('production_status', 'أرشيف')
-            ->latest()
-            ->paginate(20);
-        
-        return view('work-orders.archive', compact('workOrders'));
+        $query = WorkOrder::with('client')
+            ->where('status', 'cancelled');
+
+        // Filter work orders based on user type:
+        // - Employees: show only work orders they created
+        // - Admin (web guard): show all work orders (no filter)
+        if (auth('employee')->check()) {
+            $employeeName = auth('employee')->user()->name;
+            $query->where('created_by', $employeeName);
+        }
+        // Admin users (auth('web')->check()) will see all work orders
+        // No additional filter is applied for admin users
+
+        // Filter by client
+        if ($request->filled('client_id')) {
+            $query->where('client_id', $request->client_id);
+        }
+
+        // Filter by order number
+        if ($request->filled('order_number')) {
+            $query->where('order_number', 'like', '%' . $request->order_number . '%');
+        }
+
+        $workOrders = $query->latest()->get();
+
+        // Get all clients for filter dropdown
+        $clients = Client::orderBy('name')->get();
+
+        return view('work-orders.archive', compact('workOrders', 'clients'));
+    }
+
+    /**
+     * Display work orders list (status = work_order).
+     */
+    public function workOrdersList(Request $request)
+    {
+        $query = WorkOrder::with('client')
+            ->where('status', 'work_order');
+
+        // Filter work orders based on user type:
+        // - Employees: show only work orders they created
+        // - Admin (web guard): show all work orders (no filter)
+        if (auth('employee')->check()) {
+            $employeeName = auth('employee')->user()->name;
+            $query->where('created_by', $employeeName);
+        }
+        // Admin users (auth('web')->check()) will see all work orders
+        // No additional filter is applied for admin users
+
+        // Filter by client
+        if ($request->filled('client_id')) {
+            $query->where('client_id', $request->client_id);
+        }
+
+        // Filter by order number
+        if ($request->filled('order_number')) {
+            $query->where('order_number', 'like', '%' . $request->order_number . '%');
+        }
+
+        $workOrders = $query->latest()->get();
+
+        // Get all clients for filter dropdown
+        $clients = Client::orderBy('name')->get();
+
+        return view('work-orders.work-orders-list', compact('workOrders', 'clients'));
     }
 
     /**
@@ -203,7 +280,7 @@ class WorkOrderController extends Controller
             'increase' => 'nullable|numeric|min:0',
             'linear_meter' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string',
-            'status' => 'nullable|in:draft,pending,in_progress,completed,cancelled,client_approved,client_rejected,client_no_response',
+            'status' => 'nullable|in:draft,pending,in_progress,completed,cancelled,client_approved,client_rejected,client_no_response,work_order',
             'sent_to_client' => 'nullable|in:yes,no',
         ]);
 
@@ -550,7 +627,7 @@ class WorkOrderController extends Controller
             'increase' => 'nullable|numeric|min:0',
             'linear_meter' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string',
-            'status' => 'nullable|in:draft,pending,in_progress,completed,cancelled,client_approved,client_rejected,client_no_response',
+            'status' => 'nullable|in:draft,pending,in_progress,completed,cancelled,client_approved,client_rejected,client_no_response,work_order',
             'sent_to_client' => 'nullable|in:yes,no',
         ]);
 
@@ -673,6 +750,46 @@ class WorkOrderController extends Controller
 
         return redirect()->back()
             ->with('success', 'تم تحديث حالة رد العميل بنجاح');
+    }
+
+    /**
+     * Convert price quote to work order.
+     */
+    public function convertToOrder(WorkOrder $workOrder)
+    {
+        // Check if the status is client_approved
+        if (($workOrder->status ?? '') !== 'client_approved') {
+            return redirect()->back()
+                ->with('error', 'لا يمكن تحويل عرض السعر إلى أمر شغل إلا بعد موافقة العميل');
+        }
+
+        // Update status to work_order
+        $workOrder->update([
+            'status' => 'work_order'
+        ]);
+
+        return redirect()->back()
+            ->with('success', 'تم تحويل عرض السعر إلى أمر شغل بنجاح. الحالة الآن: أمر شغل');
+    }
+
+    /**
+     * Archive work order (for rejected or no response quotes).
+     */
+    public function archiveQuote(WorkOrder $workOrder)
+    {
+        // Check if the status is client_rejected or client_no_response
+        if (!in_array($workOrder->status ?? '', ['client_rejected', 'client_no_response'])) {
+            return redirect()->back()
+                ->with('error', 'لا يمكن أرشفة عرض السعر إلا إذا كان العميل قد رفض أو لم يرد');
+        }
+
+        // Update status to cancelled (archived)
+        $workOrder->update([
+            'status' => 'cancelled'
+        ]);
+
+        return redirect()->back()
+            ->with('success', 'تم أرشفة عرض السعر بنجاح. الحالة الآن: ملغي');
     }
 
     /**

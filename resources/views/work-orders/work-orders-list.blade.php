@@ -1,6 +1,6 @@
 <x-app-layout>
     @php
-        $title = 'الأرشيف';
+        $title = 'أمر شغل';
     @endphp
 
     <style>
@@ -86,8 +86,8 @@
     <!-- Header Actions -->
     <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
         <div>
-            <h2 style="font-size: 1.75rem; font-weight: 700; color: #111827; margin: 0 0 0.25rem 0;">الأرشيف</h2>
-            <p style="font-size: 1rem; color: #6b7280; margin: 0;">عرض جميع عروض الأسعار والأوامر الملغية</p>
+            <h2 style="font-size: 1.75rem; font-weight: 700; color: #111827; margin: 0 0 0.25rem 0;">أمر شغل</h2>
+            <p style="font-size: 1rem; color: #6b7280; margin: 0;">عرض جميع أوامر الشغل المحولة من عروض الأسعار</p>
         </div>
         <a href="{{ route('work-orders.index') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #6b7280; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
             <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -99,7 +99,7 @@
 
     <!-- Filters -->
     <div style="margin-bottom: 1.5rem; background: white; padding: 1.25rem; border-radius: 0.5rem; border: 1px solid #e5e7eb; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
-        <form method="GET" action="{{ route('work-orders.archive') }}" style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
+        <form method="GET" action="{{ route('work-orders.list') }}" style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
             <div style="flex: 1; min-width: 250px;">
                 <label for="client_id" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">فلترة بالعميل</label>
                 <select name="client_id" id="client_id" style="width: 100%; padding: 0.625rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; background-color: white; cursor: pointer;">
@@ -124,7 +124,7 @@
                 <button type="submit" style="padding: 0.625rem 1.25rem; background-color: #2563eb; color: white; border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer;">
                     بحث
                 </button>
-                <a href="{{ route('work-orders.archive') }}" style="padding: 0.625rem 1.25rem; background-color: #6b7280; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; display: inline-flex; align-items: center;">
+                <a href="{{ route('work-orders.list') }}" style="padding: 0.625rem 1.25rem; background-color: #6b7280; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; display: inline-flex; align-items: center;">
                     إعادة تعيين
                 </a>
             </div>
@@ -153,10 +153,10 @@
                         @if(isset($workOrder->id) && !is_null($workOrder->id))
                         @php
                             $statusColors = [
-                                'cancelled' => '#dc2626'
+                                'work_order' => '#2563eb'
                             ];
                             $statusLabels = [
-                                'cancelled' => 'ملغي'
+                                'work_order' => 'أمر شغل'
                             ];
                             $color = $statusColors[$workOrder->status] ?? '#6b7280';
                             $label = $statusLabels[$workOrder->status] ?? $workOrder->status;
@@ -211,13 +211,14 @@
     @else
         <div style="text-align: center; padding: 3rem; background: white; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
             <svg style="width: 64px; height: 64px; color: #9ca3af; margin: 0 auto 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
             </svg>
-            <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 0.5rem 0;">لا توجد عناصر في الأرشيف</h3>
-            <p style="font-size: 1rem; color: #6b7280; margin: 0 0 1.5rem 0;">لم يتم أرشفة أي عرض سعر أو أمر شغل بعد</p>
+            <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 0.5rem 0;">لا توجد أوامر شغل</h3>
+            <p style="font-size: 1rem; color: #6b7280; margin: 0 0 1.5rem 0;">لم يتم تحويل أي عرض سعر إلى أمر شغل بعد</p>
             <a href="{{ route('work-orders.index') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #2563eb; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500;">
                 العودة للقائمة الرئيسية
             </a>
         </div>
     @endif
 </x-app-layout>
+

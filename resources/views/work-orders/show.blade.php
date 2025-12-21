@@ -105,6 +105,66 @@
     </div>
     @endif
 
+    <!-- Convert to Work Order Section -->
+    @if(($workOrder->status ?? '') === 'client_approved')
+    <div class="card" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border: 2px solid #2563eb;">
+        <div style="padding: 1.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                <svg style="width: 24px; height: 24px; color: #2563eb;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e40af; margin: 0;">العميل موافق على عرض السعر</h3>
+            </div>
+            <p style="font-size: 0.875rem; color: #1e3a8a; margin-bottom: 1.5rem;">تم موافقة العميل على عرض السعر. يمكنك الآن تحويله إلى أمر شغل للبدء في التنفيذ.</p>
+            <form action="{{ route('work-orders.convert-to-order', $workOrder) }}" method="POST">
+                @csrf
+                <button type="submit" onclick="return confirm('هل أنت متأكد من تحويل عرض السعر إلى أمر شغل؟ سيتم تغيير الحالة إلى قيد التنفيذ.')" style="display: inline-flex; align-items: center; padding: 0.875rem 1.5rem; background-color: #2563eb; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);">
+                    <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                    تحويل عرض السعر إلى أمر الشغل
+                </button>
+            </form>
+        </div>
+    </div>
+    @endif
+
+    <!-- Archive Section -->
+    @if(in_array($workOrder->status ?? '', ['client_rejected', 'client_no_response']))
+    <div class="card" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%); border: 2px solid #6b7280;">
+        <div style="padding: 1.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                <svg style="width: 24px; height: 24px; color: #6b7280;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+                </svg>
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: #374151; margin: 0;">
+                    @if(($workOrder->status ?? '') === 'client_rejected')
+                        العميل رفض عرض السعر
+                    @else
+                        العميل لم يرد على عرض السعر
+                    @endif
+                </h3>
+            </div>
+            <p style="font-size: 0.875rem; color: #4b5563; margin-bottom: 1.5rem;">
+                @if(($workOrder->status ?? '') === 'client_rejected')
+                    تم رفض عرض السعر من قبل العميل. يمكنك أرشفته لإزالة العرض من القائمة النشطة.
+                @else
+                    لم يرد العميل على عرض السعر. يمكنك أرشفته لإزالة العرض من القائمة النشطة.
+                @endif
+            </p>
+            <form action="{{ route('work-orders.archive-quote', $workOrder) }}" method="POST">
+                @csrf
+                <button type="submit" onclick="return confirm('هل أنت متأكد من أرشفة عرض السعر؟ سيتم تغيير الحالة إلى ملغي.')" style="display: inline-flex; align-items: center; padding: 0.875rem 1.5rem; background-color: #6b7280; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(107, 114, 128, 0.3);">
+                    <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+                    </svg>
+                    أرشفة عرض السعر
+                </button>
+            </form>
+        </div>
+    </div>
+    @endif
+
     <!-- معلومات أساسية -->
     <div class="card" style="margin-bottom: 1.5rem;">
         <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid #e5e7eb;">
@@ -156,7 +216,8 @@
                             'cancelled' => '#dc2626',
                             'client_approved' => '#10b981',
                             'client_rejected' => '#dc2626',
-                            'client_no_response' => '#6b7280'
+                            'client_no_response' => '#6b7280',
+                            'work_order' => '#2563eb'
                         ];
                         $statusLabels = [
                             'draft' => 'مسودة',
@@ -166,7 +227,8 @@
                             'cancelled' => 'ملغي',
                             'client_approved' => 'العميل موافق',
                             'client_rejected' => 'العميل رفض',
-                            'client_no_response' => 'العميل لم يرد'
+                            'client_no_response' => 'العميل لم يرد',
+                            'work_order' => 'أمر شغل'
                         ];
                         $color = $statusColors[$workOrder->status] ?? '#6b7280';
                         $label = $statusLabels[$workOrder->status] ?? $workOrder->status;
