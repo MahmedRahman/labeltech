@@ -225,6 +225,22 @@
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
         
+        /* Read-only and disabled fields styling */
+        .form-input[readonly],
+        .form-select:disabled,
+        .form-select[disabled] {
+            background-color: #f3f4f6 !important;
+            cursor: not-allowed !important;
+            opacity: 0.7;
+        }
+        
+        #client_id:disabled + .select2-container .select2-selection--single,
+        #material:disabled + .select2-container .select2-selection--single {
+            background-color: #f3f4f6 !important;
+            cursor: not-allowed !important;
+            opacity: 0.7;
+        }
+        
         /* Client select field specific styling */
         .form-group:has(#client_id) .form-label {
             font-size: 0.875rem;
@@ -345,10 +361,10 @@
                         <p class="error-message">{{ $message }}</p>
                     @enderror
 
-                    <!-- Client Selection -->
+                    <!-- Client Selection (Read-only) -->
                     <div class="form-group">
                         <label for="client_id" class="form-label required">العميل</label>
-                        <select name="client_id" id="client_id" required class="form-select client-select">
+                        <select name="client_id" id="client_id" required class="form-select client-select" disabled>
                             <option value="">اختر العميل</option>
                             @foreach($clients as $client)
                                 <option value="{{ $client->id }}" {{ old('client_id', $workOrder->client_id ?? null) == $client->id ? 'selected' : '' }}>
@@ -356,6 +372,8 @@
                                 </option>
                             @endforeach
                         </select>
+                        <!-- Hidden input to ensure value is submitted -->
+                        <input type="hidden" name="client_id" value="{{ old('client_id', $workOrder->client_id ?? null) }}">
                         @error('client_id')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
@@ -385,6 +403,18 @@
                             <option value="cancelled" {{ old('status', $workOrder->status ?? null) == 'cancelled' ? 'selected' : '' }}>ملغي</option>
                         </select>
                         @error('status')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Sent to Client -->
+                    <div class="form-group">
+                        <label for="sent_to_client" class="form-label">تم إرسال عرض السعر للعميل</label>
+                        <select name="sent_to_client" id="sent_to_client" class="form-select" required>
+                            <option value="no" {{ old('sent_to_client', $workOrder->sent_to_client ?? 'no') == 'no' ? 'selected' : '' }}>لا</option>
+                            <option value="yes" {{ old('sent_to_client', $workOrder->sent_to_client ?? 'no') == 'yes' ? 'selected' : '' }}>نعم</option>
+                        </select>
+                        @error('sent_to_client')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
                     </div>
@@ -422,7 +452,8 @@
                         <select name="material" 
                                 id="material" 
                                 required
-                                class="form-select client-select">
+                                class="form-select client-select"
+                                disabled>
                             <option value="">اختر الخامة</option>
                             @foreach($materials as $material)
                                 <option value="{{ $material->name }}" 
@@ -432,6 +463,8 @@
                                 </option>
                             @endforeach
                         </select>
+                        <!-- Hidden input to ensure value is submitted -->
+                        <input type="hidden" name="material" value="{{ old('material', $workOrder->material ?? null) }}">
                         @error('material')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
@@ -464,7 +497,8 @@
                                step="0.01"
                                min="0"
                                class="form-input"
-                               placeholder="0.00">
+                               placeholder="0.00"
+                               readonly>
                         @error('width')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
@@ -479,7 +513,8 @@
                                step="0.01"
                                min="0"
                                class="form-input"
-                               placeholder="0.00">
+                               placeholder="0.00"
+                               readonly>
                         @error('length')
                             <p class="error-message">{{ $message }}</p>
                         @enderror
@@ -2390,11 +2425,11 @@
     
     <script>
         $(document).ready(function() {
-            // Initialize Select2 on client field
+            // Initialize Select2 on client field (disabled/read-only)
             $('#client_id').select2({
                 dir: 'rtl',
                 placeholder: 'ابحث عن العميل أو اختر من القائمة',
-                allowClear: true,
+                allowClear: false,
                 width: '100%',
                 language: {
                     noResults: function() {
@@ -2409,13 +2444,13 @@
                 },
                 minimumResultsForSearch: 0,
                 dropdownAutoWidth: false
-            });
+            }).prop('disabled', true);
             
-            // Initialize Select2 on material field
+            // Initialize Select2 on material field (disabled/read-only)
             $('#material').select2({
                 dir: 'rtl',
                 placeholder: 'ابحث عن الخامة أو اختر من القائمة',
-                allowClear: true,
+                allowClear: false,
                 width: '100%',
                 language: {
                     noResults: function() {
@@ -2430,19 +2465,10 @@
                 },
                 minimumResultsForSearch: 0,
                 dropdownAutoWidth: false
-            });
+            }).prop('disabled', true);
             
-            // Fix Select2 container styling and add placeholder on open for client
-            $('#client_id').on('select2:open', function() {
-                $('.select2-search__field').attr('placeholder', 'اكتب للبحث...');
-                $('.select2-search__field').focus();
-            });
-            
-            // Fix Select2 container styling and add placeholder on open for material
-            $('#material').on('select2:open', function() {
-                $('.select2-search__field').attr('placeholder', 'اكتب للبحث...');
-                $('.select2-search__field').focus();
-            });
+            // Disable Select2 dropdown opening for read-only fields
+            // Note: These event handlers are removed since fields are disabled
             
             // Ensure proper RTL direction for client
             $('#client_id').on('select2:select select2:clear', function() {

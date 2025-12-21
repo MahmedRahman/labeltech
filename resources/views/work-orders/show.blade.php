@@ -22,6 +22,30 @@
                 </svg>
                 طباعة
             </a>
+            <a href="{{ route('work-orders.print-price-quote', $workOrder) }}" target="_blank" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #10b981; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500;">
+                <svg style="width: 18px; height: 18px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                طباعة عرض السعر
+            </a>
+            @if(($workOrder->sent_to_client ?? 'no') == 'no')
+            <form action="{{ route('work-orders.mark-as-sent', $workOrder) }}" method="POST" style="display: inline;">
+                @csrf
+                <button type="submit" onclick="return confirm('هل أنت متأكد من أنك أرسلت عرض السعر للعميل؟')" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #f59e0b; color: white; border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer;">
+                    <svg style="width: 18px; height: 18px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                    تم الإرسال للعميل
+                </button>
+            </form>
+            @else
+            <span style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #d1fae5; color: #065f46; border-radius: 0.375rem; font-weight: 500;">
+                <svg style="width: 18px; height: 18px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                تم الإرسال للعميل
+            </span>
+            @endif
             <a href="{{ route('work-orders.edit', $workOrder) }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #10b981; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500;">
                 تعديل
             </a>
@@ -30,6 +54,56 @@
             </a>
         </div>
     </div>
+
+    <!-- Client Response Section -->
+    @if(($workOrder->sent_to_client ?? 'no') == 'yes' && !in_array($workOrder->status ?? '', ['client_approved', 'client_rejected', 'client_no_response']))
+    <div class="card" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 2px solid #f59e0b;">
+        <div style="padding: 1.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                <svg style="width: 24px; height: 24px; color: #f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: #92400e; margin: 0;">رد العميل على عرض السعر</h3>
+            </div>
+            <p style="font-size: 0.875rem; color: #78350f; margin-bottom: 1.5rem;">تم إرسال عرض السعر للعميل. يرجى تحديد رد العميل:</p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <form action="{{ route('work-orders.client-response.update', $workOrder) }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="status" value="client_approved">
+                    <button type="submit" onclick="return confirm('هل أنت متأكد أن العميل وافق على عرض السعر؟')" style="width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.25rem; background-color: #10b981; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);">
+                        <svg style="width: 32px; height: 32px; margin-bottom: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <span style="font-size: 1rem;">العميل موافق</span>
+                        <span style="font-size: 0.75rem; opacity: 0.9; margin-top: 0.25rem;">تم الموافقة على العرض</span>
+                    </button>
+                </form>
+                <form action="{{ route('work-orders.client-response.update', $workOrder) }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="status" value="client_rejected">
+                    <button type="submit" onclick="return confirm('هل أنت متأكد أن العميل رفض عرض السعر؟')" style="width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.25rem; background-color: #dc2626; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);">
+                        <svg style="width: 32px; height: 32px; margin-bottom: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        <span style="font-size: 1rem;">العميل رفض</span>
+                        <span style="font-size: 0.75rem; opacity: 0.9; margin-top: 0.25rem;">تم رفض العرض</span>
+                    </button>
+                </form>
+                <form action="{{ route('work-orders.client-response.update', $workOrder) }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="status" value="client_no_response">
+                    <button type="submit" onclick="return confirm('هل تريد تحديد أن العميل لم يرد على عرض السعر؟')" style="width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.25rem; background-color: #6b7280; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(107, 114, 128, 0.3);">
+                        <svg style="width: 32px; height: 32px; margin-bottom: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span style="font-size: 1rem;">العميل لم يرد</span>
+                        <span style="font-size: 0.75rem; opacity: 0.9; margin-top: 0.25rem;">لم يتم الرد بعد</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endif
 
     <!-- معلومات أساسية -->
     <div class="card" style="margin-bottom: 1.5rem;">
@@ -75,16 +149,24 @@
                 <dd style="margin: 0;">
                     @php
                         $statusColors = [
+                            'draft' => '#6b7280',
                             'pending' => '#f59e0b',
                             'in_progress' => '#2563eb',
                             'completed' => '#10b981',
-                            'cancelled' => '#dc2626'
+                            'cancelled' => '#dc2626',
+                            'client_approved' => '#10b981',
+                            'client_rejected' => '#dc2626',
+                            'client_no_response' => '#6b7280'
                         ];
                         $statusLabels = [
+                            'draft' => 'مسودة',
                             'pending' => 'قيد الانتظار',
                             'in_progress' => 'قيد التنفيذ',
                             'completed' => 'مكتمل',
-                            'cancelled' => 'ملغي'
+                            'cancelled' => 'ملغي',
+                            'client_approved' => 'العميل موافق',
+                            'client_rejected' => 'العميل رفض',
+                            'client_no_response' => 'العميل لم يرد'
                         ];
                         $color = $statusColors[$workOrder->status] ?? '#6b7280';
                         $label = $statusLabels[$workOrder->status] ?? $workOrder->status;

@@ -12,7 +12,7 @@ class WorkOrderController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $query = WorkOrder::with('client')
             ->where(function($q) {
@@ -30,6 +30,16 @@ class WorkOrderController extends Controller
         }
         // Admin users (auth('web')->check()) will see all work orders
         // No additional filter is applied for admin users
+
+        // Filter by client
+        if ($request->filled('client_id')) {
+            $query->where('client_id', $request->client_id);
+        }
+
+        // Filter by order number (رقم عرض السعر)
+        if ($request->filled('order_number')) {
+            $query->where('order_number', 'like', '%' . $request->order_number . '%');
+        }
 
         $workOrders = $query->latest()->get();
         
@@ -54,9 +64,38 @@ class WorkOrderController extends Controller
             })->values(),
         ];
 
-    
+        // Group work orders by status (for status-based cards)
+        $statusGroups = [
+            'draft' => $workOrders->filter(function($order) {
+                return ($order->status ?? 'draft') === 'draft';
+            })->values(),
+            'pending' => $workOrders->filter(function($order) {
+                return ($order->status ?? '') === 'pending';
+            })->values(),
+            'client_approved' => $workOrders->filter(function($order) {
+                return ($order->status ?? '') === 'client_approved';
+            })->values(),
+            'client_rejected' => $workOrders->filter(function($order) {
+                return ($order->status ?? '') === 'client_rejected';
+            })->values(),
+            'client_no_response' => $workOrders->filter(function($order) {
+                return ($order->status ?? '') === 'client_no_response';
+            })->values(),
+            'in_progress' => $workOrders->filter(function($order) {
+                return ($order->status ?? '') === 'in_progress';
+            })->values(),
+            'completed' => $workOrders->filter(function($order) {
+                return ($order->status ?? '') === 'completed';
+            })->values(),
+            'cancelled' => $workOrders->filter(function($order) {
+                return ($order->status ?? '') === 'cancelled';
+            })->values(),
+        ];
 
-        return view('work-orders.index', compact('groupedOrders', 'workOrders'));
+        // Get all clients for filter dropdown
+        $clients = Client::orderBy('name')->get();
+
+        return view('work-orders.index', compact('groupedOrders', 'workOrders', 'clients', 'statusGroups'));
     }
 
     /**
@@ -164,8 +203,14 @@ class WorkOrderController extends Controller
             'increase' => 'nullable|numeric|min:0',
             'linear_meter' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string',
-            'status' => 'nullable|in:pending,in_progress,completed,cancelled',
+            'status' => 'nullable|in:draft,pending,in_progress,completed,cancelled,client_approved,client_rejected,client_no_response',
+            'sent_to_client' => 'nullable|in:yes,no',
         ]);
+
+        // Set default sent_to_client to 'no' if not provided
+        if (!isset($validated['sent_to_client']) || empty($validated['sent_to_client'])) {
+            $validated['sent_to_client'] = 'no';
+        }
 
         // Generate order number automatically
         do {
@@ -173,6 +218,11 @@ class WorkOrderController extends Controller
         } while (WorkOrder::where('order_number', $orderNumber)->exists());
         
         $validated['order_number'] = $orderNumber;
+
+        // Set default status to 'draft' if not provided
+        if (!isset($validated['status']) || empty($validated['status'])) {
+            $validated['status'] = 'draft';
+        }
 
         // Get the current authenticated user (admin or employee)
         if (auth('employee')->check()) {
@@ -313,6 +363,42 @@ class WorkOrderController extends Controller
         $calculations = $this->calculatePrintValues($workOrder);
         
         return view('work-orders.print', compact('workOrder', 'calculations'));
+    }
+
+    /**
+     * Print price quote for client.
+     */
+    public function printPriceQuote(WorkOrder $workOrder)
+    {
+        $workOrder->load('client', 'designKnife');
+        
+        // Calculate all values dynamically
+        $calculations = $this->calculateAllValues($workOrder);
+        
+        // Calculate pieces per roll (البكر به كام تكيت)
+        // Formula: الكمية ÷ عدد البكر
+        if ($workOrder->number_of_rolls && $workOrder->number_of_rolls > 0) {
+            $calculations['pieces_per_roll'] = ceil($workOrder->quantity / $workOrder->number_of_rolls);
+        } else {
+            // Fallback: use rolls_count from calculations
+            if ($calculations['rolls_count'] > 0) {
+                $calculations['pieces_per_roll'] = ceil($workOrder->quantity / $calculations['rolls_count']);
+            } else {
+                // If no rolls, assume all pieces are in one roll
+                $calculations['pieces_per_roll'] = $workOrder->quantity ?? 0;
+            }
+        }
+        
+        // Calculate price per unit (سعر التكيت)
+        // Formula: إجمالي الطلب ÷ الكمية
+        $quantity = $workOrder->quantity ?? 0;
+        if ($calculations['total_order'] > 0 && $quantity > 0) {
+            $calculations['price_per_unit'] = $calculations['total_order'] / $quantity;
+        } else {
+            $calculations['price_per_unit'] = 0;
+        }
+        
+        return view('work-orders.print-price-quote', compact('workOrder', 'calculations'));
     }
 
     /**
@@ -464,7 +550,8 @@ class WorkOrderController extends Controller
             'increase' => 'nullable|numeric|min:0',
             'linear_meter' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string',
-            'status' => 'nullable|in:pending,in_progress,completed,cancelled',
+            'status' => 'nullable|in:draft,pending,in_progress,completed,cancelled,client_approved,client_rejected,client_no_response',
+            'sent_to_client' => 'nullable|in:yes,no',
         ]);
 
         $workOrder->update($validated);
@@ -556,6 +643,36 @@ class WorkOrderController extends Controller
             'message' => 'تم تحديث حالة الإنتاج بنجاح',
             'production_status' => $workOrder->production_status,
         ]);
+    }
+
+    /**
+     * Mark work order as sent to client.
+     */
+    public function markAsSentToClient(WorkOrder $workOrder)
+    {
+        $workOrder->update([
+            'sent_to_client' => 'yes'
+        ]);
+
+        return redirect()->back()
+            ->with('success', 'تم تحديث حالة الإرسال للعميل بنجاح');
+    }
+
+    /**
+     * Update client response status.
+     */
+    public function updateClientResponse(Request $request, WorkOrder $workOrder)
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:client_approved,client_rejected,client_no_response',
+        ]);
+
+        $workOrder->update([
+            'status' => $validated['status']
+        ]);
+
+        return redirect()->back()
+            ->with('success', 'تم تحديث حالة رد العميل بنجاح');
     }
 
     /**

@@ -59,6 +59,7 @@ class WorkOrder extends Model
         'waste_per_roll',
         'increase',
         'linear_meter',
+        'sent_to_client',
     ];
 
     protected $casts = [

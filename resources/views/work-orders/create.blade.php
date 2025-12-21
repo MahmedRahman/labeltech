@@ -387,6 +387,18 @@
                             <p class="error-message">{{ $message }}</p>
                         @enderror
                     </div>
+
+                    <!-- Sent to Client -->
+                    <div class="form-group">
+                        <label for="sent_to_client" class="form-label">تم إرسال عرض السعر للعميل</label>
+                        <select name="sent_to_client" id="sent_to_client" class="form-select" required>
+                            <option value="no" {{ old('sent_to_client', 'no') == 'no' ? 'selected' : '' }}>لا</option>
+                            <option value="yes" {{ old('sent_to_client') == 'yes' ? 'selected' : '' }}>نعم</option>
+                        </select>
+                        @error('sent_to_client')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
                 </div>
 
                 <!-- معلومات المنتج -->
