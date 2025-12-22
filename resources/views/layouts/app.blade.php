@@ -10,10 +10,15 @@
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+        
+        <!-- Typography System CSS -->
+        <link rel="stylesheet" href="{{ asset('css/typography-system.css') }}">
         
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        
+        <!-- Font Size Toggle Script -->
+        <script src="{{ asset('js/font-size-toggle.js') }}" defer></script>
         
         <style>
             * {
@@ -22,43 +27,9 @@
                 box-sizing: border-box;
             }
             
+            /* Typography system CSS will handle all typography */
             body {
-                font-family: 'Tajawal', 'Tahoma', 'Arial', sans-serif;
-                font-size: 16px;
                 background-color: #f3f4f6;
-                color: #111827;
-                line-height: 1.6;
-                -webkit-font-smoothing: antialiased;
-                -moz-osx-font-smoothing: grayscale;
-            }
-            
-            h1, h2, h3, h4, h5, h6 {
-                font-weight: 700;
-                color: #111827;
-                line-height: 1.3;
-                font-size: 1.5rem;
-            }
-            
-            h1 {
-                font-size: 2rem;
-            }
-            
-            h2 {
-                font-size: 1.75rem;
-            }
-            
-            h3 {
-                font-size: 1.5rem;
-            }
-            
-            p, span, div, label {
-                color: #374151;
-                font-size: 1rem;
-            }
-            
-            input, textarea, select {
-                font-family: 'Tajawal', 'Tahoma', 'Arial', sans-serif;
-                font-size: 1rem;
             }
             
             .sidebar {
