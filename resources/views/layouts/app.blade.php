@@ -12,7 +12,7 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         
         <!-- Typography System CSS -->
-        <link rel="stylesheet" href="{{ asset('css/typography-system.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/typography-system.css') }}?v={{ filemtime(public_path('css/typography-system.css')) }}">
         
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
