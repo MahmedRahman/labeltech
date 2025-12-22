@@ -321,6 +321,8 @@ tbody tr:hover {
     margin-left: 2rem;
 }
 
+
+
 .font-size-toggle::before {
     content: 'حجم الخط:';
     font-size: var(--fs-label);

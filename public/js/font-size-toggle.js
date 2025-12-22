@@ -3,7 +3,7 @@
  * Persists user preference in localStorage
  */
 
-(function() {
+(function () {
     'use strict';
 
     // Font size modes
@@ -23,10 +23,10 @@
     function initFontSizeToggle() {
         // Get saved preference or use default
         const savedSize = localStorage.getItem(STORAGE_KEY) || FONT_SIZES.default;
-        
+
         // Apply saved size
         applyFontSize(savedSize);
-        
+
         // Create toggle UI
         createToggleUI();
     }
@@ -36,18 +36,18 @@
      */
     function applyFontSize(size) {
         const html = document.documentElement;
-        
+
         // Remove all font size classes
         Object.values(FONT_SIZES).forEach(fs => {
             html.classList.remove(fs);
         });
-        
+
         // Add selected class
         html.classList.add(size);
-        
+
         // Save to localStorage
         localStorage.setItem(STORAGE_KEY, size);
-        
+
         // Update active button
         updateActiveButton(size);
     }
@@ -61,6 +61,9 @@
             return;
         }
 
+
+
+
         // Find the top-nav element
         const topNav = document.querySelector('.top-nav');
         if (!topNav) {
@@ -72,7 +75,7 @@
 
         // Create toggle element
         const toggle = createToggleElement();
-        
+
         // Append to top-nav (header)
         topNav.appendChild(toggle);
     }
@@ -102,12 +105,12 @@
             button.textContent = size.label;
             button.setAttribute('aria-label', size.ariaLabel);
             button.setAttribute('data-size', size.key);
-            
+
             if (size.key === currentSize) {
                 button.classList.add('active');
             }
 
-            button.addEventListener('click', function() {
+            button.addEventListener('click', function () {
                 applyFontSize(size.key);
             });
 
@@ -143,7 +146,7 @@
     // Export for manual use if needed
     window.FontSizeToggle = {
         setSize: applyFontSize,
-        getCurrentSize: function() {
+        getCurrentSize: function () {
             return localStorage.getItem(STORAGE_KEY) || FONT_SIZES.default;
         }
     };
