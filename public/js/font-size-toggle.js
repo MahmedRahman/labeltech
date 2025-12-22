@@ -27,8 +27,8 @@
         // Apply saved size
         applyFontSize(savedSize);
 
-        // Create toggle UI
-        createToggleUI();
+        // Initialize buttons if they exist
+        initToggleButtons();
     }
 
     /**
@@ -53,80 +53,40 @@
     }
 
     /**
-     * Create toggle UI buttons
+     * Initialize toggle buttons (if they exist in HTML)
      */
-    function createToggleUI() {
-        // Check if toggle already exists
-        if (document.getElementById('font-size-toggle')) {
+    function initToggleButtons() {
+        const toggle = document.getElementById('font-size-toggle');
+        if (!toggle) {
             return;
         }
 
-
-
-
-        // Find the top-nav element
-        const topNav = document.querySelector('.top-nav');
-        if (!topNav) {
-            // Fallback: append to body if top-nav not found
-            const toggle = createToggleElement();
-            document.body.appendChild(toggle);
-            return;
-        }
-
-        // Create toggle element
-        const toggle = createToggleElement();
-
-        // Append to top-nav (header)
-        topNav.appendChild(toggle);
-    }
-
-    /**
-     * Create toggle element with buttons
-     */
-    function createToggleElement() {
-        const toggle = document.createElement('div');
-        toggle.id = 'font-size-toggle';
-        toggle.className = 'font-size-toggle';
-        toggle.setAttribute('role', 'group');
-        toggle.setAttribute('aria-label', 'تغيير حجم الخط');
-
+        const buttons = toggle.querySelectorAll('button[data-size]');
         const currentSize = localStorage.getItem(STORAGE_KEY) || FONT_SIZES.default;
 
-        // Create buttons for each size
-        const sizes = [
-            { key: FONT_SIZES.normal, label: 'عادي', ariaLabel: 'حجم خط عادي' },
-            { key: FONT_SIZES.large, label: 'كبير', ariaLabel: 'حجم خط كبير (افتراضي)' },
-            { key: FONT_SIZES.xlarge, label: 'كبير جداً', ariaLabel: 'حجم خط كبير جداً' }
-        ];
+        buttons.forEach(button => {
+            const size = button.getAttribute('data-size');
 
-        sizes.forEach(size => {
-            const button = document.createElement('button');
-            button.type = 'button';
-            button.textContent = size.label;
-            button.setAttribute('aria-label', size.ariaLabel);
-            button.setAttribute('data-size', size.key);
-
-            if (size.key === currentSize) {
+            // Set active state
+            if (size === currentSize) {
                 button.classList.add('active');
             }
 
+            // Add click event listener
             button.addEventListener('click', function () {
-                applyFontSize(size.key);
+                applyFontSize(size);
             });
-
-            toggle.appendChild(button);
         });
-
-        return toggle;
     }
 
     /**
      * Update active button state
      */
     function updateActiveButton(size) {
-        const buttons = document.querySelectorAll('#font-size-toggle button');
+        const buttons = document.querySelectorAll('#font-size-toggle button[data-size]');
         buttons.forEach(btn => {
-            if (btn.getAttribute('data-size') === size) {
+            const btnSize = btn.getAttribute('data-size');
+            if (btnSize === size) {
                 btn.classList.add('active');
             } else {
                 btn.classList.remove('active');
@@ -152,5 +112,3 @@
     };
 
 })();
-
-

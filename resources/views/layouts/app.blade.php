@@ -556,7 +556,13 @@
                 <!-- Top Navigation -->
                 <div class="top-nav" style="display: flex; align-items: center; justify-content: space-between;">
                     <h1 style="font-size: 1.75rem; font-weight: 700; color: #111827; margin: 0; letter-spacing: -0.025em;">{{ $title ?? 'لوحة التحكم' }}</h1>
-                    <!-- Font Size Toggle will be inserted here by JavaScript -->
+                    
+                    <!-- Font Size Toggle -->
+                    <div id="font-size-toggle" class="font-size-toggle" role="group" aria-label="تغيير حجم الخط">
+                        <button type="button" class="font-size-btn" data-size="fs-normal" aria-label="حجم خط عادي">عادي</button>
+                        <button type="button" class="font-size-btn" data-size="fs-large" aria-label="حجم خط كبير (افتراضي)">كبير</button>
+                        <button type="button" class="font-size-btn" data-size="fs-xlarge" aria-label="حجم خط كبير جداً">كبير جداً</button>
+                    </div>
                 </div>
 
                 <!-- Page Content -->
