@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ClientController extends Controller
 {
@@ -14,14 +15,42 @@ class ClientController extends Controller
     {
         $query = Client::query();
 
+        // Check if logged in as employee with sales account type
+        $employee = Auth::guard('employee')->user();
+        $isAdmin = Auth::guard('web')->check();
+        
+        // If employee is from sales team, filter clients by their team
+        if ($employee && $employee->account_type === 'مبيعات' && !$isAdmin) {
+            // Get employee's sales teams
+            $employee->load('salesTeams');
+            $teamIds = $employee->salesTeams->pluck('id')->toArray();
+            
+            if (!empty($teamIds)) {
+                // Filter clients that belong to employee's teams
+                $query->whereHas('salesTeams', function($q) use ($teamIds) {
+                    $q->whereIn('sales_teams.id', $teamIds);
+                });
+            } else {
+                // If employee has no teams, show no clients
+                $query->whereRaw('1 = 0');
+            }
+        }
+
         // Filter by name
         if ($request->filled('search_name')) {
             $query->where('name', 'like', '%' . $request->search_name . '%');
         }
 
-        $clients = $query->latest()->paginate(10)->withQueryString();
+        $clients = $query->with('salesTeams')->latest()->paginate(10)->withQueryString();
 
-        return view('clients.index', compact('clients'));
+        // Get employee info for display
+        $employeeTeams = null;
+        if ($employee && $employee->account_type === 'مبيعات' && !$isAdmin) {
+            $employee->load('salesTeams');
+            $employeeTeams = $employee->salesTeams;
+        }
+
+        return view('clients.index', compact('clients', 'employeeTeams', 'employee', 'isAdmin'));
     }
 
     /**

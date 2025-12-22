@@ -129,6 +129,42 @@
     </div>
     @endif
 
+    <!-- Send to Designer Section -->
+    @if(($workOrder->status ?? '') === 'work_order')
+    <div class="card" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%); border: 2px solid #8b5cf6;">
+        <div style="padding: 1.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                <svg style="width: 24px; height: 24px; color: #8b5cf6;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
+                </svg>
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: #6b21a8; margin: 0;">إرسال إلى المصمم</h3>
+            </div>
+            @if(($workOrder->sent_to_designer ?? 'no') == 'no')
+                <p style="font-size: 0.875rem; color: #7c3aed; margin-bottom: 1.5rem;">تم تحويل عرض السعر إلى أمر شغل. يمكنك الآن إرساله إلى المصمم للبدء في التصميم.</p>
+                <form action="{{ route('work-orders.mark-as-sent-to-designer', $workOrder) }}" method="POST">
+                    @csrf
+                    <button type="submit" onclick="return confirm('هل أنت متأكد من إرسال أمر الشغل إلى المصمم؟')" style="display: inline-flex; align-items: center; padding: 0.875rem 1.5rem; background-color: #8b5cf6; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(139, 92, 246, 0.3);">
+                        <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                        </svg>
+                        إرسال إلى المصمم
+                    </button>
+                </form>
+            @else
+                <div style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; background-color: #faf5ff; border-radius: 0.5rem; border: 1px solid #c084fc;">
+                    <svg style="width: 24px; height: 24px; color: #8b5cf6; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    <div>
+                        <p style="font-size: 0.875rem; font-weight: 600; color: #6b21a8; margin: 0;">تم إرسال أمر الشغل إلى المصمم</p>
+                        <p style="font-size: 0.75rem; color: #7c3aed; margin: 0.25rem 0 0 0;">يمكن للمصمم الآن البدء في العمل على التصميم</p>
+                    </div>
+                </div>
+            @endif
+        </div>
+    </div>
+    @endif
+
     <!-- Archive Section -->
     @if(in_array($workOrder->client_response ?? '', ['رفض', 'لم يرد']))
     <div class="card" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%); border: 2px solid #6b7280;">
@@ -219,6 +255,23 @@
                     <span style="display: inline-block; padding: 0.375rem 0.875rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; background-color: {{ $responseColor }}20; color: {{ $responseColor }};">
                         {{ $workOrder->client_response }}
                     </span>
+                </dd>
+            </div>
+            @endif
+
+            @if(($workOrder->status ?? '') === 'work_order')
+            <div>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">إرسال إلى المصمم</dt>
+                <dd style="margin: 0;">
+                    @if(($workOrder->sent_to_designer ?? 'no') == 'yes')
+                        <span style="display: inline-block; padding: 0.375rem 0.875rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; background-color: #8b5cf620; color: #8b5cf6;">
+                            تم الإرسال
+                        </span>
+                    @else
+                        <span style="display: inline-block; padding: 0.375rem 0.875rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; background-color: #6b728020; color: #6b7280;">
+                            لم يتم الإرسال
+                        </span>
+                    @endif
                 </dd>
             </div>
             @endif

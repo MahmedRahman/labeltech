@@ -6,6 +6,7 @@ use App\Models\WorkOrder;
 use App\Models\Client;
 use App\Models\Material;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class WorkOrderController extends Controller
 {
@@ -193,7 +194,30 @@ class WorkOrderController extends Controller
      */
     public function create()
     {
-        $clients = Client::orderBy('name')->get();
+        $query = Client::query();
+        
+        // Check if logged in as employee with sales account type
+        $employee = Auth::guard('employee')->user();
+        $isAdmin = Auth::guard('web')->check();
+        
+        // If employee is from sales team, filter clients by their team
+        if ($employee && $employee->account_type === 'مبيعات' && !$isAdmin) {
+            // Get employee's sales teams
+            $employee->load('salesTeams');
+            $teamIds = $employee->salesTeams->pluck('id')->toArray();
+            
+            if (!empty($teamIds)) {
+                // Filter clients that belong to employee's teams
+                $query->whereHas('salesTeams', function($q) use ($teamIds) {
+                    $q->whereIn('sales_teams.id', $teamIds);
+                });
+            } else {
+                // If employee has no teams, show no clients
+                $query->whereRaw('1 = 0');
+            }
+        }
+        
+        $clients = $query->orderBy('name')->get();
         $materials = Material::where('is_active', true)->orderBy('name')->get();
         $additions = \App\Models\Addition::orderBy('name')->get();
         $externalBreakingPrice = \App\Models\SystemSetting::getValue('external_breaking_price', 4);
@@ -540,7 +564,30 @@ class WorkOrderController extends Controller
      */
     public function edit(WorkOrder $workOrder)
     {
-        $clients = Client::orderBy('name')->get();
+        $query = Client::query();
+        
+        // Check if logged in as employee with sales account type
+        $employee = Auth::guard('employee')->user();
+        $isAdmin = Auth::guard('web')->check();
+        
+        // If employee is from sales team, filter clients by their team
+        if ($employee && $employee->account_type === 'مبيعات' && !$isAdmin) {
+            // Get employee's sales teams
+            $employee->load('salesTeams');
+            $teamIds = $employee->salesTeams->pluck('id')->toArray();
+            
+            if (!empty($teamIds)) {
+                // Filter clients that belong to employee's teams
+                $query->whereHas('salesTeams', function($q) use ($teamIds) {
+                    $q->whereIn('sales_teams.id', $teamIds);
+                });
+            } else {
+                // If employee has no teams, show no clients
+                $query->whereRaw('1 = 0');
+            }
+        }
+        
+        $clients = $query->orderBy('name')->get();
         $materials = Material::where('is_active', true)->orderBy('name')->get();
         $additions = \App\Models\Addition::orderBy('name')->get();
         $externalBreakingPrice = \App\Models\SystemSetting::getValue('external_breaking_price', 4);
@@ -755,6 +802,25 @@ class WorkOrderController extends Controller
     /**
      * Convert price quote to work order.
      */
+    /**
+     * Mark work order as sent to designer.
+     */
+    public function markAsSentToDesigner(WorkOrder $workOrder)
+    {
+        // Only allow if status is work_order
+        if ($workOrder->status !== 'work_order') {
+            return redirect()->route('work-orders.show', $workOrder)
+                ->with('error', 'يمكن إرسال أمر الشغل إلى المصمم فقط عندما تكون الحالة "أمر شغل"');
+        }
+
+        $workOrder->update([
+            'sent_to_designer' => 'yes'
+        ]);
+
+        return redirect()->route('work-orders.show', $workOrder)
+            ->with('success', 'تم إرسال أمر الشغل إلى المصمم بنجاح');
+    }
+
     public function convertToOrder(WorkOrder $workOrder)
     {
         // Check if the client response is موافق

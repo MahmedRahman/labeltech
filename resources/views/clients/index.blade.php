@@ -7,7 +7,17 @@
     <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
         <div>
             <h2 style="font-size: 1.75rem; font-weight: 700; color: #111827; margin: 0 0 0.25rem 0;">قائمة العملاء</h2>
-            <p style="font-size: 1rem; color: #6b7280; margin: 0;">إدارة جميع عملائك من مكان واحد</p>
+            <p style="font-size: 1rem; color: #6b7280; margin: 0;">
+                @if($employee && $employee->account_type === 'مبيعات' && !$isAdmin)
+                    @if($employeeTeams && $employeeTeams->count() > 0)
+                        عرض عملاء فريق{{ $employeeTeams->count() > 1 ? 'ك' : '' }}: {{ $employeeTeams->pluck('name')->join('، ') }}
+                    @else
+                        لا يوجد لديك فرق مبيعات مخصصة
+                    @endif
+                @else
+                    إدارة جميع عملائك من مكان واحد
+                @endif
+            </p>
         </div>
         <a href="{{ route('clients.create') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #2563eb; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
             <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -44,6 +54,19 @@
             </div>
         </form>
     </div>
+
+    @if(isset($employee) && $employee && $employee->account_type === 'مبيعات' && (!isset($isAdmin) || !$isAdmin) && (!$employeeTeams || $employeeTeams->count() == 0))
+        <div style="padding: 1.5rem; background-color: #fef3c7; color: #92400e; border-radius: 0.5rem; margin-bottom: 1.5rem; border: 1px solid #f59e0b;">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <svg style="width: 24px; height: 24px; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+                <div>
+                    <strong>تنبيه:</strong> لا يوجد لديك فرق مبيعات مخصصة. يرجى الاتصال بالإدارة لإضافتك إلى فريق مبيعات لعرض العملاء.
+                </div>
+            </div>
+        </div>
+    @endif
 
     <div class="table-container">
         <div class="table-content">
