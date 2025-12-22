@@ -60,6 +60,7 @@ class WorkOrder extends Model
         'increase',
         'linear_meter',
         'sent_to_client',
+        'client_response',
     ];
 
     protected $casts = [

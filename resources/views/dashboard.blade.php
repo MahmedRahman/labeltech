@@ -159,6 +159,29 @@
             </div>
         </a>
 
+        <!-- Sales Teams -->
+        <a href="{{ route('sales-teams.index') }}" style="text-decoration: none; display: block;">
+            <div class="stat-card" style="cursor: pointer;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <p class="stat-label">فرق المبيعات</p>
+                        <p class="stat-number">{{ $salesTeamsCount ?? 0 }}</p>
+                    </div>
+                    <div style="width: 48px; height: 48px; background-color: #fef3c7; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;">
+                        <svg style="width: 32px; height: 32px; color: #f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div style="margin-top: 1rem; display: inline-flex; align-items: center; color: #f59e0b; font-size: 1rem;">
+                    عرض جميع فرق المبيعات
+                    <svg style="width: 16px; height: 16px; margin-right: 0.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </div>
+            </div>
+        </a>
+
         <!-- Quick Actions -->
         <div class="stat-card">
             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -193,6 +216,12 @@
                 </a>
                 <a href="{{ route('work-orders.create') }}" style="display: inline-flex; align-items: center; color: #10b981; text-decoration: none; font-size: 1rem;">
                     إضافة أمر شغل
+                    <svg style="width: 16px; height: 16px; margin-right: 0.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </a>
+                <a href="{{ route('client-distribution.index') }}" style="display: inline-flex; align-items: center; color: #10b981; text-decoration: none; font-size: 1rem;">
+                    توزيع العملاء على الفرق
                     <svg style="width: 16px; height: 16px; margin-right: 0.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                     </svg>

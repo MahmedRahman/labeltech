@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -25,6 +26,15 @@ class Employee extends Authenticatable
     public function position(): BelongsTo
     {
         return $this->belongsTo(Position::class);
+    }
+
+    /**
+     * Get the sales teams that the employee belongs to.
+     */
+    public function salesTeams(): BelongsToMany
+    {
+        return $this->belongsToMany(SalesTeam::class, 'sales_team_employee')
+                    ->withTimestamps();
     }
 
     protected $fillable = [

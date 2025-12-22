@@ -412,6 +412,7 @@
                             <th>الكمية</th>
                             <th>الأبعاد</th>
                             <th>تم الإرسال للعميل</th>
+                            <th>رد العميل على عرض السعر</th>
                             <th>الحالة</th>
                             <th>الإجراءات</th>
                         </tr>
@@ -488,6 +489,29 @@
                                         <span style="display: inline-block; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; background-color: #fee2e2; color: #991b1b;">
                                             ✗ لم يتم الإرسال
                                         </span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @php
+                                        $clientResponseColors = [
+                                            'موافق' => '#10b981',
+                                            'رفض' => '#dc2626',
+                                            'لم يرد' => '#6b7280'
+                                        ];
+                                        $clientResponseLabels = [
+                                            'موافق' => 'موافق',
+                                            'رفض' => 'رفض',
+                                            'لم يرد' => 'لم يرد'
+                                        ];
+                                        $responseColor = $clientResponseColors[$workOrder->client_response] ?? '#9ca3af';
+                                        $responseLabel = $clientResponseLabels[$workOrder->client_response] ?? '-';
+                                    @endphp
+                                    @if($workOrder->client_response)
+                                        <span class="status-badge" style="background-color: {{ $responseColor }}20; color: {{ $responseColor }};">
+                                            {{ $responseLabel }}
+                                        </span>
+                                    @else
+                                        <span style="color: #9ca3af;">-</span>
                                     @endif
                                 </td>
                                 <td>

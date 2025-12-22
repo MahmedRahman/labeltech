@@ -56,7 +56,7 @@
     </div>
 
     <!-- Client Response Section -->
-    @if(($workOrder->sent_to_client ?? 'no') == 'yes' && !in_array($workOrder->status ?? '', ['client_approved', 'client_rejected', 'client_no_response']))
+    @if(($workOrder->sent_to_client ?? 'no') == 'yes' && !in_array($workOrder->client_response ?? '', ['موافق', 'رفض', 'لم يرد']))
     <div class="card" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 2px solid #f59e0b;">
         <div style="padding: 1.5rem;">
             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
@@ -69,7 +69,7 @@
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
                 <form action="{{ route('work-orders.client-response.update', $workOrder) }}" method="POST">
                     @csrf
-                    <input type="hidden" name="status" value="client_approved">
+                    <input type="hidden" name="client_response" value="موافق">
                     <button type="submit" onclick="return confirm('هل أنت متأكد أن العميل وافق على عرض السعر؟')" style="width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.25rem; background-color: #10b981; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);">
                         <svg style="width: 32px; height: 32px; margin-bottom: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
@@ -80,7 +80,7 @@
                 </form>
                 <form action="{{ route('work-orders.client-response.update', $workOrder) }}" method="POST">
                     @csrf
-                    <input type="hidden" name="status" value="client_rejected">
+                    <input type="hidden" name="client_response" value="رفض">
                     <button type="submit" onclick="return confirm('هل أنت متأكد أن العميل رفض عرض السعر؟')" style="width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.25rem; background-color: #dc2626; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);">
                         <svg style="width: 32px; height: 32px; margin-bottom: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -91,7 +91,7 @@
                 </form>
                 <form action="{{ route('work-orders.client-response.update', $workOrder) }}" method="POST">
                     @csrf
-                    <input type="hidden" name="status" value="client_no_response">
+                    <input type="hidden" name="client_response" value="لم يرد">
                     <button type="submit" onclick="return confirm('هل تريد تحديد أن العميل لم يرد على عرض السعر؟')" style="width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.25rem; background-color: #6b7280; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(107, 114, 128, 0.3);">
                         <svg style="width: 32px; height: 32px; margin-bottom: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -106,7 +106,7 @@
     @endif
 
     <!-- Convert to Work Order Section -->
-    @if(($workOrder->status ?? '') === 'client_approved')
+    @if(($workOrder->client_response ?? '') === 'موافق')
     <div class="card" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border: 2px solid #2563eb;">
         <div style="padding: 1.5rem;">
             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
@@ -130,7 +130,7 @@
     @endif
 
     <!-- Archive Section -->
-    @if(in_array($workOrder->status ?? '', ['client_rejected', 'client_no_response']))
+    @if(in_array($workOrder->client_response ?? '', ['رفض', 'لم يرد']))
     <div class="card" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%); border: 2px solid #6b7280;">
         <div style="padding: 1.5rem;">
             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
@@ -138,7 +138,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
                 </svg>
                 <h3 style="font-size: 1.125rem; font-weight: 600; color: #374151; margin: 0;">
-                    @if(($workOrder->status ?? '') === 'client_rejected')
+                    @if(($workOrder->client_response ?? '') === 'رفض')
                         العميل رفض عرض السعر
                     @else
                         العميل لم يرد على عرض السعر
@@ -146,7 +146,7 @@
                 </h3>
             </div>
             <p style="font-size: 0.875rem; color: #4b5563; margin-bottom: 1.5rem;">
-                @if(($workOrder->status ?? '') === 'client_rejected')
+                @if(($workOrder->client_response ?? '') === 'رفض')
                     تم رفض عرض السعر من قبل العميل. يمكنك أرشفته لإزالة العرض من القائمة النشطة.
                 @else
                     لم يرد العميل على عرض السعر. يمكنك أرشفته لإزالة العرض من القائمة النشطة.
@@ -204,6 +204,25 @@
             </div>
             @endif
 
+            @if($workOrder->client_response)
+            <div>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">رد العميل على عرض السعر</dt>
+                <dd style="margin: 0;">
+                    @php
+                        $clientResponseColors = [
+                            'موافق' => '#10b981',
+                            'رفض' => '#dc2626',
+                            'لم يرد' => '#6b7280'
+                        ];
+                        $responseColor = $clientResponseColors[$workOrder->client_response] ?? '#6b7280';
+                    @endphp
+                    <span style="display: inline-block; padding: 0.375rem 0.875rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; background-color: {{ $responseColor }}20; color: {{ $responseColor }};">
+                        {{ $workOrder->client_response }}
+                    </span>
+                </dd>
+            </div>
+            @endif
+
             <div>
                 <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">الحالة</dt>
                 <dd style="margin: 0;">
@@ -214,9 +233,6 @@
                             'in_progress' => '#2563eb',
                             'completed' => '#10b981',
                             'cancelled' => '#dc2626',
-                            'client_approved' => '#10b981',
-                            'client_rejected' => '#dc2626',
-                            'client_no_response' => '#6b7280',
                             'work_order' => '#2563eb'
                         ];
                         $statusLabels = [
@@ -225,9 +241,6 @@
                             'in_progress' => 'قيد التنفيذ',
                             'completed' => 'مكتمل',
                             'cancelled' => 'ملغي',
-                            'client_approved' => 'العميل موافق',
-                            'client_rejected' => 'العميل رفض',
-                            'client_no_response' => 'العميل لم يرد',
                             'work_order' => 'أمر شغل'
                         ];
                         $color = $statusColors[$workOrder->status] ?? '#6b7280';
@@ -659,13 +672,6 @@
                 </dd>
             </div>
 
-            <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 0.5rem; backdrop-filter: blur(10px);">
-                <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">عدد البكر</dt>
-                <dd style="font-size: 1.25rem; color: white; margin: 0; font-weight: 700;">
-                    {{ number_format($calculations['rolls_count'], 0) }}
-                </dd>
-            </div>
-
             @if($workOrder->waste_per_roll)
             <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 0.5rem; backdrop-filter: blur(10px);">
                 <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">عدد الهالك للبكره</dt>
@@ -674,13 +680,6 @@
                 </dd>
             </div>
             @endif
-
-            <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 0.5rem; backdrop-filter: blur(10px);">
-                <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">الهالك + نسبة الهالك</dt>
-                <dd style="font-size: 1.25rem; color: white; margin: 0; font-weight: 700;">
-                    {{ number_format($calculations['waste'] + $calculations['waste_percentage'], 2) }}
-                </dd>
-            </div>
 
             <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 0.5rem; backdrop-filter: blur(10px);">
                 <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">المتر الطولي + الهالك</dt>

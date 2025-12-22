@@ -27,11 +27,12 @@ Route::get('/dashboard', function () {
     $employeesCount = \App\Models\Employee::count();
     $suppliersCount = \App\Models\Supplier::count();
     $workOrdersCount = \App\Models\WorkOrder::count();
+    $salesTeamsCount = \App\Models\SalesTeam::count();
     $recentClients = \App\Models\Client::latest()->take(5)->get();
     $recentEmployees = \App\Models\Employee::latest()->take(5)->get();
     $recentSuppliers = \App\Models\Supplier::latest()->take(5)->get();
     $recentWorkOrders = \App\Models\WorkOrder::with('client')->latest()->take(5)->get();
-    return view('dashboard', compact('clientsCount', 'employeesCount', 'suppliersCount', 'workOrdersCount', 'recentClients', 'recentEmployees', 'recentSuppliers', 'recentWorkOrders'));
+    return view('dashboard', compact('clientsCount', 'employeesCount', 'suppliersCount', 'workOrdersCount', 'salesTeamsCount', 'recentClients', 'recentEmployees', 'recentSuppliers', 'recentWorkOrders'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -101,6 +102,14 @@ Route::middleware('auth')->group(function () {
     
     // المصروفات
     Route::resource('expenses', \App\Http\Controllers\ExpenseController::class);
+    
+    // فرق المبيعات
+    Route::resource('sales-teams', \App\Http\Controllers\SalesTeamController::class);
+    
+    // توزيع العملاء على فرق المبيعات
+    Route::get('client-distribution', [\App\Http\Controllers\ClientDistributionController::class, 'index'])->name('client-distribution.index');
+    Route::post('client-distribution', [\App\Http\Controllers\ClientDistributionController::class, 'store'])->name('client-distribution.store');
+    Route::put('client-distribution/{client}', [\App\Http\Controllers\ClientDistributionController::class, 'update'])->name('client-distribution.update');
 });
 
 require __DIR__.'/auth.php';

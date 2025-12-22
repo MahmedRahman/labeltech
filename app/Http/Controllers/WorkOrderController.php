@@ -741,11 +741,11 @@ class WorkOrderController extends Controller
     public function updateClientResponse(Request $request, WorkOrder $workOrder)
     {
         $validated = $request->validate([
-            'status' => 'required|in:client_approved,client_rejected,client_no_response',
+            'client_response' => 'required|in:موافق,رفض,لم يرد',
         ]);
 
         $workOrder->update([
-            'status' => $validated['status']
+            'client_response' => $validated['client_response']
         ]);
 
         return redirect()->back()
@@ -757,8 +757,8 @@ class WorkOrderController extends Controller
      */
     public function convertToOrder(WorkOrder $workOrder)
     {
-        // Check if the status is client_approved
-        if (($workOrder->status ?? '') !== 'client_approved') {
+        // Check if the client response is موافق
+        if (($workOrder->client_response ?? '') !== 'موافق') {
             return redirect()->back()
                 ->with('error', 'لا يمكن تحويل عرض السعر إلى أمر شغل إلا بعد موافقة العميل');
         }
@@ -777,8 +777,8 @@ class WorkOrderController extends Controller
      */
     public function archiveQuote(WorkOrder $workOrder)
     {
-        // Check if the status is client_rejected or client_no_response
-        if (!in_array($workOrder->status ?? '', ['client_rejected', 'client_no_response'])) {
+        // Check if the client response is رفض or لم يرد
+        if (!in_array($workOrder->client_response ?? '', ['رفض', 'لم يرد'])) {
             return redirect()->back()
                 ->with('error', 'لا يمكن أرشفة عرض السعر إلا إذا كان العميل قد رفض أو لم يرد');
         }
