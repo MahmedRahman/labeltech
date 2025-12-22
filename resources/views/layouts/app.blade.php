@@ -231,11 +231,17 @@
                 line-height: 1.2;
             }
             
+
+
+            
             .form-input, .form-textarea, .form-select {
                 font-size: 1.0625rem;
                 font-weight: 400;
             }
             
+
+
+
             .form-label {
                 font-size: 1.0625rem;
                 font-weight: 600;
