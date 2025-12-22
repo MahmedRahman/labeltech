@@ -10,7 +10,7 @@
 :root {
     /* Font Family */
     --font-primary: 'IBM Plex Sans Arabic', system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
-    
+
     /* Base Font Sizes (Large - Default) */
     --fs-base: 20px;
     --fs-h1: 32px;
@@ -24,18 +24,18 @@
     --fs-placeholder: 16px;
     --fs-table-header: 18px;
     --fs-table-row: 18px;
-    
+
     /* Line Heights */
     --lh-base: 1.7;
     --lh-heading: 1.4;
     --lh-table: 1.7;
-    
+
     /* Colors */
     --color-text: #222222;
     --color-text-light: #555555;
     --color-bg: #FFFFFF;
     --color-bg-alt: #F7F7F7;
-    
+
     /* Font Weights */
     --fw-normal: 400;
     --fw-medium: 500;
@@ -114,7 +114,8 @@ body {
 }
 
 /* Headings */
-h1, .h1 {
+h1,
+.h1 {
     font-size: var(--fs-h1);
     font-weight: var(--fw-semibold);
     line-height: var(--lh-heading);
@@ -122,7 +123,8 @@ h1, .h1 {
     margin: 0 0 1rem 0;
 }
 
-h2, .h2 {
+h2,
+.h2 {
     font-size: var(--fs-h2);
     font-weight: var(--fw-semibold);
     line-height: var(--lh-heading);
@@ -130,7 +132,8 @@ h2, .h2 {
     margin: 0 0 0.875rem 0;
 }
 
-h3, .h3 {
+h3,
+.h3 {
     font-size: var(--fs-h3);
     font-weight: var(--fw-medium);
     line-height: var(--lh-heading);
@@ -138,7 +141,8 @@ h3, .h3 {
     margin: 0 0 0.75rem 0;
 }
 
-h4, .h4 {
+h4,
+.h4 {
     font-size: var(--fs-h4);
     font-weight: var(--fw-medium);
     line-height: var(--lh-heading);
@@ -146,7 +150,8 @@ h4, .h4 {
     margin: 0 0 0.625rem 0;
 }
 
-h5, .h5 {
+h5,
+.h5 {
     font-size: var(--fs-base);
     font-weight: var(--fw-medium);
     line-height: var(--lh-base);
@@ -154,7 +159,8 @@ h5, .h5 {
     margin: 0 0 0.5rem 0;
 }
 
-h6, .h6 {
+h6,
+.h6 {
     font-size: var(--fs-base);
     font-weight: var(--fw-medium);
     line-height: var(--lh-base);
@@ -388,7 +394,7 @@ tbody tr:hover {
     html {
         font-size: 12pt;
     }
-    
+
     body {
         font-size: 12pt;
         line-height: 1.6;
@@ -400,13 +406,12 @@ tbody tr:hover {
     :root {
         --fs-base: 18px;
     }
-    
+
     .fs-large {
         --fs-base: 18px;
     }
-    
+
     .fs-xlarge {
         --fs-base: 20px;
     }
 }
-

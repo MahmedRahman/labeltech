@@ -47,31 +47,19 @@
             gap: 0.5rem;
         }
 
-        .btn-view, .btn-edit {
+        .btn-view {
             padding: 0.375rem 0.75rem;
             border-radius: 0.375rem;
             text-decoration: none;
             font-size: 0.75rem;
             font-weight: 500;
             transition: all 0.2s;
-        }
-
-        .btn-view {
             background-color: #dbeafe;
             color: #1e40af;
         }
 
         .btn-view:hover {
             background-color: #bfdbfe;
-        }
-
-        .btn-edit {
-            background-color: #d1fae5;
-            color: #065f46;
-        }
-
-        .btn-edit:hover {
-            background-color: #a7f3d0;
         }
 
         .status-badge {
@@ -144,6 +132,7 @@
                         <th>الخامة</th>
                         <th>الكمية</th>
                         <th>الأبعاد</th>
+                        <th>رد العميل على عرض السعر</th>
                         <th>الحالة</th>
                         <th>الإجراءات</th>
                     </tr>
@@ -192,6 +181,23 @@
                                 @endif
                             </td>
                             <td>
+                                @if($workOrder->client_response)
+                                    @php
+                                        $clientResponseColors = [
+                                            'موافق' => '#10b981',
+                                            'رفض' => '#dc2626',
+                                            'لم يرد' => '#6b7280'
+                                        ];
+                                        $responseColor = $clientResponseColors[$workOrder->client_response] ?? '#6b7280';
+                                    @endphp
+                                    <span class="status-badge" style="background-color: {{ $responseColor }}20; color: {{ $responseColor }};">
+                                        {{ $workOrder->client_response }}
+                                    </span>
+                                @else
+                                    <span style="color: #9ca3af;">-</span>
+                                @endif
+                            </td>
+                            <td>
                                 <span class="status-badge" style="background-color: {{ $color }}20; color: {{ $color }};">
                                     {{ $label }}
                                 </span>
@@ -199,7 +205,6 @@
                             <td>
                                 <div class="table-actions">
                                     <a href="{{ route('work-orders.show', $workOrder->id) }}" class="btn-view">عرض</a>
-                                    <a href="{{ route('work-orders.edit', $workOrder->id) }}" class="btn-edit">تعديل</a>
                                 </div>
                             </td>
                         </tr>

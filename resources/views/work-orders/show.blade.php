@@ -56,7 +56,7 @@
     </div>
 
     <!-- Client Response Section -->
-    @if(($workOrder->sent_to_client ?? 'no') == 'yes' && !in_array($workOrder->client_response ?? '', ['موافق', 'رفض', 'لم يرد']))
+    @if(($workOrder->sent_to_client ?? 'no') == 'yes' && empty($workOrder->client_response))
     <div class="card" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 2px solid #f59e0b;">
         <div style="padding: 1.5rem;">
             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
