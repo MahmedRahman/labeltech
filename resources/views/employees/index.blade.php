@@ -267,6 +267,9 @@
             }
         }
 
+
+
+        
         // Filter by position
         function filterByPosition(positionId) {
             const url = new URL(window.location.href);
