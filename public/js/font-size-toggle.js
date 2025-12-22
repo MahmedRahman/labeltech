@@ -61,6 +61,26 @@
             return;
         }
 
+        // Find the top-nav element
+        const topNav = document.querySelector('.top-nav');
+        if (!topNav) {
+            // Fallback: append to body if top-nav not found
+            const toggle = createToggleElement();
+            document.body.appendChild(toggle);
+            return;
+        }
+
+        // Create toggle element
+        const toggle = createToggleElement();
+        
+        // Append to top-nav (header)
+        topNav.appendChild(toggle);
+    }
+
+    /**
+     * Create toggle element with buttons
+     */
+    function createToggleElement() {
         const toggle = document.createElement('div');
         toggle.id = 'font-size-toggle';
         toggle.className = 'font-size-toggle';
@@ -94,8 +114,7 @@
             toggle.appendChild(button);
         });
 
-        // Append to body
-        document.body.appendChild(toggle);
+        return toggle;
     }
 
     /**
@@ -130,4 +149,5 @@
     };
 
 })();
+
 

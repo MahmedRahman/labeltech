@@ -32,12 +32,26 @@ class EmployeeController extends Controller
             $query->where('department_id', $request->filter_department);
         }
 
+        // Filter by position
+        if ($request->filled('filter_position')) {
+            $query->where('position_id', $request->filter_position);
+        }
+
         $employees = $query->with('department', 'position')->latest()->paginate(10)->withQueryString();
 
         // Get departments for filter
         $departments = Department::orderBy('name')->get();
 
-        return view('employees.index', compact('employees', 'departments'));
+        // Get positions with employee count
+        $positionsWithCount = Position::withCount('employees')
+            ->with('department')
+            ->orderBy('name')
+            ->get();
+
+        // Get total employees count for "الكل" card
+        $totalEmployeesCount = Employee::count();
+
+        return view('employees.index', compact('employees', 'departments', 'positionsWithCount', 'totalEmployeesCount'));
     }
 
     /**

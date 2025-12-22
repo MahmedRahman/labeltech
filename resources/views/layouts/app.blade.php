@@ -548,8 +548,9 @@
             <!-- Main Content -->
             <div class="main-content" style="flex: 1;">
                 <!-- Top Navigation -->
-                <div class="top-nav">
+                <div class="top-nav" style="display: flex; align-items: center; justify-content: space-between;">
                     <h1 style="font-size: 1.75rem; font-weight: 700; color: #111827; margin: 0; letter-spacing: -0.025em;">{{ $title ?? 'لوحة التحكم' }}</h1>
+                    <!-- Font Size Toggle will be inserted here by JavaScript -->
                 </div>
 
                 <!-- Page Content -->

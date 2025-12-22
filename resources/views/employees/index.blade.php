@@ -86,6 +86,57 @@
         </form>
     </div>
 
+    <!-- Position Cards -->
+    <div style="margin-bottom: 2rem;">
+        <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin-bottom: 1rem;">التخصصات والموظفين</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem;">
+            <!-- الكل Card -->
+            <div class="position-card" 
+                 data-position-id=""
+                 onclick="filterByPosition('')"
+                 style="background: white; border-radius: 0.75rem; border: 2px solid {{ request('filter_position') == '' || !request()->has('filter_position') ? '#2563eb' : '#e5e7eb' }}; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; cursor: pointer;" 
+                 onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 6px rgba(0, 0, 0, 0.1)';" 
+                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0, 0, 0, 0.05)';">
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.75rem;">
+                    <div style="flex: 1;">
+                        <h4 style="font-size: 1.125rem; font-weight: 600; color: #111827; margin: 0 0 0.25rem 0;">الكل</h4>
+                        <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">جميع الموظفين</p>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white; border-radius: 0.5rem; padding: 0.5rem 0.75rem; min-width: 50px; text-align: center;">
+                        <div style="font-size: 1.5rem; font-weight: 700; line-height: 1;">{{ $totalEmployeesCount }}</div>
+                        <div style="font-size: 0.75rem; opacity: 0.9; margin-top: 0.25rem;">موظف</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Position Cards -->
+            @foreach($positionsWithCount as $position)
+                <div class="position-card" 
+                     data-position-id="{{ $position->id }}"
+                     onclick="filterByPosition({{ $position->id }})"
+                     style="background: white; border-radius: 0.75rem; border: 2px solid {{ request('filter_position') == $position->id ? '#2563eb' : '#e5e7eb' }}; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s; cursor: pointer;" 
+                     onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 6px rgba(0, 0, 0, 0.1)';" 
+                     onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0, 0, 0, 0.05)';">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.75rem;">
+                        <div style="flex: 1;">
+                            <h4 style="font-size: 1.125rem; font-weight: 600; color: #111827; margin: 0 0 0.25rem 0;">{{ $position->name }}</h4>
+                            @if($position->department)
+                                <p style="font-size: 0.875rem; color: #6b7280; margin: 0;">{{ $position->department->name }}</p>
+                            @endif
+                        </div>
+                        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 0.5rem; padding: 0.5rem 0.75rem; min-width: 50px; text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: 700; line-height: 1;">{{ $position->employees_count }}</div>
+                            <div style="font-size: 0.75rem; opacity: 0.9; margin-top: 0.25rem;">موظف</div>
+                        </div>
+                    </div>
+                    @if($position->description)
+                        <p style="font-size: 0.875rem; color: #6b7280; margin: 0; line-height: 1.5;">{{ Str::limit($position->description, 80) }}</p>
+                    @endif
+                </div>
+            @endforeach
+        </div>
+    </div>
+
     <div class="table-container">
         <div class="table-content">
             @if($employees->count() > 0)
@@ -215,6 +266,39 @@
                 modal.style.display = 'none';
             }
         }
+
+        // Filter by position
+        function filterByPosition(positionId) {
+            const url = new URL(window.location.href);
+            const params = new URLSearchParams(url.search);
+            
+            if (positionId === '' || positionId === null) {
+                params.delete('filter_position');
+            } else {
+                params.set('filter_position', positionId);
+            }
+            
+            // Reset pagination
+            params.delete('page');
+            
+            // Update URL and reload
+            url.search = params.toString();
+            window.location.href = url.toString();
+        }
+
+        // Highlight active card on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const activePositionId = '{{ request("filter_position") }}';
+            const cards = document.querySelectorAll('.position-card');
+            
+            cards.forEach(card => {
+                const cardPositionId = card.getAttribute('data-position-id');
+                if (cardPositionId === activePositionId || (activePositionId === '' && cardPositionId === '')) {
+                    card.style.borderColor = '#2563eb';
+                    card.style.boxShadow = '0 4px 6px rgba(37, 99, 235, 0.2)';
+                }
+            });
+        });
     </script>
 </x-app-layout>
 
