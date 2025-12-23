@@ -366,10 +366,9 @@
                             <th>تاريخ الإنشاء</th>
                             <th>رقم عرض السعر</th>
                             <th>العميل</th>
-                            <th>اسم العمل</th>
                             <th>الخامة</th>
                             <th>الكمية</th>
-                            <th>الأبعاد</th>
+                            <th>المقاس</th>
                             <th>تم الإرسال للعميل</th>
                             <th>رد العميل على عرض السعر</th>
                             <th>الحالة</th>
@@ -420,13 +419,6 @@
                                     <strong style="color: #111827;">{{ $workOrder->order_number ?? 'بدون رقم' }}</strong>
                                 </td>
                                 <td>{{ $workOrder->client->name ?? 'غير محدد' }}</td>
-                                <td>
-                                    @if($workOrder->job_name)
-                                        <span style="color: #2563eb; font-weight: 500;">{{ $workOrder->job_name }}</span>
-                                    @else
-                                        <span style="color: #9ca3af;">-</span>
-                                    @endif
-                                </td>
                                 <td>{{ $workOrder->material ?? '-' }}</td>
                                 <td>{{ number_format($workOrder->quantity ?? 0) }}</td>
                                 <td>
@@ -636,11 +628,6 @@
                                     <h3 style="font-size: 1rem; font-weight: 600; color: #111827; margin: 0 0 0.25rem 0;">
                                         {{ $workOrder->order_number ?? 'بدون رقم' }}
                                     </h3>
-                                    @if($workOrder->job_name)
-                                    <p style="font-size: 0.875rem; color: #2563eb; font-weight: 500; margin: 0 0 0.25rem 0;">
-                                        {{ $workOrder->job_name }}
-                                    </p>
-                                    @endif
                                     <p style="font-size: 1rem; color: #6b7280; margin: 0 0 0.25rem 0;">
                                         <strong>العميل:</strong> {{ $workOrder->client->name ?? 'غير محدد' }}
                                     </p>
@@ -669,7 +656,7 @@
                                     </div>
                                     @if($workOrder->width && $workOrder->length)
                                     <div>
-                                        <p style="font-size: 0.75rem; color: #6b7280; margin: 0 0 0.25rem 0;">الأبعاد</p>
+                                        <p style="font-size: 0.75rem; color: #6b7280; margin: 0 0 0.25rem 0;">المقاس</p>
                                         <p style="font-weight: 500; color: #111827; margin: 0;">
                                             {{ number_format($workOrder->width, 2) }} × {{ number_format($workOrder->length, 2) }}
                                         </p>

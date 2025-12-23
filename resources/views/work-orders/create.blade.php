@@ -458,13 +458,14 @@
                 <!-- Width and Length -->
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="width" class="form-label">العرض (سم)</label>
+                        <label for="width" class="form-label">العرض (سم) <span style="color: #dc2626;">*</span></label>
                         <input type="number" 
                                name="width" 
                                id="width" 
                                value="{{ old('width') }}" 
                                step="0.01"
                                min="0"
+                               required
                                class="form-input"
                                placeholder="0.00">
                         @error('width')
@@ -473,13 +474,14 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="length" class="form-label">الطول (سم)</label>
+                        <label for="length" class="form-label">الطول (سم) <span style="color: #dc2626;">*</span></label>
                         <input type="number" 
                                name="length" 
                                id="length" 
                                value="{{ old('length') }}" 
                                step="0.01"
                                min="0"
+                               required
                                class="form-input"
                                placeholder="0.00">
                         @error('length')
@@ -509,14 +511,24 @@
                     @enderror
                 </div>
 
-                <!-- Paper Width (calculated automatically, hidden) -->
-                <input type="hidden" 
-                       name="paper_width" 
-                       id="paper_width" 
-                       value="{{ old('paper_width') }}">
-                @error('paper_width')
-                    <p class="error-message">{{ $message }}</p>
-                @enderror
+                <!-- Paper Width -->
+                <div class="form-group">
+                    <label for="paper_width" class="form-label">عرض الورق (سم)</label>
+                    <input type="number" 
+                           name="paper_width" 
+                           id="paper_width" 
+                           value="{{ old('paper_width') }}" 
+                           step="0.01"
+                           min="0"
+                           class="form-input"
+                           placeholder="سيتم الحساب تلقائياً">
+                    <small style="display: block; margin-top: 0.25rem; color: #6b7280; font-size: 0.875rem;">
+                        يتم الحساب تلقائياً بناءً على: (العرض × عدد الصفوف) + ((عدد الصفوف - 1) × 0.3) + 1.2
+                    </small>
+                    @error('paper_width')
+                        <p class="error-message">{{ $message }}</p>
+                    @enderror
+                </div>
 
                 <!-- Gap Count, Waste Per Roll and Increase -->
                 <div class="form-grid">
@@ -634,8 +646,41 @@
                 <div style="margin-bottom: 2rem; padding: 1.5rem; background-color: #f9fafb; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
                     <h3 style="font-size: 1rem; font-weight: 600; color: #111827; margin-bottom: 1.5rem;">التجهيزات والإضافات</h3>
                     
-                    <!-- العدد -->
+                    <!-- الأفلام -->
                     <div class="form-group">
+                        <label class="form-label">الأفلام</label>
+                        <div style="display: flex; gap: 0.75rem; margin-top: 0.5rem; flex-wrap: wrap;">
+                            @php
+                                $filmsExists = old('films_exists', 'no');
+                            @endphp
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ $filmsExists == 'no' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                                <input type="radio" 
+                                       name="films_exists" 
+                                       value="no" 
+                                       id="films_exists_no"
+                                       {{ $filmsExists == 'no' ? 'checked' : '' }}
+                                       onchange="toggleFilmsFields()"
+                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">لا يوجد</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ $filmsExists == 'yes' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                                <input type="radio" 
+                                       name="films_exists" 
+                                       value="yes" 
+                                       id="films_exists_yes"
+                                       {{ $filmsExists == 'yes' ? 'checked' : '' }}
+                                       onchange="toggleFilmsFields()"
+                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">يوجد</span>
+                            </label>
+                        </div>
+                        @error('films_exists')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- العدد -->
+                    <div class="form-group" id="film_count_group" style="display: {{ $filmsExists == 'yes' ? 'block' : 'none' }};">
                         <label class="form-label">العدد</label>
                         <div style="display: flex; gap: 0.75rem; margin-top: 0.5rem; flex-wrap: wrap;">
                             @for($i = 1; $i <= 6; $i++)
@@ -657,7 +702,7 @@
                     </div>
 
                     <!-- سعر الفيلم الواحد -->
-                    <div class="form-group">
+                    <div class="form-group" id="film_price_group" style="display: {{ $filmsExists == 'yes' ? 'block' : 'none' }};">
                         <label for="film_price" class="form-label">سعر الفيلم الواحد</label>
                         <input type="number" 
                                name="film_price" 
@@ -1032,7 +1077,7 @@
                                     <div style="display: flex; gap: 1rem; margin-top: 0.5rem; flex-wrap: wrap;">
                                         @php
                                             $coreSizes = [76, 40, 25];
-                                            $selectedCoreSize = old('core_size');
+                                            $selectedCoreSize = old('core_size', 76);
                                         @endphp
                                         @foreach($coreSizes as $size)
                                             <label class="number-of-colors-card" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; cursor: pointer; padding: 1rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; min-width: 60px; text-align: center;">
@@ -1487,6 +1532,40 @@
             calculatePaperWidth();
             calculateLinearMeter();
             
+            // Handle films_exists radio buttons
+            const filmsExistsRadios = document.querySelectorAll('input[name="films_exists"]');
+            filmsExistsRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    toggleFilmsFields();
+                    updateFilmsExistsStyle();
+                });
+                
+                // Also listen to click on the label
+                const label = radio.closest('label');
+                if (label) {
+                    label.addEventListener('click', function(e) {
+                        if (e.target === label || e.target.tagName === 'SPAN') {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            filmsExistsRadios.forEach(r => {
+                                if (r !== radio) {
+                                    r.checked = false;
+                                }
+                            });
+                            radio.checked = true;
+                            toggleFilmsFields();
+                            updateFilmsExistsStyle();
+                            const changeEvent = new Event('change', { bubbles: true });
+                            radio.dispatchEvent(changeEvent);
+                        }
+                    });
+                }
+            });
+            
+            // Initialize films_exists styling
+            updateFilmsExistsStyle();
+            toggleFilmsFields();
+            
             // Handle film_count radio buttons
             const filmCountRadios = document.querySelectorAll('input[name="film_count"]');
             filmCountRadios.forEach(radio => {
@@ -1645,6 +1724,49 @@
         }
 
         // Update film count style
+        // Toggle films fields visibility
+        function toggleFilmsFields() {
+            const filmsExistsYes = document.getElementById('films_exists_yes');
+            const filmCountGroup = document.getElementById('film_count_group');
+            const filmPriceGroup = document.getElementById('film_price_group');
+            
+            if (filmsExistsYes && filmsExistsYes.checked) {
+                // Show fields if "يوجد" is selected
+                if (filmCountGroup) filmCountGroup.style.display = 'block';
+                if (filmPriceGroup) filmPriceGroup.style.display = 'block';
+            } else {
+                // Hide fields if "لا يوجد" is selected
+                if (filmCountGroup) filmCountGroup.style.display = 'none';
+                if (filmPriceGroup) filmPriceGroup.style.display = 'none';
+                
+                // Clear film_count and film_price values when hidden
+                document.querySelectorAll('input[name="film_count"]').forEach(r => r.checked = false);
+                const filmPriceInput = document.getElementById('film_price');
+                if (filmPriceInput) filmPriceInput.value = '';
+                
+                // Recalculate total preparations
+                calculateTotalPreparations();
+            }
+        }
+        
+        // Update films_exists style
+        function updateFilmsExistsStyle() {
+            document.querySelectorAll('input[name="films_exists"]').forEach(r => {
+                const label = r.closest('label');
+                if (label) {
+                    if (r.checked) {
+                        label.style.borderColor = '#2563eb';
+                        label.style.backgroundColor = '#eff6ff';
+                        label.style.borderWidth = '2px';
+                    } else {
+                        label.style.borderColor = '#d1d5db';
+                        label.style.backgroundColor = 'transparent';
+                        label.style.borderWidth = '2px';
+                    }
+                }
+            });
+        }
+        
         function updateFilmCountStyle() {
             document.querySelectorAll('input[name="film_count"]').forEach(r => {
                 const label = r.closest('label');
@@ -2090,12 +2212,17 @@
             const totalPreparationsInput = document.getElementById('total_preparations');
             if (!totalPreparationsInput) return;
             
-            // Get film price
-            const filmPrice = parseFloat(document.getElementById('film_price')?.value) || 0;
+            // Check if films exists
+            const filmsExistsYes = document.getElementById('films_exists_yes');
+            let filmPrice = 0;
+            let filmCount = 0;
             
-            // Get film count (from radio buttons)
-            const filmCountRadio = document.querySelector('input[name="film_count"]:checked');
-            const filmCount = filmCountRadio ? parseFloat(filmCountRadio.value) || 0 : 0;
+            // Only calculate film price if "يوجد" is selected
+            if (filmsExistsYes && filmsExistsYes.checked) {
+                filmPrice = parseFloat(document.getElementById('film_price')?.value) || 0;
+                const filmCountRadio = document.querySelector('input[name="film_count"]:checked');
+                filmCount = filmCountRadio ? parseFloat(filmCountRadio.value) || 0 : 0;
+            }
             
             // Get knife price (only if knife exists)
             const knifeYes = document.getElementById('knife_exists_yes');
@@ -2387,6 +2514,45 @@
             
         });
 
+    </script>
+
+    <script>
+        // Fallback, ensure paper width recalculates when width or rows change
+        document.addEventListener('DOMContentLoaded', function() {
+            const widthInput = document.getElementById('width');
+            const paperWidthInput = document.getElementById('paper_width');
+            const rowsRadios = document.querySelectorAll('input[name="rows_count"]');
+
+            function recalcPaperWidth() {
+                if (!widthInput || !paperWidthInput) return;
+
+                let rowsCount = 0;
+                rowsRadios.forEach(r => {
+                    if (r.checked) {
+                        rowsCount = parseFloat(r.value) || 0;
+                    }
+                });
+
+                const widthVal = parseFloat(widthInput.value) || 0;
+
+                if (rowsCount > 0 && widthVal > 0) {
+                    const paperWidth = (widthVal * rowsCount) + (((rowsCount - 1) * 0.3) + 1.2);
+                    paperWidthInput.value = paperWidth.toFixed(2);
+                } else {
+                    paperWidthInput.value = '';
+                }
+            }
+
+            if (widthInput && paperWidthInput) {
+                widthInput.addEventListener('input', recalcPaperWidth);
+                widthInput.addEventListener('change', recalcPaperWidth);
+                rowsRadios.forEach(r => {
+                    r.addEventListener('change', recalcPaperWidth);
+                    r.addEventListener('click', recalcPaperWidth);
+                });
+                recalcPaperWidth();
+            }
+        });
     </script>
 
     <!-- Select2 JS -->

@@ -271,8 +271,8 @@ class WorkOrderController extends Controller
             'rows_count' => 'nullable|integer|min:1',
             'material' => 'required|string|max:255',
             'quantity' => 'required|integer|min:1',
-            'width' => 'nullable|numeric|min:0',
-            'length' => 'nullable|numeric|min:0',
+            'width' => 'required|numeric|min:0',
+            'length' => 'required|numeric|min:0',
             'final_product_shape' => 'nullable|string',
             'additions' => 'nullable|string',
             'addition_price' => [
@@ -661,8 +661,8 @@ class WorkOrderController extends Controller
             'rows_count' => 'nullable|integer|min:1',
             'material' => 'required|string|max:255',
             'quantity' => 'required|integer|min:1',
-            'width' => 'nullable|numeric|min:0',
-            'length' => 'nullable|numeric|min:0',
+            'width' => 'required|numeric|min:0',
+            'length' => 'required|numeric|min:0',
             'final_product_shape' => 'nullable|string',
             'additions' => 'nullable|string',
             'addition_price' => [

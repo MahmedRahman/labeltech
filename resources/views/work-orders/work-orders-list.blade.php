@@ -193,10 +193,9 @@
                         <th>تاريخ الإنشاء</th>
                         <th>رقم عرض السعر</th>
                         <th>العميل</th>
-                        <th>اسم العمل</th>
                         <th>الخامة</th>
                         <th>الكمية</th>
-                        <th>الأبعاد</th>
+                        <th>المقاس</th>
                         <th>تم الإرسال إلى المصمم</th>
                         <th>الحالة</th>
                         <th>الإجراءات</th>
@@ -229,13 +228,6 @@
                                 <strong style="color: #111827;">{{ $workOrder->order_number ?? 'بدون رقم' }}</strong>
                             </td>
                             <td>{{ $workOrder->client->name ?? 'غير محدد' }}</td>
-                            <td>
-                                @if($workOrder->job_name)
-                                    <span style="color: #2563eb; font-weight: 500;">{{ $workOrder->job_name }}</span>
-                                @else
-                                    <span style="color: #9ca3af;">-</span>
-                                @endif
-                            </td>
                             <td>{{ $workOrder->material ?? '-' }}</td>
                             <td>{{ number_format($workOrder->quantity ?? 0) }}</td>
                             <td>
