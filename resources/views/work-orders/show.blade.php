@@ -106,7 +106,7 @@
     @endif
 
     <!-- Convert to Work Order Section -->
-    @if(($workOrder->client_response ?? '') === 'موافق')
+    @if(($workOrder->client_response ?? '') === 'موافق' && ($workOrder->status ?? '') !== 'work_order')
     <div class="card" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border: 2px solid #2563eb;">
         <div style="padding: 1.5rem;">
             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
@@ -115,16 +115,27 @@
                 </svg>
                 <h3 style="font-size: 1.125rem; font-weight: 600; color: #1e40af; margin: 0;">العميل موافق على عرض السعر</h3>
             </div>
-            <p style="font-size: 0.875rem; color: #1e3a8a; margin-bottom: 1.5rem;">تم موافقة العميل على عرض السعر. يمكنك الآن تحويله إلى أمر شغل للبدء في التنفيذ.</p>
-            <form action="{{ route('work-orders.convert-to-order', $workOrder) }}" method="POST">
-                @csrf
-                <button type="submit" onclick="return confirm('هل أنت متأكد من تحويل عرض السعر إلى أمر شغل؟ سيتم تغيير الحالة إلى قيد التنفيذ.')" style="display: inline-flex; align-items: center; padding: 0.875rem 1.5rem; background-color: #2563eb; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);">
-                    <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                    </svg>
-                    تحويل عرض السعر إلى أمر الشغل
-                </button>
-            </form>
+            <p style="font-size: 0.875rem; color: #1e3a8a; margin-bottom: 1.5rem;">تم موافقة العميل على عرض السعر. يمكنك الآن طلب بروفا من المصمم أو تحويله إلى أمر شغل للبدء في التنفيذ.</p>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <form action="{{ route('work-orders.request-proof-from-designer', $workOrder) }}" method="POST">
+                    @csrf
+                    <button type="submit" onclick="return confirm('هل أنت متأكد من طلب البروفا من المصمم؟ سيتم تحويل عرض السعر إلى بروفا وإرساله إلى المصمم تلقائياً.')" style="display: inline-flex; align-items: center; padding: 0.875rem 1.5rem; background-color: #8b5cf6; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(139, 92, 246, 0.3);">
+                        <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
+                        </svg>
+                        طلب بروفا من المصمم
+                    </button>
+                </form>
+                <form action="{{ route('work-orders.convert-to-order', $workOrder) }}" method="POST">
+                    @csrf
+                    <button type="submit" onclick="return confirm('هل أنت متأكد من تحويل عرض السعر إلى أمر شغل؟ سيتم تغيير الحالة إلى قيد التنفيذ.')" style="display: inline-flex; align-items: center; padding: 0.875rem 1.5rem; background-color: #2563eb; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);">
+                        <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        تحويل عرض السعر إلى أمر الشغل
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
     @endif

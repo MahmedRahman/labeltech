@@ -123,6 +123,21 @@
                     @endforeach
                 </div>
             </form>
+            
+            @if(($workOrder->client_design_approval ?? '') === 'موافق')
+            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid #10b981;">
+                <p style="font-size: 0.875rem; color: #065f46; margin-bottom: 1rem;">تم موافقة العميل على التصميم. يمكنك الآن نقل البروفا إلى التجهيزات.</p>
+                <form action="{{ route('work-orders.move-to-preparations', $workOrder) }}" method="POST">
+                    @csrf
+                    <button type="submit" onclick="return confirm('هل أنت متأكد من نقل البروفا إلى التجهيزات؟')" style="display: inline-flex; align-items: center; padding: 0.875rem 1.5rem; background-color: #f59e0b; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);">
+                        <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                        </svg>
+                        نقل إلى التجهيزات
+                    </button>
+                </form>
+            </div>
+            @endif
         </div>
     </div>
     @endif

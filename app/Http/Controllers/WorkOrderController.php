@@ -205,6 +205,84 @@ class WorkOrderController extends Controller
     }
 
     /**
+     * Display preparations list (status = in_progress).
+     */
+    public function preparationsList(Request $request)
+    {
+        $query = WorkOrder::with('client')
+            ->where('status', 'completed');
+
+        // Filter work orders based on user type:
+        // - Employees: show only work orders they created
+        // - Admin (web guard): show all work orders (no filter)
+        if (auth('employee')->check()) {
+            $employeeName = auth('employee')->user()->name;
+            $query->where('created_by', $employeeName);
+        }
+        // Admin users (auth('web')->check()) will see all work orders
+        // No additional filter is applied for admin users
+
+        // Filter by client
+        if ($request->filled('client_id')) {
+            $query->where('client_id', $request->client_id);
+        }
+
+        // Filter by order number
+        if ($request->filled('order_number')) {
+            $query->where('order_number', 'like', '%' . $request->order_number . '%');
+        }
+
+        $workOrders = $query->latest()->get();
+
+        // Get all clients for filter dropdown
+        $clients = Client::orderBy('name')->get();
+
+        // Calculate total count
+        $totalCount = $workOrders->count();
+
+        return view('work-orders.preparations-list', compact('workOrders', 'clients', 'totalCount'));
+    }
+
+    /**
+     * Display production list (status = completed).
+     */
+    public function productionList(Request $request)
+    {
+        $query = WorkOrder::with('client')
+            ->where('status', 'completed');
+
+        // Filter work orders based on user type:
+        // - Employees: show only work orders they created
+        // - Admin (web guard): show all work orders (no filter)
+        if (auth('employee')->check()) {
+            $employeeName = auth('employee')->user()->name;
+            $query->where('created_by', $employeeName);
+        }
+        // Admin users (auth('web')->check()) will see all work orders
+        // No additional filter is applied for admin users
+
+        // Filter by client
+        if ($request->filled('client_id')) {
+            $query->where('client_id', $request->client_id);
+        }
+
+        // Filter by order number
+        if ($request->filled('order_number')) {
+            $query->where('order_number', 'like', '%' . $request->order_number . '%');
+        }
+
+        $workOrders = $query->latest()->get();
+
+        // Get all clients for filter dropdown
+        $clients = Client::orderBy('name')->get();
+
+        // Calculate total count
+        $totalCount = $workOrders->count();
+
+        return view('work-orders.production-list', compact('workOrders', 'clients', 'totalCount'));
+    }
+
+    /**
      * Show the form for creating a new resource.
      */
     public function create()
@@ -884,6 +962,24 @@ class WorkOrderController extends Controller
             'client_response' => $validated['client_response']
         ]);
 
+        // If client rejected or didn't respond, redirect to archive page
+        if (in_array($validated['client_response'], ['رفض', 'لم يرد'])) {
+            return redirect()->route('work-orders.archive')
+                ->with('success', 'تم تحديث حالة رد العميل بنجاح');
+        }
+
+        // If client approved, convert to work_order, send to designer, and redirect to proofs page
+        if ($validated['client_response'] === 'موافق') {
+            $workOrder->update([
+                'status' => 'work_order',
+                'sent_to_designer' => 'yes'
+            ]);
+
+            return redirect()->route('work-orders.list')
+                ->with('success', 'تم موافقة العميل على عرض السعر. تم تحويله إلى بروفا وإرساله إلى المصمم بنجاح.');
+        }
+
+        // Fallback (should not reach here)
         return redirect()->back()
             ->with('success', 'تم تحديث حالة رد العميل بنجاح');
     }
@@ -906,6 +1002,32 @@ class WorkOrderController extends Controller
     }
 
     /**
+     * Move work order to preparations (change status to in_progress).
+     */
+    public function moveToPreparations(WorkOrder $workOrder)
+    {
+        // Only allow if client has approved the design
+        if (($workOrder->client_design_approval ?? '') !== 'موافق') {
+            return redirect()->back()
+                ->with('error', 'لا يمكن نقل البروفا إلى التجهيزات إلا بعد موافقة العميل على التصميم');
+        }
+
+        // Only allow if status is work_order
+        if ($workOrder->status !== 'work_order') {
+            return redirect()->back()
+                ->with('error', 'لا يمكن نقل البروفا إلى التجهيزات إلا إذا كانت حالة البروفا');
+        }
+
+        // Update status to in_progress
+        $workOrder->update([
+            'status' => 'in_progress'
+        ]);
+
+        return redirect()->route('work-orders.preparations')
+            ->with('success', 'تم نقل البروفا إلى التجهيزات بنجاح');
+    }
+
+    /**
      * Convert price quote to work order.
      */
     /**
@@ -925,6 +1047,27 @@ class WorkOrderController extends Controller
 
         return redirect()->route('work-orders.show', $workOrder)
             ->with('success', 'تم إرسال أمر الشغل إلى المصمم بنجاح');
+    }
+
+    /**
+     * Request proof from designer (convert to work_order and send to designer).
+     */
+    public function requestProofFromDesigner(WorkOrder $workOrder)
+    {
+        // Only allow if client has approved
+        if (($workOrder->client_response ?? '') !== 'موافق') {
+            return redirect()->back()
+                ->with('error', 'لا يمكن طلب بروفا من المصمم إلا بعد موافقة العميل على عرض السعر');
+        }
+
+        // Update status to work_order and send to designer
+        $workOrder->update([
+            'status' => 'work_order',
+            'sent_to_designer' => 'yes'
+        ]);
+
+        return redirect()->route('work-orders.list')
+            ->with('success', 'تم طلب البروفا من المصمم بنجاح. تم تحويل عرض السعر إلى بروفا وإرساله إلى المصمم.');
     }
 
     public function convertToOrder(WorkOrder $workOrder)

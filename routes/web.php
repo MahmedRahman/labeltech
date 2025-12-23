@@ -55,11 +55,15 @@ Route::middleware('auth.any')->group(function () {
     Route::post('work-orders/{workOrder}/mark-as-sent', [\App\Http\Controllers\WorkOrderController::class, 'markAsSentToClient'])->name('work-orders.mark-as-sent');
     Route::post('work-orders/{workOrder}/client-response', [\App\Http\Controllers\WorkOrderController::class, 'updateClientResponse'])->name('work-orders.client-response.update');
     Route::post('work-orders/{workOrder}/client-design-approval', [\App\Http\Controllers\WorkOrderController::class, 'updateClientDesignApproval'])->name('work-orders.client-design-approval.update');
+    Route::post('work-orders/{workOrder}/move-to-preparations', [\App\Http\Controllers\WorkOrderController::class, 'moveToPreparations'])->name('work-orders.move-to-preparations');
     Route::post('work-orders/{workOrder}/convert-to-order', [\App\Http\Controllers\WorkOrderController::class, 'convertToOrder'])->name('work-orders.convert-to-order');
     Route::post('work-orders/{workOrder}/mark-as-sent-to-designer', [\App\Http\Controllers\WorkOrderController::class, 'markAsSentToDesigner'])->name('work-orders.mark-as-sent-to-designer');
+    Route::post('work-orders/{workOrder}/request-proof-from-designer', [\App\Http\Controllers\WorkOrderController::class, 'requestProofFromDesigner'])->name('work-orders.request-proof-from-designer');
     Route::post('work-orders/{workOrder}/archive', [\App\Http\Controllers\WorkOrderController::class, 'archiveQuote'])->name('work-orders.archive-quote');
     Route::get('work-orders-list', [\App\Http\Controllers\WorkOrderController::class, 'workOrdersList'])->name('work-orders.list');
     Route::get('work-orders-list/{workOrder}', [\App\Http\Controllers\WorkOrderController::class, 'showProfile'])->name('work-orders-list.show');
+    Route::get('work-orders-preparations', [\App\Http\Controllers\WorkOrderController::class, 'preparationsList'])->name('work-orders.preparations');
+    Route::get('work-orders-production', [\App\Http\Controllers\WorkOrderController::class, 'productionList'])->name('work-orders.production');
     Route::get('work-orders/archive', [\App\Http\Controllers\WorkOrderController::class, 'archive'])->name('work-orders.archive');
     Route::get('work-orders/archive/{workOrder}', [\App\Http\Controllers\WorkOrderController::class, 'showArchive'])->name('work-orders.archive.show');
     Route::post('work-orders/archive/{workOrder}/restore', [\App\Http\Controllers\WorkOrderController::class, 'restoreQuote'])->name('work-orders.archive.restore');
