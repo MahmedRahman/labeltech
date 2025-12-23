@@ -201,84 +201,26 @@
             </svg>
             مرحباً بك، {{ auth('employee')->user()->name }}
         </h2>
-        <p style="color: rgba(255, 255, 255, 0.9); margin: 0; font-size: 1rem;">إليك نظرة سريعة على السكاكين المتاحة</p>
+        <p style="color: rgba(255, 255, 255, 0.9); margin: 0; font-size: 1rem;">لوحة التحكم الخاصة بالمصمم</p>
     </div>
 
-    <!-- Statistics Cards -->
+    <!-- Quick Actions -->
     <div class="stats-grid">
-        <!-- Knives Card -->
-        <div class="stat-card">
-            <div class="stat-card-content">
-                <div class="stat-info">
-                    <div class="stat-label">إجمالي السكاكين</div>
-                    <div class="stat-number">{{ $knivesCount }}</div>
-                </div>
-                <div class="stat-icon knives">
-                    <svg style="width: 28px; height: 28px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
+        <a href="{{ route('employee.designer.work-orders') }}" style="text-decoration: none;">
+            <div class="stat-card" style="cursor: pointer;">
+                <div class="stat-card-content">
+                    <div class="stat-info">
+                        <div class="stat-label">أوامر الشغل المرسلة</div>
+                        <div class="stat-number">{{ \App\Models\WorkOrder::where('sent_to_designer', 'yes')->where('status', 'work_order')->count() }}</div>
+                    </div>
+                    <div class="stat-icon knives">
+                        <svg style="width: 28px; height: 28px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Recent Knives Section -->
-    <div class="section-card">
-        <div class="section-header">
-            <h3 class="section-title">
-                <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
-                أحدث السكاكين
-            </h3>
-            <a href="{{ route('knives.index') }}" class="action-link">
-                عرض الكل
-                <svg style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; margin-right: 0.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                </svg>
-            </a>
-        </div>
-        <div class="section-content">
-            @if($recentKnives->count() > 0)
-                <div style="overflow-x: auto;">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>الرقم الكود</th>
-                                <th>النوع</th>
-                                <th>الطول</th>
-                                <th>العرض</th>
-                                <th>درافيل</th>
-                                <th>الإجراءات</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($recentKnives as $knife)
-                                <tr>
-                                    <td style="font-weight: 600; color: #2563eb;">{{ $knife->knife_code }}</td>
-                                    <td style="color: #6b7280;">{{ $knife->type ?? '-' }}</td>
-                                    <td style="color: #6b7280;">{{ $knife->length ? number_format($knife->length, 2) : '-' }}</td>
-                                    <td style="color: #6b7280;">{{ $knife->width ? number_format($knife->width, 2) : '-' }}</td>
-                                    <td style="color: #6b7280;">{{ $knife->dragile_drive ?? '-' }}</td>
-                                    <td>
-                                        <a href="{{ route('knives.show', $knife) }}" class="action-link">
-                                            عرض التفاصيل
-                                        </a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @else
-                <div class="empty-state">
-                    <svg class="empty-state-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
-                    <p style="font-size: 0.9375rem; margin: 0;">لا توجد سكاكين حالياً</p>
-                </div>
-            @endif
-        </div>
+        </a>
     </div>
 </x-app-layout>
 

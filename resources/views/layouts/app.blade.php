@@ -20,6 +20,9 @@
         <!-- Font Size Toggle Script -->
         <script src="{{ asset('js/font-size-toggle.js') }}" defer></script>
         
+        <!-- SweetAlert2 CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+        
         <style>
             * {
                 margin: 0;
@@ -410,7 +413,8 @@
                         </a>
                     @endif
                     
-                    <!-- أمر شغل - يظهر لجميع المستخدمين -->
+                    @if(!$isDesignEmployee)
+                    <!-- أمر شغل - لا يظهر للمصمم -->
                     @php
                         $currentRoute = request()->route()?->getName() ?? '';
                         $isWorkOrderListRoute = $currentRoute === 'work-orders.list';
@@ -422,7 +426,7 @@
                         أمر شغل
                     </a>
                     
-                    <!-- الأرشيف - يظهر لجميع المستخدمين -->
+                    <!-- الأرشيف - لا يظهر للمصمم -->
                     @php
                         $isArchiveRoute = $currentRoute === 'work-orders.archive';
                     @endphp
@@ -432,6 +436,17 @@
                         </svg>
                         الأرشيف
                     </a>
+                    @endif
+
+                    @if($isDesignEmployee)
+                        <!-- أمر شغل المصمم - للمصمم فقط -->
+                        <a href="{{ route('employee.designer.work-orders') }}" class="nav-link {{ request()->routeIs('employee.designer.work-orders') ? 'active' : '' }}">
+                            <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            أمر شغل المصمم
+                        </a>
+                    @endif
 
                     @if($isDesignEmployee || $isProductionEmployee || $isAdmin)
                         <!-- السكاكين - للمصمم والتشغيل والادمن -->
@@ -567,21 +582,87 @@
 
                 <!-- Page Content -->
                 <div class="content-area">
-                    @if(session('success'))
-                        <div style="margin-bottom: 1rem; padding: 1rem; background-color: #d1fae5; border: 1px solid #6ee7b7; color: #065f46; border-radius: 0.5rem;">
-                            {{ session('success') }}
-                        </div>
-                    @endif
-
-                    @if(session('error'))
-                        <div style="margin-bottom: 1rem; padding: 1rem; background-color: #fee2e2; border: 1px solid #fca5a5; color: #991b1b; border-radius: 0.5rem;">
-                            {{ session('error') }}
-                        </div>
-                    @endif
-
                     {{ $slot }}
                 </div>
             </div>
         </div>
+        
+        <!-- SweetAlert2 JS -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        
+        <script>
+            // Show success/error messages from session using SweetAlert2
+            @if(session('success'))
+                Swal.fire({
+                    title: 'نجح!',
+                    text: '{{ session('success') }}',
+                    icon: 'success',
+                    confirmButtonText: 'حسناً',
+                    confirmButtonColor: '#10b981',
+                    customClass: {
+                        popup: 'rtl-popup'
+                    }
+                });
+            @endif
+
+            @if(session('error'))
+                Swal.fire({
+                    title: 'خطأ!',
+                    text: '{{ session('error') }}',
+                    icon: 'error',
+                    confirmButtonText: 'حسناً',
+                    confirmButtonColor: '#dc2626',
+                    customClass: {
+                        popup: 'rtl-popup'
+                    }
+                });
+            @endif
+
+            @if(session('warning'))
+                Swal.fire({
+                    title: 'تحذير!',
+                    text: '{{ session('warning') }}',
+                    icon: 'warning',
+                    confirmButtonText: 'حسناً',
+                    confirmButtonColor: '#f59e0b',
+                    customClass: {
+                        popup: 'rtl-popup'
+                    }
+                });
+            @endif
+
+            @if(session('info'))
+                Swal.fire({
+                    title: 'معلومة',
+                    text: '{{ session('info') }}',
+                    icon: 'info',
+                    confirmButtonText: 'حسناً',
+                    confirmButtonColor: '#3b82f6',
+                    customClass: {
+                        popup: 'rtl-popup'
+                    }
+                });
+            @endif
+        </script>
+        
+        <style>
+            /* RTL Support for SweetAlert2 */
+            .rtl-popup {
+                direction: rtl;
+                text-align: right;
+            }
+            
+            .rtl-popup .swal2-title {
+                text-align: right;
+            }
+            
+            .rtl-popup .swal2-content {
+                text-align: right;
+            }
+            
+            .rtl-popup .swal2-actions {
+                justify-content: flex-start;
+            }
+        </style>
     </body>
 </html>

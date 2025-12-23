@@ -214,12 +214,22 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                     </svg>
                 </a>
+                @php
+                    $hasPendingQuote = \App\Models\WorkOrder::where('sent_to_client', 'yes')
+                        ->where(function($q) {
+                            $q->whereNull('client_response')
+                              ->orWhere('client_response', '');
+                        })
+                        ->exists();
+                @endphp
+                @if(!$hasPendingQuote)
                 <a href="{{ route('work-orders.create') }}" style="display: inline-flex; align-items: center; color: #10b981; text-decoration: none; font-size: 1rem;">
                     إضافة أمر شغل
                     <svg style="width: 16px; height: 16px; margin-right: 0.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                     </svg>
                 </a>
+                @endif
                 <a href="{{ route('client-distribution.index') }}" style="display: inline-flex; align-items: center; color: #10b981; text-decoration: none; font-size: 1rem;">
                     توزيع العملاء على الفرق
                     <svg style="width: 16px; height: 16px; margin-right: 0.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">

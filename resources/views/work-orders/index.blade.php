@@ -105,6 +105,7 @@
         .kanban-card.dragging {
             opacity: 0.6;
             transform: scale(0.98);
+            cursor: move;
         }
 
         .kanban-row.drag-over {
@@ -308,54 +309,12 @@
         </div>
     </div>
 
-    <!-- Filters -->
-    <div style="margin-bottom: 1.5rem; background: white; padding: 1.25rem; border-radius: 0.5rem; border: 1px solid #e5e7eb; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
-        <form method="GET" action="{{ route('work-orders.index') }}" style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 250px;">
-                <label for="client_id" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">فلترة بالعميل</label>
-                <select name="client_id" id="client_id" style="width: 100%; padding: 0.625rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; background-color: white; cursor: pointer;">
-                    <option value="">جميع العملاء</option>
-                    @foreach($clients as $client)
-                        <option value="{{ $client->id }}" {{ request('client_id') == $client->id ? 'selected' : '' }}>
-                            {{ $client->name }} @if($client->company) - {{ $client->company }} @endif
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-            <div style="flex: 1; min-width: 250px;">
-                <label for="order_number" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">البحث برقم عرض السعر</label>
-                <input type="text" 
-                       name="order_number" 
-                       id="order_number" 
-                       value="{{ request('order_number') }}" 
-                       placeholder="أدخل رقم عرض السعر للبحث..."
-                       style="width: 100%; padding: 0.625rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; background-color: white;">
-            </div>
-            <div style="display: flex; gap: 0.5rem;">
-                <button type="submit" style="padding: 0.625rem 1.25rem; background-color: #2563eb; color: white; border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem;">
-                    <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                    بحث
-                </button>
-                @if(request('client_id') || request('order_number'))
-                <a href="{{ route('work-orders.index') }}" style="padding: 0.625rem 1.25rem; background-color: #6b7280; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.5rem;">
-                    <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                    إلغاء الفلتر
-                </a>
-                @endif
-            </div>
-        </form>
-    </div>
-
     @if($workOrders->count() > 0)
         <!-- Sent Status Summary Cards -->
         <div style="margin-bottom: 2rem;">
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
                 <!-- Total Orders Card -->
-                <div style="background: white; border-radius: 0.5rem; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); overflow: hidden; transition: all 0.2s;">
+                <div class="summary-card active" data-filter="all" onclick="filterWorkOrders('all')" style="background: white; border-radius: 0.5rem; border: 2px solid #2563eb; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); overflow: hidden; transition: all 0.2s; cursor: pointer;">
                     <div style="background: #f8fafc; padding: 1rem; text-align: center;">
                         <div style="width: 45px; height: 45px; background: #e0e7ff; border-radius: 0.375rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem;">
                             <svg style="width: 24px; height: 24px; color: #6366f1;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -369,7 +328,7 @@
                 </div>
 
                 <!-- Sent to Client Card -->
-                <div style="background: white; border-radius: 0.5rem; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); overflow: hidden; transition: all 0.2s;">
+                <div class="summary-card" data-filter="sent" onclick="filterWorkOrders('sent')" style="background: white; border-radius: 0.5rem; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); overflow: hidden; transition: all 0.2s; cursor: pointer;">
                     <div style="background: #f0fdf4; padding: 1rem; text-align: center;">
                         <div style="width: 45px; height: 45px; background: #dcfce7; border-radius: 0.375rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem;">
                             <svg style="width: 24px; height: 24px; color: #22c55e;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -383,7 +342,7 @@
                 </div>
 
                 <!-- Not Sent to Client Card -->
-                <div style="background: white; border-radius: 0.5rem; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); overflow: hidden; transition: all 0.2s;">
+                <div class="summary-card" data-filter="not-sent" onclick="filterWorkOrders('not-sent')" style="background: white; border-radius: 0.5rem; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); overflow: hidden; transition: all 0.2s; cursor: pointer;">
                     <div style="background: #fffbeb; padding: 1rem; text-align: center;">
                         <div style="width: 45px; height: 45px; background: #fef3c7; border-radius: 0.375rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.75rem;">
                             <svg style="width: 24px; height: 24px; color: #f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -447,7 +406,7 @@
                                 $label = $statusLabels[$workOrder->status] ?? $workOrder->status;
                                 $productionStatus = $workOrder->production_status ?? 'بدون حالة';
                             @endphp
-                            <tr>
+                            <tr data-sent-to-client="{{ ($workOrder->sent_to_client ?? 'no') == 'yes' ? 'sent' : 'not-sent' }}">
                                 <td>
                                     @if($workOrder->created_at)
                                         {{ $workOrder->created_at->format('Y-m-d') }}
@@ -570,7 +529,7 @@
                             </div>
                             <div style="padding: 1rem; max-height: 500px; overflow-y: auto; flex: 1;">
                                 @foreach($statusGroups[$statusKey] as $workOrder)
-                                    <div style="background: #f9fafb; border-radius: 0.5rem; padding: 1rem; margin-bottom: 0.75rem; border: 1px solid #e5e7eb; transition: all 0.2s; cursor: pointer;" onclick="window.location.href='{{ route('work-orders.show', $workOrder->id) }}'">
+                                    <div data-sent-to-client="{{ ($workOrder->sent_to_client ?? 'no') == 'yes' ? 'sent' : 'not-sent' }}" style="background: #f9fafb; border-radius: 0.5rem; padding: 1rem; margin-bottom: 0.75rem; border: 1px solid #e5e7eb; transition: all 0.2s; cursor: pointer;" onclick="window.location.href='{{ route('work-orders.show', $workOrder->id) }}'">
                                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
                                             <div>
                                                 <h5 style="font-size: 0.875rem; font-weight: 600; color: #111827; margin: 0 0 0.25rem 0;">{{ $workOrder->order_number ?? 'بدون رقم' }}</h5>
@@ -662,7 +621,8 @@
                             <div class="kanban-card" 
                                  draggable="true" 
                                  ondragstart="handleDragStart(event, {{ $workOrder->id }})"
-                                 data-order-id="{{ $workOrder->id }}">
+                                 data-order-id="{{ $workOrder->id }}"
+                                 data-sent-to-client="{{ ($workOrder->sent_to_client ?? 'no') == 'yes' ? 'sent' : 'not-sent' }}">
                                 @if($workOrder->has_design ?? false)
                                 <div class="card-badge design">
                                     <svg style="width: 12px; height: 12px; display: inline-block; vertical-align: middle; margin-left: 0.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -877,7 +837,16 @@
             })
             .catch(error => {
                 console.error('Error updating production status:', error);
-                alert('حدث خطأ أثناء تحديث حالة الإنتاج: ' + error.message);
+                Swal.fire({
+                    title: 'خطأ!',
+                    text: 'حدث خطأ أثناء تحديث حالة الإنتاج: ' + error.message,
+                    icon: 'error',
+                    confirmButtonText: 'حسناً',
+                    confirmButtonColor: '#dc2626',
+                    customClass: {
+                        popup: 'rtl-popup'
+                    }
+                });
                 cardElement.classList.remove('dragging');
             });
         }
@@ -968,7 +937,16 @@
             })
             .catch(error => {
                 console.error('Error updating production status:', error);
-                alert('حدث خطأ أثناء تحديث حالة الإنتاج: ' + error.message);
+                Swal.fire({
+                    title: 'خطأ!',
+                    text: 'حدث خطأ أثناء تحديث حالة الإنتاج: ' + error.message,
+                    icon: 'error',
+                    confirmButtonText: 'حسناً',
+                    confirmButtonColor: '#dc2626',
+                    customClass: {
+                        popup: 'rtl-popup'
+                    }
+                });
                 const select = cardElement.querySelector('.production-status-select');
                 if (select) {
                     const originalStatus = currentRow?.getAttribute('data-status') || 'بدون حالة';
@@ -978,26 +956,90 @@
         }
         @endif
 
-        // Confirm delete function
+        // Confirm delete function using SweetAlert
         function confirmDelete(event) {
-            if (!confirm('هل أنت متأكد من حذف هذا الأمر؟ لا يمكن التراجع عن هذه العملية.')) {
-                event.preventDefault();
-                return false;
-            }
-            return true;
+            event.preventDefault();
+            const form = event.target;
+            
+            Swal.fire({
+                title: 'هل أنت متأكد؟',
+                text: 'هل أنت متأكد من حذف هذا الأمر؟ لا يمكن التراجع عن هذه العملية.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'نعم، احذف',
+                cancelButtonText: 'إلغاء',
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+                customClass: {
+                    popup: 'rtl-popup'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+            
+            return false;
         }
+        
+        // Filter work orders by sent to client status
+        function filterWorkOrders(filterType) {
+            // Remove active class from all summary cards
+            document.querySelectorAll('.summary-card').forEach(card => {
+                card.classList.remove('active');
+                card.style.border = '1px solid #e5e7eb';
+            });
+            
+            // Add active class to clicked card
+            const clickedCard = event.currentTarget;
+            clickedCard.classList.add('active');
+            clickedCard.style.border = '2px solid #2563eb';
+            clickedCard.style.boxShadow = '0 4px 12px rgba(37, 99, 235, 0.2)';
+            
+            // Filter table rows (for sales employees table view)
+            const tableRows = document.querySelectorAll('tbody tr[data-sent-to-client]');
+            tableRows.forEach(row => {
+                const sentStatus = row.getAttribute('data-sent-to-client');
+                
+                if (filterType === 'all') {
+                    row.style.display = '';
+                } else if (filterType === 'sent') {
+                    row.style.display = sentStatus === 'sent' ? '' : 'none';
+                } else if (filterType === 'not-sent') {
+                    row.style.display = sentStatus === 'not-sent' ? '' : 'none';
+                }
+            });
+            
+            // Filter kanban cards
+            const kanbanCards = document.querySelectorAll('.kanban-card[data-sent-to-client]');
+            kanbanCards.forEach(card => {
+                const sentStatus = card.getAttribute('data-sent-to-client');
+                
+                if (filterType === 'all') {
+                    card.style.display = '';
+                } else if (filterType === 'sent') {
+                    card.style.display = sentStatus === 'sent' ? '' : 'none';
+                } else if (filterType === 'not-sent') {
+                    card.style.display = sentStatus === 'not-sent' ? '' : 'none';
+                }
+            });
+            
+            // Filter status-based cards
+            const statusCards = document.querySelectorAll('[onclick*="work-orders.show"][data-sent-to-client]');
+            statusCards.forEach(card => {
+                const sentStatus = card.getAttribute('data-sent-to-client');
+                
+                if (filterType === 'all') {
+                    card.style.display = '';
+                } else if (filterType === 'sent') {
+                    card.style.display = sentStatus === 'sent' ? '' : 'none';
+                } else if (filterType === 'not-sent') {
+                    card.style.display = sentStatus === 'not-sent' ? '' : 'none';
+                }
+            });
+        }
+        
     </script>
 
-    @if(session('success'))
-    <script>
-        alert('{{ session('success') }}');
-    </script>
-    @endif
-
-    @if(session('error'))
-    <script>
-        alert('{{ session('error') }}');
-    </script>
-    @endif
 
 </x-app-layout>

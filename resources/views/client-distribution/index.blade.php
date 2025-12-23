@@ -236,11 +236,6 @@
         </div>
     </div>
 
-    @if(session('success'))
-        <div style="padding: 1rem; background-color: #d1fae5; color: #065f46; border-radius: 0.375rem; margin-bottom: 1.5rem;">
-            {{ session('success') }}
-        </div>
-    @endif
 
     <div class="distribution-page">
         <!-- Search Section -->

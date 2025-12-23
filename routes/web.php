@@ -140,17 +140,32 @@ Route::middleware(['auth:employee', 'employee.sales'])->prefix('employee')->name
     // Work Orders routes are now handled by auth.any middleware above
 });
 
-// Employee Routes (Design Employees) - Dashboard and Knives only
+// Employee Routes (Design Employees) - Dashboard and Work Orders
 Route::middleware(['auth:employee'])->prefix('employee')->name('employee.')->group(function () {
     Route::get('/designer/dashboard', function () {
         $employee = auth('employee')->user();
         if ($employee->account_type !== 'تصميم') {
             abort(403);
         }
-        $knivesCount = \App\Models\Knife::count();
-        $recentKnives = \App\Models\Knife::latest()->take(5)->get();
-        return view('employee.designer-dashboard', compact('knivesCount', 'recentKnives'));
+        return view('employee.designer-dashboard');
     })->name('designer.dashboard');
+    
+    Route::get('/designer/work-orders', function () {
+        $employee = auth('employee')->user();
+        if ($employee->account_type !== 'تصميم') {
+            abort(403);
+        }
+        // Get work orders sent to designer
+        $workOrders = \App\Models\WorkOrder::with('client')
+            ->where('sent_to_designer', 'yes')
+            ->where('status', 'work_order')
+            ->latest()
+            ->get();
+        
+        return view('employee.designer-work-orders', compact('workOrders'));
+    })->name('designer.work-orders');
+    
+    Route::get('/designer/work-orders/{workOrder}', [\App\Http\Controllers\WorkOrderController::class, 'showForDesigner'])->name('designer.work-orders.show');
     
     // Employee Routes (Production Employees) - Dashboard and Work Orders only
     Route::get('/production/dashboard', function () {

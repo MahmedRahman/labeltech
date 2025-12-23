@@ -69,6 +69,63 @@
             font-size: 0.75rem;
             font-weight: 500;
         }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .stat-card.active {
+            border: 2px solid #2563eb;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+
+        .stat-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .stat-card-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6b7280;
+            margin: 0;
+        }
+
+        .stat-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #111827;
+            margin: 0;
+        }
     </style>
 
     <!-- Header Actions -->
@@ -85,38 +142,46 @@
         </a>
     </div>
 
-    <!-- Filters -->
-    <div style="margin-bottom: 1.5rem; background: white; padding: 1.25rem; border-radius: 0.5rem; border: 1px solid #e5e7eb; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
-        <form method="GET" action="{{ route('work-orders.list') }}" style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 250px;">
-                <label for="client_id" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">فلترة بالعميل</label>
-                <select name="client_id" id="client_id" style="width: 100%; padding: 0.625rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; background-color: white; cursor: pointer;">
-                    <option value="">جميع العملاء</option>
-                    @foreach($clients as $client)
-                        <option value="{{ $client->id }}" {{ request('client_id') == $client->id ? 'selected' : '' }}>
-                            {{ $client->name }} @if($client->company) - {{ $client->company }} @endif
-                        </option>
-                    @endforeach
-                </select>
+    <!-- Statistics Cards -->
+    <div class="stats-cards">
+        <!-- Total Work Orders Card -->
+        <div class="stat-card active" data-filter="all" onclick="filterTable('all')">
+            <div class="stat-card-header">
+                <h3 class="stat-card-title">إجمالي أوامر الشغل</h3>
+                <div class="stat-card-icon" style="background-color: #dbeafe;">
+                    <svg style="width: 24px; height: 24px; color: #2563eb;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
             </div>
-            <div style="flex: 1; min-width: 250px;">
-                <label for="order_number" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">البحث برقم عرض السعر</label>
-                <input type="text" 
-                       name="order_number" 
-                       id="order_number" 
-                       value="{{ request('order_number') }}" 
-                       placeholder="أدخل رقم عرض السعر للبحث..."
-                       style="width: 100%; padding: 0.625rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; background-color: white;">
+            <p class="stat-card-value">{{ $totalCount ?? 0 }}</p>
+        </div>
+
+        <!-- Sent to Designer Card -->
+        <div class="stat-card" data-filter="sent" onclick="filterTable('sent')">
+            <div class="stat-card-header">
+                <h3 class="stat-card-title">تم الإرسال إلى المصمم</h3>
+                <div class="stat-card-icon" style="background-color: #d1fae5;">
+                    <svg style="width: 24px; height: 24px; color: #10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
             </div>
-            <div style="display: flex; gap: 0.5rem;">
-                <button type="submit" style="padding: 0.625rem 1.25rem; background-color: #2563eb; color: white; border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer;">
-                    بحث
-                </button>
-                <a href="{{ route('work-orders.list') }}" style="padding: 0.625rem 1.25rem; background-color: #6b7280; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; display: inline-flex; align-items: center;">
-                    إعادة تعيين
-                </a>
+            <p class="stat-card-value" style="color: #10b981;">{{ $sentToDesignerCount ?? 0 }}</p>
+        </div>
+
+        <!-- Not Sent to Designer Card -->
+        <div class="stat-card" data-filter="not-sent" onclick="filterTable('not-sent')">
+            <div class="stat-card-header">
+                <h3 class="stat-card-title">لم يتم الإرسال إلى المصمم</h3>
+                <div class="stat-card-icon" style="background-color: #fee2e2;">
+                    <svg style="width: 24px; height: 24px; color: #dc2626;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </div>
             </div>
-        </form>
+            <p class="stat-card-value" style="color: #dc2626;">{{ $notSentToDesignerCount ?? 0 }}</p>
+        </div>
     </div>
 
     @if($workOrders->count() > 0)
@@ -132,7 +197,7 @@
                         <th>الخامة</th>
                         <th>الكمية</th>
                         <th>الأبعاد</th>
-                        <th>رد العميل على عرض السعر</th>
+                        <th>تم الإرسال إلى المصمم</th>
                         <th>الحالة</th>
                         <th>الإجراءات</th>
                     </tr>
@@ -150,7 +215,7 @@
                             $color = $statusColors[$workOrder->status] ?? '#6b7280';
                             $label = $statusLabels[$workOrder->status] ?? $workOrder->status;
                         @endphp
-                        <tr>
+                        <tr data-sent-to-designer="{{ ($workOrder->sent_to_designer ?? 'no') == 'yes' ? 'sent' : 'not-sent' }}">
                             <td>
                                 @if($workOrder->created_at)
                                     {{ $workOrder->created_at->format('Y-m-d') }}
@@ -181,20 +246,20 @@
                                 @endif
                             </td>
                             <td>
-                                @if($workOrder->client_response)
-                                    @php
-                                        $clientResponseColors = [
-                                            'موافق' => '#10b981',
-                                            'رفض' => '#dc2626',
-                                            'لم يرد' => '#6b7280'
-                                        ];
-                                        $responseColor = $clientResponseColors[$workOrder->client_response] ?? '#6b7280';
-                                    @endphp
-                                    <span class="status-badge" style="background-color: {{ $responseColor }}20; color: {{ $responseColor }};">
-                                        {{ $workOrder->client_response }}
+                                @if(($workOrder->sent_to_designer ?? 'no') == 'yes')
+                                    <span class="status-badge" style="background-color: #10b98120; color: #10b981;">
+                                        <svg style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-left: 0.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        نعم
                                     </span>
                                 @else
-                                    <span style="color: #9ca3af;">-</span>
+                                    <span class="status-badge" style="background-color: #dc262620; color: #dc2626;">
+                                        <svg style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-left: 0.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                        لا
+                                    </span>
                                 @endif
                             </td>
                             <td>
@@ -225,5 +290,35 @@
             </a>
         </div>
     @endif
+
+    <script>
+        function filterTable(filterType) {
+            // Remove active class from all cards
+            document.querySelectorAll('.stat-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            
+            // Add active class to clicked card
+            event.currentTarget.classList.add('active');
+            
+            // Get all table rows
+            const rows = document.querySelectorAll('tbody tr[data-sent-to-designer]');
+            
+            rows.forEach(row => {
+                const sentStatus = row.getAttribute('data-sent-to-designer');
+                
+                if (filterType === 'all') {
+                    // Show all rows
+                    row.style.display = '';
+                } else if (filterType === 'sent') {
+                    // Show only sent rows
+                    row.style.display = sentStatus === 'sent' ? '' : 'none';
+                } else if (filterType === 'not-sent') {
+                    // Show only not sent rows
+                    row.style.display = sentStatus === 'not-sent' ? '' : 'none';
+                }
+            });
+        }
+    </script>
 </x-app-layout>
 

@@ -388,17 +388,8 @@
                         @enderror
                     </div>
 
-                    <!-- Sent to Client -->
-                    <div class="form-group">
-                        <label for="sent_to_client" class="form-label">تم إرسال عرض السعر للعميل</label>
-                        <select name="sent_to_client" id="sent_to_client" class="form-select" required>
-                            <option value="no" {{ old('sent_to_client', 'no') == 'no' ? 'selected' : '' }}>لا</option>
-                            <option value="yes" {{ old('sent_to_client') == 'yes' ? 'selected' : '' }}>نعم</option>
-                        </select>
-                        @error('sent_to_client')
-                            <p class="error-message">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    <!-- Sent to Client (Hidden - default value is 'no') -->
+                    <input type="hidden" name="sent_to_client" value="no">
                 </div>
 
                 <!-- معلومات المنتج -->
@@ -1037,15 +1028,24 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="core_size" class="form-label">مقاس الكور</label>
-                                    <select name="core_size" 
-                                            id="core_size" 
-                                            class="form-select">
-                                        <option value="">اختر مقاس الكور</option>
-                                        <option value="76" {{ old('core_size') == '76' ? 'selected' : '' }}>76</option>
-                                        <option value="40" {{ old('core_size') == '40' ? 'selected' : '' }}>40</option>
-                                        <option value="25" {{ old('core_size') == '25' ? 'selected' : '' }}>25</option>
-                                    </select>
+                                    <label class="form-label">مقاس الكور</label>
+                                    <div style="display: flex; gap: 1rem; margin-top: 0.5rem; flex-wrap: wrap;">
+                                        @php
+                                            $coreSizes = [76, 40, 25];
+                                            $selectedCoreSize = old('core_size');
+                                        @endphp
+                                        @foreach($coreSizes as $size)
+                                            <label class="number-of-colors-card" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; cursor: pointer; padding: 1rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; min-width: 60px; text-align: center;">
+                                                <input type="radio" 
+                                                       name="core_size" 
+                                                       value="{{ $size }}" 
+                                                       id="core_size_{{ $size }}"
+                                                       {{ $selectedCoreSize == $size ? 'checked' : '' }}
+                                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                                                <span style="font-size: 1rem; font-weight: 600; color: #111827;">{{ $size }}</span>
+                                            </label>
+                                        @endforeach
+                                    </div>
                                     @error('core_size')
                                         <p class="error-message">{{ $message }}</p>
                                     @enderror
@@ -1510,6 +1510,41 @@
             // Initialize film_count styling
             updateFilmCountStyle();
             
+            // Handle core_size radio buttons
+            const coreSizeRadios = document.querySelectorAll('input[name="core_size"]');
+            coreSizeRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    updateCoreSizeStyle();
+                });
+                
+                // Also listen to click on the label
+                const label = radio.closest('label');
+                if (label) {
+                    label.addEventListener('click', function(e) {
+                        // If clicking on label (not the radio itself), manually check the radio
+                        if (e.target === label || e.target.tagName === 'SPAN') {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            // Uncheck all other radios first
+                            coreSizeRadios.forEach(r => {
+                                if (r !== radio) {
+                                    r.checked = false;
+                                }
+                            });
+                            radio.checked = true;
+                            // Update style immediately
+                            updateCoreSizeStyle();
+                            // Trigger change event manually
+                            const changeEvent = new Event('change', { bubbles: true });
+                            radio.dispatchEvent(changeEvent);
+                        }
+                    });
+                }
+            });
+            
+            // Initialize core_size styling
+            updateCoreSizeStyle();
+            
             // Handle select dropdowns styling and feedback
             const selects = document.querySelectorAll('.form-select');
             selects.forEach(select => {
@@ -1620,6 +1655,26 @@
                     } else {
                         label.style.borderColor = '#d1d5db';
                         label.style.backgroundColor = 'transparent';
+                    }
+                }
+            });
+        }
+
+        // Update core size style
+        function updateCoreSizeStyle() {
+            const radios = document.querySelectorAll('input[name="core_size"]');
+            radios.forEach(r => {
+                const label = r.closest('label');
+                if (label) {
+                    // Remove all inline styles first to ensure clean state
+                    if (r.checked) {
+                        label.style.borderColor = '#2563eb';
+                        label.style.backgroundColor = '#eff6ff';
+                        label.style.borderWidth = '2px';
+                    } else {
+                        label.style.borderColor = '#d1d5db';
+                        label.style.backgroundColor = 'transparent';
+                        label.style.borderWidth = '2px';
                     }
                 }
             });

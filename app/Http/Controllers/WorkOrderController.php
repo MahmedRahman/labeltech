@@ -114,7 +114,15 @@ class WorkOrderController extends Controller
         // Get all clients for filter dropdown
         $clients = Client::orderBy('name')->get();
 
-        return view('work-orders.index', compact('groupedOrders', 'workOrders', 'clients', 'statusGroups', 'sentCount', 'notSentCount'));
+        // Check if there's a pending price quote sent to client
+        $hasPendingQuote = WorkOrder::where('sent_to_client', 'yes')
+            ->where(function($q) {
+                $q->whereNull('client_response')
+                  ->orWhere('client_response', '');
+            })
+            ->exists();
+
+        return view('work-orders.index', compact('groupedOrders', 'workOrders', 'clients', 'statusGroups', 'sentCount', 'notSentCount', 'hasPendingQuote'));
     }
 
     /**
@@ -186,7 +194,14 @@ class WorkOrderController extends Controller
         // Get all clients for filter dropdown
         $clients = Client::orderBy('name')->get();
 
-        return view('work-orders.work-orders-list', compact('workOrders', 'clients'));
+        // Calculate statistics
+        $totalCount = $workOrders->count();
+        $sentToDesignerCount = $workOrders->filter(function($order) {
+            return ($order->sent_to_designer ?? 'no') == 'yes';
+        })->count();
+        $notSentToDesignerCount = $totalCount - $sentToDesignerCount;
+
+        return view('work-orders.work-orders-list', compact('workOrders', 'clients', 'totalCount', 'sentToDesignerCount', 'notSentToDesignerCount'));
     }
 
     /**
@@ -199,9 +214,27 @@ class WorkOrderController extends Controller
         // Check if logged in as employee with sales account type
         $employee = Auth::guard('employee')->user();
         $isAdmin = Auth::guard('web')->check();
+        $isSalesEmployee = $employee && $employee->account_type === 'مبيعات' && !$isAdmin;
+        
+        // Only apply the restriction for admin users, not for sales employees
+        // Sales employees can create multiple price quotes at the same time
+        if ($isAdmin) {
+            // Check if there's a pending price quote sent to client
+            $pendingQuote = WorkOrder::where('sent_to_client', 'yes')
+                ->where(function($q) {
+                    $q->whereNull('client_response')
+                      ->orWhere('client_response', '');
+                })
+                ->first();
+            
+            if ($pendingQuote) {
+                return redirect()->route('work-orders.index')
+                    ->with('error', 'لا يمكن إضافة أمر شغل جديد. يوجد عرض سعر تم إرساله للعميل ولم يرد عليه بعد. يرجى الانتظار حتى يرد العميل على عرض السعر.');
+            }
+        }
         
         // If employee is from sales team, filter clients by their team
-        if ($employee && $employee->account_type === 'مبيعات' && !$isAdmin) {
+        if ($isSalesEmployee) {
             // Get employee's sales teams
             $employee->load('salesTeams');
             $teamIds = $employee->salesTeams->pluck('id')->toArray();
@@ -349,6 +382,26 @@ class WorkOrderController extends Controller
         $calculations = $this->calculateAllValues($workOrder);
         
         return view('work-orders.show', compact('workOrder', 'calculations'));
+    }
+
+    /**
+     * Show work order for designer (simplified view)
+     */
+    public function showForDesigner(WorkOrder $workOrder)
+    {
+        $employee = auth('employee')->user();
+        if ($employee->account_type !== 'تصميم') {
+            abort(403);
+        }
+        
+        // Verify that this work order is sent to designer
+        if (($workOrder->sent_to_designer ?? 'no') !== 'yes') {
+            abort(403, 'هذا أمر الشغل لم يتم إرساله إلى المصمم');
+        }
+        
+        $workOrder->load('client', 'designKnife');
+        
+        return view('employee.designer-work-order-show', compact('workOrder'));
     }
 
     /**
