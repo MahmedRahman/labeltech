@@ -1,6 +1,6 @@
 <x-app-layout>
     @php
-        $title = 'أمر شغل';
+        $title = 'بروفا';
     @endphp
 
     <style>
@@ -131,8 +131,8 @@
     <!-- Header Actions -->
     <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
         <div>
-            <h2 style="font-size: 1.75rem; font-weight: 700; color: #111827; margin: 0 0 0.25rem 0;">أمر شغل</h2>
-            <p style="font-size: 1rem; color: #6b7280; margin: 0;">عرض جميع أوامر الشغل المحولة من عروض الأسعار</p>
+            <h2 style="font-size: 1.75rem; font-weight: 700; color: #111827; margin: 0 0 0.25rem 0;">بروفا</h2>
+            <p style="font-size: 1rem; color: #6b7280; margin: 0;">عرض جميع البروفات المحولة من عروض الأسعار</p>
         </div>
         <a href="{{ route('work-orders.index') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #6b7280; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
             <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -147,7 +147,7 @@
         <!-- Total Work Orders Card -->
         <div class="stat-card active" data-filter="all" onclick="filterTable('all')">
             <div class="stat-card-header">
-                <h3 class="stat-card-title">إجمالي أوامر الشغل</h3>
+                <h3 class="stat-card-title">إجمالي البروفات</h3>
                 <div class="stat-card-icon" style="background-color: #dbeafe;">
                     <svg style="width: 24px; height: 24px; color: #2563eb;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -197,6 +197,7 @@
                         <th>الكمية</th>
                         <th>المقاس</th>
                         <th>تم الإرسال إلى المصمم</th>
+                        <th>موافقة العميل على التصميم</th>
                         <th>الحالة</th>
                         <th>الإجراءات</th>
                     </tr>
@@ -209,7 +210,7 @@
                                 'work_order' => '#2563eb'
                             ];
                             $statusLabels = [
-                                'work_order' => 'أمر شغل'
+                                'work_order' => 'بروفا'
                             ];
                             $color = $statusColors[$workOrder->status] ?? '#6b7280';
                             $label = $statusLabels[$workOrder->status] ?? $workOrder->status;
@@ -255,13 +256,44 @@
                                 @endif
                             </td>
                             <td>
+                                @if($workOrder->client_design_approval)
+                                    @php
+                                        $designApprovalColors = [
+                                            'موافق' => '#10b981',
+                                            'رفض' => '#dc2626',
+                                            'لم يرد' => '#6b7280'
+                                        ];
+                                        $approvalColor = $designApprovalColors[$workOrder->client_design_approval] ?? '#6b7280';
+                                    @endphp
+                                    <span class="status-badge" style="background-color: {{ $approvalColor }}20; color: {{ $approvalColor }};">
+                                        @if($workOrder->client_design_approval == 'موافق')
+                                            <svg style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-left: 0.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                        @elseif($workOrder->client_design_approval == 'رفض')
+                                            <svg style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-left: 0.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                        @endif
+                                        {{ $workOrder->client_design_approval }}
+                                    </span>
+                                @else
+                                    <span class="status-badge" style="background-color: #6b728020; color: #6b7280;">
+                                        <svg style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-left: 0.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        لم يرد
+                                    </span>
+                                @endif
+                            </td>
+                            <td>
                                 <span class="status-badge" style="background-color: {{ $color }}20; color: {{ $color }};">
                                     {{ $label }}
                                 </span>
                             </td>
                             <td>
                                 <div class="table-actions">
-                                    <a href="{{ route('work-orders.show', $workOrder->id) }}" class="btn-view">عرض</a>
+                                    <a href="{{ route('work-orders-list.show', $workOrder->id) }}" class="btn-view">عرض</a>
                                 </div>
                             </td>
                         </tr>
@@ -275,8 +307,8 @@
             <svg style="width: 64px; height: 64px; color: #9ca3af; margin: 0 auto 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
             </svg>
-            <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 0.5rem 0;">لا توجد أوامر شغل</h3>
-            <p style="font-size: 1rem; color: #6b7280; margin: 0 0 1.5rem 0;">لم يتم تحويل أي عرض سعر إلى أمر شغل بعد</p>
+            <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 0.5rem 0;">لا توجد بروفات</h3>
+            <p style="font-size: 1rem; color: #6b7280; margin: 0 0 1.5rem 0;">لم يتم تحويل أي عرض سعر إلى بروفا بعد</p>
             <a href="{{ route('work-orders.index') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #2563eb; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500;">
                 العودة للقائمة الرئيسية
             </a>

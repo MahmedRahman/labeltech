@@ -465,6 +465,7 @@
                                value="{{ old('width') }}" 
                                step="0.01"
                                min="0"
+                               max="20"
                                required
                                class="form-input"
                                placeholder="0.00">
@@ -481,6 +482,7 @@
                                value="{{ old('length') }}" 
                                step="0.01"
                                min="0"
+                               max="50"
                                required
                                class="form-input"
                                placeholder="0.00">
@@ -520,6 +522,7 @@
                            value="{{ old('paper_width') }}" 
                            step="0.01"
                            min="0"
+                           max="20"
                            class="form-input"
                            placeholder="سيتم الحساب تلقائياً">
                     <small style="display: block; margin-top: 0.25rem; color: #6b7280; font-size: 0.875rem;">
@@ -533,7 +536,7 @@
                 <!-- Gap Count, Waste Per Roll and Increase -->
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="gap_count" class="form-label">عدد الجاب</label>
+                        <label for="gap_count" class="form-label">الجاب</label>
                         <input type="number" 
                                name="gap_count" 
                                id="gap_count" 
@@ -541,7 +544,7 @@
                                min="0"
                                step="0.01"
                                class="form-input"
-                               placeholder="أدخل عدد الجاب"
+                               placeholder="أدخل الجاب"
                                oninput="calculateLinearMeter()">
                         @error('gap_count')
                             <p class="error-message">{{ $message }}</p>
@@ -653,23 +656,21 @@
                             @php
                                 $filmsExists = old('films_exists', 'no');
                             @endphp
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ $filmsExists == 'no' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s;">
                                 <input type="radio" 
                                        name="films_exists" 
                                        value="no" 
                                        id="films_exists_no"
                                        {{ $filmsExists == 'no' ? 'checked' : '' }}
-                                       onchange="toggleFilmsFields()"
                                        style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
                                 <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">لا يوجد</span>
                             </label>
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ $filmsExists == 'yes' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s;">
                                 <input type="radio" 
                                        name="films_exists" 
                                        value="yes" 
                                        id="films_exists_yes"
                                        {{ $filmsExists == 'yes' ? 'checked' : '' }}
-                                       onchange="toggleFilmsFields()"
                                        style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
                                 <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">يوجد</span>
                             </label>
@@ -717,13 +718,44 @@
                         @enderror
                     </div>
 
-                    <!-- Sales Percentage -->
+                    <!-- Sales Percentage Exists -->
                     <div class="form-group">
-                        <label for="sales_percentage" class="form-label">نسبة المبيعات</label>
+                        <label class="form-label">نسبة المبيعات</label>
+                        <div style="display: flex; gap: 0.75rem; margin-top: 0.5rem; flex-wrap: wrap;">
+                            @php
+                                $salesPercentageExists = old('sales_percentage_exists', 'no');
+                            @endphp
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s;">
+                                <input type="radio" 
+                                       name="sales_percentage_exists" 
+                                       value="no" 
+                                       id="sales_percentage_exists_no"
+                                       {{ $salesPercentageExists == 'no' ? 'checked' : '' }}
+                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">لا يوجد</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s;">
+                                <input type="radio" 
+                                       name="sales_percentage_exists" 
+                                       value="yes" 
+                                       id="sales_percentage_exists_yes"
+                                       {{ $salesPercentageExists == 'yes' ? 'checked' : '' }}
+                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
+                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">يوجد</span>
+                            </label>
+                        </div>
+                        @error('sales_percentage_exists')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Sales Percentage Value -->
+                    <div class="form-group" id="sales_percentage_group" style="display: {{ $salesPercentageExists == 'yes' ? 'block' : 'none' }};">
+                        <label for="sales_percentage" class="form-label">نسبة المبيعات (%)</label>
                         <input type="number" 
                                name="sales_percentage" 
                                id="sales_percentage" 
-                               value="{{ old('sales_percentage', 10) }}" 
+                               value="{{ old('sales_percentage', $salesPercentageExists == 'yes' ? 10 : 0) }}" 
                                step="0.01"
                                min="0"
                                max="100"
@@ -1063,7 +1095,7 @@
                                     <input type="number"
                                            name="number_of_rolls"
                                            id="number_of_rolls"
-                                           value="{{ old('number_of_rolls') }}"
+                                           value="{{ old('number_of_rolls', 1000) }}"
                                            min="1"
                                            class="form-input"
                                            placeholder="أدخل عدد التكت في البكره">
@@ -1208,6 +1240,117 @@
                         } else {
                             label.style.borderColor = '#d1d5db';
                             label.style.backgroundColor = 'transparent';
+                        }
+                    }
+                });
+            }
+            
+            // Toggle films fields visibility
+            function toggleFilmsFields() {
+                const filmsExistsYes = document.getElementById('films_exists_yes');
+                const filmCountGroup = document.getElementById('film_count_group');
+                const filmPriceGroup = document.getElementById('film_price_group');
+                
+                if (filmsExistsYes && filmsExistsYes.checked) {
+                    // Show fields if "يوجد" is selected
+                    if (filmCountGroup) filmCountGroup.style.display = 'block';
+                    if (filmPriceGroup) filmPriceGroup.style.display = 'block';
+                    
+                    // Set default film_count to 1 (always set to 1 when "يوجد" is selected)
+                    const filmCount1 = document.getElementById('film_count_1');
+                    if (filmCount1) {
+                        // Uncheck all film_count radios first
+                        document.querySelectorAll('input[name="film_count"]').forEach(r => r.checked = false);
+                        // Set film_count_1 as checked
+                        filmCount1.checked = true;
+                        if (typeof updateFilmCountStyle === 'function') {
+                            updateFilmCountStyle();
+                        }
+                    }
+                    
+                    // Set default film_price to 850 (only if empty)
+                    const filmPriceInput = document.getElementById('film_price');
+                    if (filmPriceInput && (!filmPriceInput.value || filmPriceInput.value === '0')) {
+                        filmPriceInput.value = '850';
+                    }
+                } else {
+                    // Hide fields if "لا يوجد" is selected
+                    if (filmCountGroup) filmCountGroup.style.display = 'none';
+                    if (filmPriceGroup) filmPriceGroup.style.display = 'none';
+                    
+                    // Clear film_count and film_price values when hidden
+                    document.querySelectorAll('input[name="film_count"]').forEach(r => r.checked = false);
+                    const filmPriceInput = document.getElementById('film_price');
+                    if (filmPriceInput) filmPriceInput.value = '';
+                    
+                    // Recalculate total preparations
+                    if (typeof calculateTotalPreparations === 'function') {
+                        calculateTotalPreparations();
+                    }
+                }
+            }
+            
+            // Update films_exists style
+            function updateFilmsExistsStyle() {
+                document.querySelectorAll('input[name="films_exists"]').forEach(r => {
+                    const label = r.closest('label');
+                    if (label) {
+                        if (r.checked) {
+                            label.style.borderColor = '#2563eb';
+                            label.style.backgroundColor = '#eff6ff';
+                            label.style.borderWidth = '2px';
+                        } else {
+                            label.style.borderColor = '#d1d5db';
+                            label.style.backgroundColor = 'transparent';
+                            label.style.borderWidth = '2px';
+                        }
+                    }
+                });
+            }
+            
+            // Toggle sales percentage field visibility
+            function toggleSalesPercentage() {
+                const salesPercentageExistsYes = document.getElementById('sales_percentage_exists_yes');
+                const salesPercentageGroup = document.getElementById('sales_percentage_group');
+                const salesPercentageInput = document.getElementById('sales_percentage');
+                
+                if (salesPercentageExistsYes && salesPercentageExistsYes.checked) {
+                    // Show field if "يوجد" is selected
+                    if (salesPercentageGroup) salesPercentageGroup.style.display = 'block';
+                    // Set default value to 10
+                    if (salesPercentageInput) {
+                        if (!salesPercentageInput.value || salesPercentageInput.value == '0') {
+                            salesPercentageInput.value = '10';
+                        }
+                    }
+                } else {
+                    // Hide field if "لا يوجد" is selected
+                    if (salesPercentageGroup) salesPercentageGroup.style.display = 'none';
+                    // Set value to 0
+                    if (salesPercentageInput) {
+                        salesPercentageInput.value = '0';
+                    }
+                }
+                
+                // Recalculate total amount when sales percentage changes
+                if (typeof calculateTotalAmount === 'function') {
+                    calculateTotalAmount();
+                }
+            }
+            
+            // Update sales_percentage_exists style
+            function updateSalesPercentageExistsStyle() {
+                document.querySelectorAll('input[name="sales_percentage_exists"]').forEach(r => {
+                    const label = r.closest('label');
+                    if (label) {
+                        if (r.checked) {
+                            label.style.borderColor = '#2563eb';
+                            label.style.backgroundColor = '#eff6ff';
+                            label.style.borderWidth = '2px';
+                        } else {
+                            label.style.borderColor = '#d1d5db';
+                            label.style.backgroundColor = 'transparent';
+                            label.style.borderWidth = '2px';
                         }
                     }
                 });
@@ -1536,25 +1679,29 @@
             const filmsExistsRadios = document.querySelectorAll('input[name="films_exists"]');
             filmsExistsRadios.forEach(radio => {
                 radio.addEventListener('change', function() {
-                    toggleFilmsFields();
                     updateFilmsExistsStyle();
+                    toggleFilmsFields();
                 });
                 
                 // Also listen to click on the label
                 const label = radio.closest('label');
                 if (label) {
                     label.addEventListener('click', function(e) {
+                        // If clicking on label (not the radio itself), manually check the radio
                         if (e.target === label || e.target.tagName === 'SPAN') {
                             e.preventDefault();
                             e.stopPropagation();
+                            // Uncheck all other radios first
                             filmsExistsRadios.forEach(r => {
                                 if (r !== radio) {
                                     r.checked = false;
                                 }
                             });
                             radio.checked = true;
-                            toggleFilmsFields();
+                            // Update style immediately
                             updateFilmsExistsStyle();
+                            toggleFilmsFields();
+                            // Trigger change event manually
                             const changeEvent = new Event('change', { bubbles: true });
                             radio.dispatchEvent(changeEvent);
                         }
@@ -1565,6 +1712,44 @@
             // Initialize films_exists styling
             updateFilmsExistsStyle();
             toggleFilmsFields();
+            
+            // Handle sales_percentage_exists radio buttons
+            const salesPercentageExistsRadios = document.querySelectorAll('input[name="sales_percentage_exists"]');
+            salesPercentageExistsRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    updateSalesPercentageExistsStyle();
+                    toggleSalesPercentage();
+                });
+                
+                // Also listen to click on the label
+                const label = radio.closest('label');
+                if (label) {
+                    label.addEventListener('click', function(e) {
+                        // If clicking on label (not the radio itself), manually check the radio
+                        if (e.target === label || e.target.tagName === 'SPAN') {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            // Uncheck all other radios first
+                            salesPercentageExistsRadios.forEach(r => {
+                                if (r !== radio) {
+                                    r.checked = false;
+                                }
+                            });
+                            radio.checked = true;
+                            // Update style immediately
+                            updateSalesPercentageExistsStyle();
+                            toggleSalesPercentage();
+                            // Trigger change event manually
+                            const changeEvent = new Event('change', { bubbles: true });
+                            radio.dispatchEvent(changeEvent);
+                        }
+                    });
+                }
+            });
+            
+            // Initialize sales_percentage_exists styling
+            updateSalesPercentageExistsStyle();
+            toggleSalesPercentage();
             
             // Handle film_count radio buttons
             const filmCountRadios = document.querySelectorAll('input[name="film_count"]');
@@ -1723,50 +1908,6 @@
             });
         }
 
-        // Update film count style
-        // Toggle films fields visibility
-        function toggleFilmsFields() {
-            const filmsExistsYes = document.getElementById('films_exists_yes');
-            const filmCountGroup = document.getElementById('film_count_group');
-            const filmPriceGroup = document.getElementById('film_price_group');
-            
-            if (filmsExistsYes && filmsExistsYes.checked) {
-                // Show fields if "يوجد" is selected
-                if (filmCountGroup) filmCountGroup.style.display = 'block';
-                if (filmPriceGroup) filmPriceGroup.style.display = 'block';
-            } else {
-                // Hide fields if "لا يوجد" is selected
-                if (filmCountGroup) filmCountGroup.style.display = 'none';
-                if (filmPriceGroup) filmPriceGroup.style.display = 'none';
-                
-                // Clear film_count and film_price values when hidden
-                document.querySelectorAll('input[name="film_count"]').forEach(r => r.checked = false);
-                const filmPriceInput = document.getElementById('film_price');
-                if (filmPriceInput) filmPriceInput.value = '';
-                
-                // Recalculate total preparations
-                calculateTotalPreparations();
-            }
-        }
-        
-        // Update films_exists style
-        function updateFilmsExistsStyle() {
-            document.querySelectorAll('input[name="films_exists"]').forEach(r => {
-                const label = r.closest('label');
-                if (label) {
-                    if (r.checked) {
-                        label.style.borderColor = '#2563eb';
-                        label.style.backgroundColor = '#eff6ff';
-                        label.style.borderWidth = '2px';
-                    } else {
-                        label.style.borderColor = '#d1d5db';
-                        label.style.backgroundColor = 'transparent';
-                        label.style.borderWidth = '2px';
-                    }
-                }
-            });
-        }
-        
         function updateFilmCountStyle() {
             document.querySelectorAll('input[name="film_count"]').forEach(r => {
                 const label = r.closest('label');
@@ -1894,12 +2035,9 @@
                 if (minPriceInput) minPriceInput.value = defaultPrice;
                 if (minPriceDisplay) minPriceDisplay.textContent = defaultPrice.toFixed(2);
                 
-                // Set default price if not already set or if current value is less than minimum
+                // Always set default price (minimum) when an addition is selected
                 if (priceInput) {
-                    const currentValue = parseFloat(priceInput.value) || 0;
-                    if (currentValue < defaultPrice || !priceInput.value) {
-                        priceInput.value = defaultPrice.toFixed(2);
-                    }
+                    priceInput.value = defaultPrice.toFixed(2);
                     priceInput.setAttribute('min', defaultPrice);
                     priceInput.setAttribute('required', 'required');
                 }
@@ -2011,7 +2149,13 @@
             
             // Formula: (العرض × عدد الصفوف) + ((عدد الصفوف - 1) × 0.3) + 1.2
             if (rowsCount > 0 && width > 0) {
-                const paperWidth = (width * rowsCount) + (((rowsCount - 1) * 0.3) + 1.2);
+                let paperWidth = (width * rowsCount) + (((rowsCount - 1) * 0.3) + 1.2);
+                
+                // Ensure paper width doesn't exceed maximum (20)
+                if (paperWidth > 20) {
+                    paperWidth = 20;
+                }
+                
                 paperWidthInput.value = paperWidth.toFixed(2);
             } else {
                 // Clear if either value is missing
@@ -2285,9 +2429,6 @@
             } else {
                 pricePerThousandInput.value = '';
             }
-            
-            // Update sidebar calculations
-            updateSidebarCalculations();
         }
 
 

@@ -186,7 +186,7 @@
                             </td>
                             <td>
                                 <div class="table-actions">
-                                    <a href="{{ route('work-orders.show', $workOrder->id) }}" class="btn-view">عرض</a>
+                                    <a href="{{ route('work-orders.archive.show', $workOrder->id) }}" class="btn-view">عرض</a>
                                 </div>
                             </td>
                         </tr>

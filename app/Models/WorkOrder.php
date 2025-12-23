@@ -62,6 +62,7 @@ class WorkOrder extends Model
         'sent_to_client',
         'sent_to_designer',
         'client_response',
+        'client_design_approval',
     ];
 
     protected $casts = [

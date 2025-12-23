@@ -271,8 +271,8 @@ class WorkOrderController extends Controller
             'rows_count' => 'nullable|integer|min:1',
             'material' => 'required|string|max:255',
             'quantity' => 'required|integer|min:1',
-            'width' => 'required|numeric|min:0',
-            'length' => 'required|numeric|min:0',
+            'width' => 'required|numeric|min:0|max:20',
+            'length' => 'required|numeric|min:0|max:50',
             'final_product_shape' => 'nullable|string',
             'additions' => 'nullable|string',
             'addition_price' => [
@@ -331,7 +331,7 @@ class WorkOrderController extends Controller
             'core_size' => 'nullable|in:76,40,25',
             'pieces_per_sheet' => 'nullable|integer|min:1',
             'sheets_per_stack' => 'nullable|integer|min:1',
-            'paper_width' => 'nullable|numeric|min:0',
+            'paper_width' => 'nullable|numeric|min:0|max:20',
             'gap_count' => 'nullable|numeric|min:0',
             'waste_per_roll' => 'nullable|integer|min:0',
             'increase' => 'nullable|numeric|min:0',
@@ -402,6 +402,42 @@ class WorkOrderController extends Controller
         $workOrder->load('client', 'designKnife');
         
         return view('employee.designer-work-order-show', compact('workOrder'));
+    }
+
+    /**
+     * Show profile (work order) from work-orders-list page
+     */
+    public function showProfile(WorkOrder $workOrder)
+    {
+        // Verify that this is a work order (status = 'work_order')
+        if ($workOrder->status !== 'work_order') {
+            abort(404, 'هذا ليس بروفا');
+        }
+        
+        $workOrder->load('client', 'designKnife');
+        
+        // Calculate all values dynamically
+        $calculations = $this->calculateAllValues($workOrder);
+        
+        return view('work-orders.profile-show', compact('workOrder', 'calculations'));
+    }
+
+    /**
+     * Show archived work order from archive page
+     */
+    public function showArchive(WorkOrder $workOrder)
+    {
+        // Verify that this is archived (status = 'cancelled')
+        if ($workOrder->status !== 'cancelled') {
+            abort(404, 'هذا العنصر غير موجود في الأرشيف');
+        }
+        
+        $workOrder->load('client', 'designKnife');
+        
+        // Calculate all values dynamically
+        $calculations = $this->calculateAllValues($workOrder);
+        
+        return view('work-orders.archive-show', compact('workOrder', 'calculations'));
     }
 
     /**
@@ -661,8 +697,8 @@ class WorkOrderController extends Controller
             'rows_count' => 'nullable|integer|min:1',
             'material' => 'required|string|max:255',
             'quantity' => 'required|integer|min:1',
-            'width' => 'required|numeric|min:0',
-            'length' => 'required|numeric|min:0',
+            'width' => 'required|numeric|min:0|max:20',
+            'length' => 'required|numeric|min:0|max:50',
             'final_product_shape' => 'nullable|string',
             'additions' => 'nullable|string',
             'addition_price' => [
@@ -721,7 +757,7 @@ class WorkOrderController extends Controller
             'core_size' => 'nullable|in:76,40,25',
             'pieces_per_sheet' => 'nullable|integer|min:1',
             'sheets_per_stack' => 'nullable|integer|min:1',
-            'paper_width' => 'nullable|numeric|min:0',
+            'paper_width' => 'nullable|numeric|min:0|max:20',
             'gap_count' => 'nullable|numeric|min:0',
             'waste_per_roll' => 'nullable|integer|min:0',
             'increase' => 'nullable|numeric|min:0',
@@ -853,6 +889,23 @@ class WorkOrderController extends Controller
     }
 
     /**
+     * Update client design approval status.
+     */
+    public function updateClientDesignApproval(Request $request, WorkOrder $workOrder)
+    {
+        $validated = $request->validate([
+            'client_design_approval' => 'required|in:موافق,رفض,لم يرد',
+        ]);
+
+        $workOrder->update([
+            'client_design_approval' => $validated['client_design_approval']
+        ]);
+
+        return redirect()->back()
+            ->with('success', 'تم تحديث حالة موافقة العميل على التصميم بنجاح');
+    }
+
+    /**
      * Convert price quote to work order.
      */
     /**
@@ -909,6 +962,28 @@ class WorkOrderController extends Controller
 
         return redirect()->back()
             ->with('success', 'تم أرشفة عرض السعر بنجاح. الحالة الآن: ملغي');
+    }
+
+    /**
+     * Restore archived quote (change status back to pending).
+     */
+    public function restoreQuote(WorkOrder $workOrder)
+    {
+        // Verify that this is an archived quote
+        if ($workOrder->status !== 'cancelled') {
+            return redirect()->back()
+                ->with('error', 'هذا العنصر غير موجود في الأرشيف');
+        }
+
+        // Update status to pending and reset client response
+        $workOrder->update([
+            'status' => 'pending',
+            'client_response' => null,
+            'sent_to_client' => 'no'
+        ]);
+
+        return redirect()->route('work-orders.index')
+            ->with('success', 'تم إعادة عرض السعر بنجاح. الحالة الآن: قيد الانتظار');
     }
 
     /**
