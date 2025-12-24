@@ -64,6 +64,50 @@
             font-size: 0.75rem;
             font-weight: 500;
         }
+
+        .stat-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s;
+        }
+
+        .stat-card:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .stat-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .stat-card-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #6b7280;
+            margin: 0;
+        }
+
+        .stat-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #111827;
+            margin: 0;
+        }
     </style>
 
     <!-- Header Actions -->
@@ -80,6 +124,19 @@
         </a>
     </div>
 
+    <!-- Statistics Card -->
+    <div class="stat-card" style="margin-bottom: 1.5rem;">
+        <div class="stat-card-header">
+            <h3 class="stat-card-title">إجمالي أوامر الشغل</h3>
+            <div class="stat-card-icon" style="background-color: #dbeafe;">
+                <svg style="width: 24px; height: 24px; color: #2563eb;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+            </div>
+        </div>
+        <p class="stat-card-value" style="color: #2563eb;">{{ $workOrders->count() }}</p>
+    </div>
+
     @if($workOrders->count() > 0)
         <!-- Table View -->
         <div class="data-table">
@@ -89,12 +146,12 @@
                         <th>تاريخ الإنشاء</th>
                         <th>رقم عرض السعر</th>
                         <th>العميل</th>
-                        <th>اسم العمل</th>
+                        <th>موظف المبيعات المسؤول</th>
                         <th>الخامة</th>
                         <th>الكمية</th>
                         <th>الأبعاد</th>
                         <th>عدد الألوان</th>
-                        <th>الحالة</th>
+                        <th>موافقة العميل على التصميم</th>
                         <th>الإجراءات</th>
                     </tr>
                 </thead>
@@ -126,8 +183,8 @@
                             </td>
                             <td>{{ $workOrder->client->name ?? 'غير محدد' }}</td>
                             <td>
-                                @if($workOrder->job_name)
-                                    <span style="color: #2563eb; font-weight: 500;">{{ $workOrder->job_name }}</span>
+                                @if($workOrder->created_by)
+                                    <span style="color: #6366f1; font-weight: 500;">{{ $workOrder->created_by }}</span>
                                 @else
                                     <span style="color: #9ca3af;">-</span>
                                 @endif
@@ -143,13 +200,36 @@
                             </td>
                             <td>{{ $workOrder->number_of_colors ?? '-' }}</td>
                             <td>
-                                <span class="status-badge" style="background-color: {{ $color }}20; color: {{ $color }};">
-                                    {{ $label }}
-                                </span>
+                                @if($workOrder->client_design_approval)
+                                    @php
+                                        $designApprovalColors = [
+                                            'موافق' => '#10b981',
+                                            'رفض' => '#dc2626',
+                                            'لم يرد' => '#6b7280'
+                                        ];
+                                        $approvalColor = $designApprovalColors[$workOrder->client_design_approval] ?? '#6b7280';
+                                    @endphp
+                                    <span class="status-badge" style="background-color: {{ $approvalColor }}20; color: {{ $approvalColor }};">
+                                        @if($workOrder->client_design_approval == 'موافق')
+                                            <svg style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-left: 0.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                        @elseif($workOrder->client_design_approval == 'رفض')
+                                            <svg style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-left: 0.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                        @endif
+                                        {{ $workOrder->client_design_approval }}
+                                    </span>
+                                @else
+                                    <span class="status-badge" style="background-color: #6b728020; color: #6b7280;">
+                                        لم يرد
+                                    </span>
+                                @endif
                             </td>
-                                <td>
-                                    <a href="{{ route('employee.designer.work-orders.show', $workOrder->id) }}" class="btn-view">عرض</a>
-                                </td>
+                            <td>
+                                <a href="{{ route('employee.designer.work-orders.show', $workOrder->id) }}" class="btn-view">عرض</a>
+                            </td>
                         </tr>
                         @endif
                     @endforeach

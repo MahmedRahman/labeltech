@@ -1,53 +1,34 @@
 <x-app-layout>
     @php
-        $title = 'تفاصيل البروفا';
+        $title = 'تفاصيل أمر الشغل المرسل إلى المصمم';
     @endphp
 
     <!-- Header Actions -->
     <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
         <div>
-            <h2 style="font-size: 1.75rem; font-weight: 700; color: #111827; margin: 0 0 0.25rem 0;">تفاصيل البروفا</h2>
+            <h2 style="font-size: 1.75rem; font-weight: 700; color: #111827; margin: 0 0 0.25rem 0;">تفاصيل أمر الشغل المرسل إلى المصمم</h2>
             <p style="font-size: 1rem; color: #6b7280; margin: 0;">{{ $workOrder->order_number ?? 'بدون رقم' }}</p>
         </div>
         <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-            <a href="{{ route('work-orders.list') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #6b7280; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500;">
+            <a href="{{ route('work-orders.sent-to-designer') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #6b7280; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500;">
                 العودة للقائمة
             </a>
         </div>
     </div>
 
-    <!-- Send to Designer Section -->
-    @if(($workOrder->status ?? '') === 'work_order')
+    <!-- Sent to Designer Status Section -->
+    @if(($workOrder->sent_to_designer ?? 'no') == 'yes')
     <div class="card" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%); border: 2px solid #8b5cf6;">
         <div style="padding: 1.5rem;">
-            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
-                <svg style="width: 24px; height: 24px; color: #8b5cf6;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
+            <div style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; background-color: #faf5ff; border-radius: 0.5rem; border: 1px solid #c084fc;">
+                <svg style="width: 24px; height: 24px; color: #8b5cf6; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>
-                <h3 style="font-size: 1.125rem; font-weight: 600; color: #6b21a8; margin: 0;">إرسال إلى المصمم</h3>
-            </div>
-            @if(($workOrder->sent_to_designer ?? 'no') == 'no')
-                <p style="font-size: 0.875rem; color: #7c3aed; margin-bottom: 1.5rem;">يمكنك الآن إرسال البروفا إلى المصمم للبدء في التصميم.</p>
-                <form action="{{ route('work-orders.mark-as-sent-to-designer', $workOrder) }}" method="POST">
-                    @csrf
-                    <button type="submit" onclick="return confirm('هل أنت متأكد من إرسال البروفا إلى المصمم؟')" style="display: inline-flex; align-items: center; padding: 0.875rem 1.5rem; background-color: #8b5cf6; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(139, 92, 246, 0.3);">
-                        <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-                        </svg>
-                        إرسال إلى المصمم
-                    </button>
-                </form>
-            @else
-                <div style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; background-color: #faf5ff; border-radius: 0.5rem; border: 1px solid #c084fc;">
-                    <svg style="width: 24px; height: 24px; color: #8b5cf6; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    <div>
-                        <p style="font-size: 0.875rem; font-weight: 600; color: #6b21a8; margin: 0;">تم إرسال البروفا إلى المصمم</p>
-                        <p style="font-size: 0.75rem; color: #7c3aed; margin: 0.25rem 0 0 0;">يمكن للمصمم الآن البدء في العمل على التصميم</p>
-                    </div>
+                <div>
+                    <p style="font-size: 0.875rem; font-weight: 600; color: #6b21a8; margin: 0;">تم إرسال أمر الشغل إلى المصمم</p>
+                    <p style="font-size: 0.75rem; color: #7c3aed; margin: 0.25rem 0 0 0;">يمكن للمصمم الآن البدء في العمل على التصميم</p>
                 </div>
-            @endif
+            </div>
         </div>
     </div>
     @endif
@@ -63,39 +44,53 @@
                 <h3 style="font-size: 1.125rem; font-weight: 600; color: #065f46; margin: 0;">موافقة العميل على التصميم</h3>
             </div>
             @php
+                $designApprovalColors = [
+                    'موافق' => '#10b981',
+                    'رفض' => '#dc2626',
+                    'لم يرد' => '#6b7280'
+                ];
                 $currentApproval = $workOrder->client_design_approval ?? 'لم يرد';
-                $isApproved = $currentApproval === 'موافق';
+                $approvalColor = $designApprovalColors[$currentApproval] ?? '#6b7280';
+                $approvalOptions = ['موافق', 'رفض', 'لم يرد'];
             @endphp
             <form action="{{ route('work-orders.client-design-approval.update', $workOrder) }}" method="POST" id="client-design-approval-form">
                 @csrf
                 <div style="display: flex; gap: 0.75rem; margin-top: 0.5rem; flex-wrap: wrap;">
-                    <label class="client-design-approval-card" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.875rem 1.5rem; border: 2px solid {{ $isApproved ? '#10b981' : '#d1d5db' }}; border-radius: 0.5rem; transition: all 0.2s; background-color: {{ $isApproved ? '#10b98120' : 'white' }};">
-                        <input type="radio" 
-                               name="client_design_approval" 
-                               value="موافق" 
-                               id="client_design_approval_approved"
-                               {{ $isApproved ? 'checked' : '' }}
-                               onchange="document.getElementById('client-design-approval-form').submit();"
-                               style="width: 18px; height: 18px; cursor: pointer; accent-color: #10b981;">
-                        <span style="font-size: 0.875rem; font-weight: 500; color: {{ $isApproved ? '#10b981' : '#111827' }};">
-                            <svg style="width: 18px; height: 18px; display: inline-block; vertical-align: middle; margin-left: 0.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            موافق
-                        </span>
-                    </label>
+                    @foreach($approvalOptions as $option)
+                        @php
+                            $optionColor = $designApprovalColors[$option] ?? '#6b7280';
+                            $isSelected = $currentApproval == $option;
+                        @endphp
+                        <label class="client-design-approval-card" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.875rem 1.5rem; border: 2px solid {{ $isSelected ? $optionColor : '#d1d5db' }}; border-radius: 0.5rem; transition: all 0.2s; background-color: {{ $isSelected ? $optionColor . '20' : 'white' }};">
+                            <input type="radio" 
+                                   name="client_design_approval" 
+                                   value="{{ $option }}" 
+                                   id="client_design_approval_{{ $loop->index }}"
+                                   {{ $isSelected ? 'checked' : '' }}
+                                   onchange="document.getElementById('client-design-approval-form').submit();"
+                                   style="width: 18px; height: 18px; cursor: pointer; accent-color: {{ $optionColor }};">
+                            <span style="font-size: 0.875rem; font-weight: 500; color: {{ $isSelected ? $optionColor : '#111827' }};">
+                                @if($option == 'موافق')
+                                    <svg style="width: 18px; height: 18px; display: inline-block; vertical-align: middle; margin-left: 0.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                @elseif($option == 'رفض')
+                                    <svg style="width: 18px; height: 18px; display: inline-block; vertical-align: middle; margin-left: 0.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                @else
+                                    <svg style="width: 18px; height: 18px; display: inline-block; vertical-align: middle; margin-left: 0.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                @endif
+                                {{ $option }}
+                            </span>
+                        </label>
+                    @endforeach
                 </div>
             </form>
             
-            @if($isApproved)
-            <div style="margin-top: 1rem; padding: 0.75rem; background-color: #ecfdf5; border-radius: 0.5rem; border: 1px solid #10b981;">
-                <p style="font-size: 0.75rem; color: #065f46; margin: 0; line-height: 1.5;">
-                    <strong>ملاحظة:</strong> سيتم طلب التجهيزات من المصمم عند موافقة العميل على التصميم.
-                </p>
-            </div>
-            @endif
-            
-            @if($isApproved)
+            @if(($workOrder->client_design_approval ?? '') === 'موافق')
             <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid #10b981;">
                 <p style="font-size: 0.875rem; color: #065f46; margin-bottom: 1rem;">تم موافقة العميل على التصميم. يمكنك الآن نقل البروفا إلى التجهيزات.</p>
                 <form action="{{ route('work-orders.move-to-preparations', $workOrder) }}" method="POST">
@@ -134,7 +129,7 @@
 
             @if($workOrder->order_number)
             <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">رقم البروفا</dt>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">رقم عرض السعر</dt>
                 <dd style="font-size: 0.875rem; color: #111827; margin: 0; font-weight: 600;">{{ $workOrder->order_number }}</dd>
             </div>
             @endif
@@ -720,89 +715,19 @@
     @endif
 
     <!-- الملاحظات -->
+    @if($workOrder->notes)
     <div class="card" style="margin-bottom: 1.5rem;">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 2px solid #e5e7eb;">
-            <div style="display: flex; align-items: center; gap: 0.5rem;">
-                <svg style="width: 24px; height: 24px; color: #6b7280;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                </svg>
-                <h3 style="font-size: 1.125rem; font-weight: 600; color: #111827; margin: 0;">ملاحظات</h3>
-            </div>
-            <button type="button" onclick="toggleNotesEdit()" id="edit-notes-btn" style="display: inline-flex; align-items: center; padding: 0.5rem 1rem; background-color: #10b981; color: white; border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer; font-size: 0.875rem;">
-                <svg style="width: 16px; height: 16px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                </svg>
-                تعديل الملاحظات
-            </button>
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 2px solid #e5e7eb;">
+            <svg style="width: 24px; height: 24px; color: #6b7280;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+            </svg>
+            <h3 style="font-size: 1.125rem; font-weight: 600; color: #111827; margin: 0;">ملاحظات</h3>
         </div>
-        <div id="notes-display" style="font-size: 0.875rem; color: #111827; line-height: 1.6; white-space: pre-wrap; min-height: 2rem;">
-            {{ $workOrder->notes ?? 'لا توجد ملاحظات' }}
-        </div>
-        <div id="notes-edit" style="display: none;">
-            <form action="{{ route('work-orders-list.update-notes', $workOrder) }}" method="POST" id="notes-form">
-                @csrf
-                <textarea name="notes" id="notes-textarea" rows="4" style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem; font-family: inherit; resize: vertical;" placeholder="أدخل الملاحظات هنا...">{{ $workOrder->notes ?? '' }}</textarea>
-                <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
-                    <button type="submit" style="display: inline-flex; align-items: center; padding: 0.625rem 1.25rem; background-color: #10b981; color: white; border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer;">
-                        حفظ
-                    </button>
-                    <button type="button" onclick="cancelNotesEdit()" style="display: inline-flex; align-items: center; padding: 0.625rem 1.25rem; background-color: #6b7280; color: white; border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer;">
-                        إلغاء
-                    </button>
-                </div>
-            </form>
-        </div>
+        <div style="font-size: 0.875rem; color: #111827; line-height: 1.6; white-space: pre-wrap;">{{ $workOrder->notes }}</div>
     </div>
+    @endif
 
     <script>
-        function toggleNotesEdit() {
-            const display = document.getElementById('notes-display');
-            const edit = document.getElementById('notes-edit');
-            const btn = document.getElementById('edit-notes-btn');
-            
-            if (display.style.display === 'none') {
-                // Cancel edit mode
-                display.style.display = 'block';
-                edit.style.display = 'none';
-                btn.innerHTML = `
-                    <svg style="width: 16px; height: 16px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                    </svg>
-                    تعديل الملاحظات
-                `;
-            } else {
-                // Enter edit mode
-                display.style.display = 'none';
-                edit.style.display = 'block';
-                btn.innerHTML = `
-                    <svg style="width: 16px; height: 16px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                    إلغاء التعديل
-                `;
-                document.getElementById('notes-textarea').focus();
-            }
-        }
-        
-        function cancelNotesEdit() {
-            const display = document.getElementById('notes-display');
-            const edit = document.getElementById('notes-edit');
-            const btn = document.getElementById('edit-notes-btn');
-            const textarea = document.getElementById('notes-textarea');
-            
-            // Reset textarea to original value
-            textarea.value = `{{ $workOrder->notes ?? '' }}`;
-            
-            display.style.display = 'block';
-            edit.style.display = 'none';
-            btn.innerHTML = `
-                <svg style="width: 16px; height: 16px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                </svg>
-                تعديل الملاحظات
-            `;
-        }
-        
         document.addEventListener('DOMContentLoaded', function() {
             // Update client design approval card styles
             function updateClientDesignApprovalStyle() {

@@ -63,6 +63,10 @@ class WorkOrder extends Model
         'sent_to_designer',
         'client_response',
         'client_design_approval',
+        'designer_number_of_colors',
+        'designer_drills',
+        'designer_breaking_gear',
+        'designer_paper_width',
     ];
 
     protected $casts = [
@@ -95,6 +99,8 @@ class WorkOrder extends Model
         'waste_per_roll' => 'integer',
         'increase' => 'decimal:2',
         'linear_meter' => 'decimal:2',
+        'designer_number_of_colors' => 'integer',
+        'designer_paper_width' => 'decimal:2',
     ];
 
     /**

@@ -56,14 +56,19 @@ Route::middleware('auth.any')->group(function () {
     Route::post('work-orders/{workOrder}/client-response', [\App\Http\Controllers\WorkOrderController::class, 'updateClientResponse'])->name('work-orders.client-response.update');
     Route::post('work-orders/{workOrder}/client-design-approval', [\App\Http\Controllers\WorkOrderController::class, 'updateClientDesignApproval'])->name('work-orders.client-design-approval.update');
     Route::post('work-orders/{workOrder}/move-to-preparations', [\App\Http\Controllers\WorkOrderController::class, 'moveToPreparations'])->name('work-orders.move-to-preparations');
+    Route::post('work-orders/{workOrder}/move-to-production', [\App\Http\Controllers\WorkOrderController::class, 'moveToProduction'])->name('work-orders.move-to-production');
     Route::post('work-orders/{workOrder}/convert-to-order', [\App\Http\Controllers\WorkOrderController::class, 'convertToOrder'])->name('work-orders.convert-to-order');
     Route::post('work-orders/{workOrder}/mark-as-sent-to-designer', [\App\Http\Controllers\WorkOrderController::class, 'markAsSentToDesigner'])->name('work-orders.mark-as-sent-to-designer');
     Route::post('work-orders/{workOrder}/request-proof-from-designer', [\App\Http\Controllers\WorkOrderController::class, 'requestProofFromDesigner'])->name('work-orders.request-proof-from-designer');
     Route::post('work-orders/{workOrder}/archive', [\App\Http\Controllers\WorkOrderController::class, 'archiveQuote'])->name('work-orders.archive-quote');
     Route::get('work-orders-list', [\App\Http\Controllers\WorkOrderController::class, 'workOrdersList'])->name('work-orders.list');
     Route::get('work-orders-list/{workOrder}', [\App\Http\Controllers\WorkOrderController::class, 'showProfile'])->name('work-orders-list.show');
+    Route::post('work-orders-list/{workOrder}/update-notes', [\App\Http\Controllers\WorkOrderController::class, 'updateNotes'])->name('work-orders-list.update-notes');
     Route::get('work-orders-preparations', [\App\Http\Controllers\WorkOrderController::class, 'preparationsList'])->name('work-orders.preparations');
+    Route::get('work-orders-preparations/{workOrder}', [\App\Http\Controllers\WorkOrderController::class, 'showPreparations'])->name('work-orders.preparations.show');
     Route::get('work-orders-production', [\App\Http\Controllers\WorkOrderController::class, 'productionList'])->name('work-orders.production');
+    Route::get('work-orders-sent-to-designer', [\App\Http\Controllers\WorkOrderController::class, 'sentToDesignerList'])->name('work-orders.sent-to-designer');
+    Route::get('work-orders-sent-to-designer/{workOrder}', [\App\Http\Controllers\WorkOrderController::class, 'showSentToDesigner'])->name('work-orders.sent-to-designer.show');
     Route::get('work-orders/archive', [\App\Http\Controllers\WorkOrderController::class, 'archive'])->name('work-orders.archive');
     Route::get('work-orders/archive/{workOrder}', [\App\Http\Controllers\WorkOrderController::class, 'showArchive'])->name('work-orders.archive.show');
     Route::post('work-orders/archive/{workOrder}/restore', [\App\Http\Controllers\WorkOrderController::class, 'restoreQuote'])->name('work-orders.archive.restore');
@@ -174,6 +179,12 @@ Route::middleware(['auth:employee'])->prefix('employee')->name('employee.')->gro
     })->name('designer.work-orders');
     
     Route::get('/designer/work-orders/{workOrder}', [\App\Http\Controllers\WorkOrderController::class, 'showForDesigner'])->name('designer.work-orders.show');
+    
+    // Designer Preparations Routes
+    Route::get('/designer/preparations', [\App\Http\Controllers\WorkOrderController::class, 'designerPreparationsList'])->name('designer.preparations');
+    Route::get('/designer/preparations/{workOrder}', [\App\Http\Controllers\WorkOrderController::class, 'showDesignerPreparations'])->name('designer.preparations.show');
+    Route::get('/designer/preparations/{workOrder}/edit', [\App\Http\Controllers\WorkOrderController::class, 'editDesignerPreparations'])->name('designer.preparations.edit');
+    Route::post('/designer/preparations/{workOrder}/update', [\App\Http\Controllers\WorkOrderController::class, 'updateDesignerPreparations'])->name('designer.preparations.update');
     
     // Employee Routes (Production Employees) - Dashboard and Work Orders only
     Route::get('/production/dashboard', function () {

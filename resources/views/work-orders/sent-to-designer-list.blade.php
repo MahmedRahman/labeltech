@@ -1,6 +1,6 @@
 <x-app-layout>
     @php
-        $title = 'التجهيزات';
+        $title = 'أوامر الشغل المرسلة إلى المصمم';
     @endphp
 
     <style>
@@ -42,11 +42,6 @@
             background: #f9fafb;
         }
 
-        .table-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-
         .btn-view {
             padding: 0.375rem 0.75rem;
             border-radius: 0.375rem;
@@ -54,59 +49,45 @@
             font-size: 0.75rem;
             font-weight: 500;
             transition: all 0.2s;
-            background-color: #dbeafe;
-            color: #1e40af;
+            display: inline-block;
+            background-color: #2563eb;
+            color: white;
         }
 
         .btn-view:hover {
-            background-color: #bfdbfe;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 500;
+            background-color: #1d4ed8;
         }
 
         .stats-cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
         }
 
         .stat-card {
             background: white;
-            border-radius: 0.75rem;
-            padding: 1.5rem;
+            border-radius: 0.5rem;
             border: 1px solid #e5e7eb;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
             transition: all 0.2s;
-            cursor: pointer;
         }
 
         .stat-card:hover {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .stat-card.active {
-            border: 2px solid #2563eb;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
         }
 
         .stat-card-header {
             display: flex;
-            align-items: center;
             justify-content: space-between;
+            align-items: center;
             margin-bottom: 1rem;
         }
 
         .stat-card-title {
             font-size: 0.875rem;
-            font-weight: 500;
+            font-weight: 600;
             color: #6b7280;
             margin: 0;
         }
@@ -130,10 +111,10 @@
 
     <!-- Header Actions -->
     <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-            <div>
-                <h2 style="font-size: 1.75rem; font-weight: 700; color: #111827; margin: 0 0 0.25rem 0;">التجهيزات</h2>
-                <p style="font-size: 1rem; color: #6b7280; margin: 0;">عرض جميع عروض الأسعار جاري التجهيز</p>
-            </div>
+        <div>
+            <h2 style="font-size: 1.75rem; font-weight: 700; color: #111827; margin: 0 0 0.25rem 0;">أوامر الشغل المرسلة إلى المصمم</h2>
+            <p style="font-size: 1rem; color: #6b7280; margin: 0;">عرض جميع أوامر الشغل المرسلة إلى المصمم</p>
+        </div>
         <a href="{{ route('work-orders.index') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #6b7280; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
             <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
@@ -144,17 +125,17 @@
 
     <!-- Statistics Card -->
     <div class="stats-cards">
-        <!-- Total Preparations Card -->
+        <!-- Total Sent to Designer Card -->
         <div class="stat-card active">
             <div class="stat-card-header">
-                <h3 class="stat-card-title">إجمالي التجهيزات</h3>
-                <div class="stat-card-icon" style="background-color: #fef3c7;">
-                    <svg style="width: 24px; height: 24px; color: #f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <h3 class="stat-card-title">إجمالي المرسلة إلى المصمم</h3>
+                <div class="stat-card-icon" style="background-color: #dbeafe;">
+                    <svg style="width: 24px; height: 24px; color: #2563eb;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
                 </div>
             </div>
-            <p class="stat-card-value" style="color: #f59e0b;">{{ $totalCount ?? 0 }}</p>
+            <p class="stat-card-value" style="color: #2563eb;">{{ $totalCount ?? 0 }}</p>
         </div>
     </div>
 
@@ -165,11 +146,12 @@
                 <thead>
                     <tr>
                         <th>تاريخ الإنشاء</th>
-                        <th>رقم عرض السعر</th>
+                        <th>رقم البروفا</th>
                         <th>العميل</th>
                         <th>الخامة</th>
                         <th>الكمية</th>
                         <th>المقاس</th>
+                        <th>عدد الألوان</th>
                         <th>الحالة</th>
                         <th>الإجراءات</th>
                     </tr>
@@ -179,10 +161,10 @@
                         @if(isset($workOrder->id) && !is_null($workOrder->id))
                         @php
                             $statusColors = [
-                                'in_progress' => '#f59e0b'
+                                'work_order' => '#2563eb'
                             ];
                             $statusLabels = [
-                                'in_progress' => 'جاري التجهيز'
+                                'work_order' => 'بروفا'
                             ];
                             $color = $statusColors[$workOrder->status] ?? '#6b7280';
                             $label = $statusLabels[$workOrder->status] ?? $workOrder->status;
@@ -210,14 +192,15 @@
                                     <span style="color: #9ca3af;">-</span>
                                 @endif
                             </td>
+                            <td>{{ $workOrder->number_of_colors ?? '-' }}</td>
                             <td>
-                                <span class="status-badge" style="background-color: {{ $color }}20; color: {{ $color }};">
+                                <span class="status-badge" style="background-color: {{ $color }}20; color: {{ $color }}; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;">
                                     {{ $label }}
                                 </span>
                             </td>
                             <td>
                                 <div class="table-actions">
-                                    <a href="{{ route('work-orders.preparations.show', $workOrder->id) }}" class="btn-view">عرض</a>
+                                    <a href="{{ route('work-orders.sent-to-designer.show', $workOrder->id) }}" class="btn-view">عرض</a>
                                 </div>
                             </td>
                         </tr>
@@ -231,8 +214,8 @@
             <svg style="width: 64px; height: 64px; color: #9ca3af; margin: 0 auto 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
             </svg>
-            <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 0.5rem 0;">لا توجد تجهيزات</h3>
-            <p style="font-size: 1rem; color: #6b7280; margin: 0 0 1.5rem 0;">لا توجد عروض أسعار جاري التجهيز حالياً</p>
+            <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 0.5rem 0;">لا توجد أوامر شغل مرسلة إلى المصمم</h3>
+            <p style="font-size: 1rem; color: #6b7280; margin: 0 0 1.5rem 0;">لا توجد أوامر شغل مرسلة إلى المصمم حالياً</p>
             <a href="{{ route('work-orders.index') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #2563eb; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500;">
                 العودة للقائمة الرئيسية
             </a>

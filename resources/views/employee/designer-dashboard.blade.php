@@ -221,6 +221,22 @@
                 </div>
             </div>
         </a>
+        
+        <a href="{{ route('employee.designer.preparations') }}" style="text-decoration: none;">
+            <div class="stat-card" style="cursor: pointer;">
+                <div class="stat-card-content">
+                    <div class="stat-info">
+                        <div class="stat-label">التجهيزات</div>
+                        <div class="stat-number">{{ \App\Models\WorkOrder::where('status', 'in_progress')->count() }}</div>
+                    </div>
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); color: #f59e0b;">
+                        <svg style="width: 28px; height: 28px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </a>
     </div>
 </x-app-layout>
 

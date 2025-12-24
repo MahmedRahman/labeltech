@@ -10,18 +10,6 @@
             <p style="font-size: 1rem; color: #6b7280; margin: 0;">{{ $workOrder->order_number ?? 'بدون رقم' }}</p>
         </div>
         <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-            <a href="{{ route('work-orders.design.show', $workOrder) }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; box-shadow: 0 2px 4px rgba(139, 92, 246, 0.3);">
-                <svg style="width: 18px; height: 18px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
-                </svg>
-                {{ ($workOrder->has_design ?? false) ? 'تعديل التصميم' : 'إضافة التصميم' }}
-            </a>
-            <a href="{{ route('work-orders.print', $workOrder) }}" target="_blank" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #2563eb; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500;">
-                <svg style="width: 18px; height: 18px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
-                </svg>
-                طباعة
-            </a>
             <a href="{{ route('work-orders.print-price-quote', $workOrder) }}" target="_blank" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #10b981; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500;">
                 <svg style="width: 18px; height: 18px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -29,9 +17,9 @@
                 طباعة عرض السعر
             </a>
             @if(($workOrder->sent_to_client ?? 'no') == 'no')
-            <form action="{{ route('work-orders.mark-as-sent', $workOrder) }}" method="POST" style="display: inline;">
+            <form action="{{ route('work-orders.mark-as-sent', $workOrder) }}" method="POST" style="display: inline;" id="mark-as-sent-form">
                 @csrf
-                <button type="submit" onclick="return confirm('هل أنت متأكد من أنك أرسلت عرض السعر للعميل؟')" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #f59e0b; color: white; border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer;">
+                <button type="submit" onclick="event.preventDefault(); handleMarkAsSent(event);" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #f59e0b; color: white; border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer;">
                     <svg style="width: 18px; height: 18px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
                     </svg>
@@ -67,39 +55,60 @@
             </div>
             <p style="font-size: 0.875rem; color: #78350f; margin-bottom: 1.5rem;">تم إرسال عرض السعر للعميل. يرجى تحديد رد العميل:</p>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                <form action="{{ route('work-orders.client-response.update', $workOrder) }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="client_response" value="موافق">
-                    <button type="submit" onclick="return confirm('هل أنت متأكد أن العميل وافق على عرض السعر؟')" style="width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.25rem; background-color: #10b981; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);">
-                        <svg style="width: 32px; height: 32px; margin-bottom: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        <span style="font-size: 1rem;">العميل موافق</span>
-                        <span style="font-size: 0.75rem; opacity: 0.9; margin-top: 0.25rem;">تم الموافقة على العرض</span>
-                    </button>
-                </form>
-                <form action="{{ route('work-orders.client-response.update', $workOrder) }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="client_response" value="رفض">
-                    <button type="submit" onclick="return confirm('هل أنت متأكد أن العميل رفض عرض السعر؟')" style="width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.25rem; background-color: #dc2626; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);">
-                        <svg style="width: 32px; height: 32px; margin-bottom: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                        <span style="font-size: 1rem;">العميل رفض</span>
-                        <span style="font-size: 0.75rem; opacity: 0.9; margin-top: 0.25rem;">تم رفض العرض</span>
-                    </button>
-                </form>
-                <form action="{{ route('work-orders.client-response.update', $workOrder) }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="client_response" value="لم يرد">
-                    <button type="submit" onclick="return confirm('هل تريد تحديد أن العميل لم يرد على عرض السعر؟')" style="width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.25rem; background-color: #6b7280; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(107, 114, 128, 0.3);">
-                        <svg style="width: 32px; height: 32px; margin-bottom: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        <span style="font-size: 1rem;">العميل لم يرد</span>
-                        <span style="font-size: 0.75rem; opacity: 0.9; margin-top: 0.25rem;">لم يتم الرد بعد</span>
-                    </button>
-                </form>
+                <div style="display: flex; flex-direction: column;">
+                    <form action="{{ route('work-orders.client-response.update', $workOrder) }}" method="POST" id="client-response-approved-form">
+                        @csrf
+                        <input type="hidden" name="client_response" value="موافق">
+                        <button type="submit" onclick="event.preventDefault(); handleClientResponse(event, 'موافق', 'هل أنت متأكد أن العميل وافق على عرض السعر؟');" style="width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.25rem; background-color: #10b981; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);">
+                            <svg style="width: 32px; height: 32px; margin-bottom: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span style="font-size: 1rem;">العميل موافق</span>
+                            <span style="font-size: 0.75rem; opacity: 0.9; margin-top: 0.25rem;">تم الموافقة على العرض</span>
+                        </button>
+                    </form>
+                    <div style="margin-top: 0.75rem; padding: 0.75rem; background-color: #ecfdf5; border-radius: 0.5rem; border: 1px solid #10b981;">
+                        <p style="font-size: 0.75rem; color: #065f46; margin: 0; line-height: 1.5;">
+                            <strong>ملاحظة:</strong> عند الضغط على موافق سيتم قبول عرض السعر وسيتم إرساله إلى المصمم لطلب البروفا.
+                        </p>
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column;">
+                    <form action="{{ route('work-orders.client-response.update', $workOrder) }}" method="POST" id="client-response-rejected-form">
+                        @csrf
+                        <input type="hidden" name="client_response" value="رفض">
+                        <button type="submit" onclick="event.preventDefault(); handleClientResponse(event, 'رفض', 'هل أنت متأكد أن العميل رفض عرض السعر؟');" style="width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.25rem; background-color: #dc2626; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);">
+                            <svg style="width: 32px; height: 32px; margin-bottom: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            <span style="font-size: 1rem;">العميل رفض</span>
+                            <span style="font-size: 0.75rem; opacity: 0.9; margin-top: 0.25rem;">تم رفض العرض</span>
+                        </button>
+                    </form>
+                    <div style="margin-top: 0.75rem; padding: 0.75rem; background-color: #fef2f2; border-radius: 0.5rem; border: 1px solid #dc2626;">
+                        <p style="font-size: 0.75rem; color: #991b1b; margin: 0; line-height: 1.5;">
+                            <strong>ملاحظة:</strong> سيتم إرسال عرض السعر إلى الأرشيف. يمكنك استرجاعه إذا غير العميل رأيه أو رد.
+                        </p>
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column;">
+                    <form action="{{ route('work-orders.client-response.update', $workOrder) }}" method="POST" id="client-response-no-response-form">
+                        @csrf
+                        <input type="hidden" name="client_response" value="لم يرد">
+                        <button type="submit" onclick="event.preventDefault(); handleClientResponse(event, 'لم يرد', 'هل تريد تحديد أن العميل لم يرد على عرض السعر؟');" style="width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.25rem; background-color: #6b7280; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(107, 114, 128, 0.3);">
+                            <svg style="width: 32px; height: 32px; margin-bottom: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span style="font-size: 1rem;">العميل لم يرد</span>
+                            <span style="font-size: 0.75rem; opacity: 0.9; margin-top: 0.25rem;">لم يتم الرد بعد</span>
+                        </button>
+                    </form>
+                    <div style="margin-top: 0.75rem; padding: 0.75rem; background-color: #f3f4f6; border-radius: 0.5rem; border: 1px solid #6b7280;">
+                        <p style="font-size: 0.75rem; color: #374151; margin: 0; line-height: 1.5;">
+                            <strong>ملاحظة:</strong> سيتم إرسال عرض السعر إلى الأرشيف. يمكنك استرجاعه إذا غير العميل رأيه أو رد.
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -117,22 +126,13 @@
             </div>
             <p style="font-size: 0.875rem; color: #1e3a8a; margin-bottom: 1.5rem;">تم موافقة العميل على عرض السعر. يمكنك الآن طلب بروفا من المصمم أو تحويله إلى أمر شغل للبدء في التنفيذ.</p>
             <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                <form action="{{ route('work-orders.request-proof-from-designer', $workOrder) }}" method="POST">
+                <form action="{{ route('work-orders.request-proof-from-designer', $workOrder) }}" method="POST" id="request-proof-form">
                     @csrf
-                    <button type="submit" onclick="return confirm('هل أنت متأكد من طلب البروفا من المصمم؟ سيتم تحويل عرض السعر إلى بروفا وإرساله إلى المصمم تلقائياً.')" style="display: inline-flex; align-items: center; padding: 0.875rem 1.5rem; background-color: #8b5cf6; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(139, 92, 246, 0.3);">
+                    <button type="submit" onclick="event.preventDefault(); handleRequestProof(event);" style="display: inline-flex; align-items: center; padding: 0.875rem 1.5rem; background-color: #8b5cf6; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(139, 92, 246, 0.3);">
                         <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
                         </svg>
                         طلب بروفا من المصمم
-                    </button>
-                </form>
-                <form action="{{ route('work-orders.convert-to-order', $workOrder) }}" method="POST">
-                    @csrf
-                    <button type="submit" onclick="return confirm('هل أنت متأكد من تحويل عرض السعر إلى أمر شغل؟ سيتم تغيير الحالة إلى قيد التنفيذ.')" style="display: inline-flex; align-items: center; padding: 0.875rem 1.5rem; background-color: #2563eb; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);">
-                        <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                        </svg>
-                        تحويل عرض السعر إلى أمر الشغل
                     </button>
                 </form>
             </div>
@@ -152,9 +152,9 @@
             </div>
             @if(($workOrder->sent_to_designer ?? 'no') == 'no')
                 <p style="font-size: 0.875rem; color: #7c3aed; margin-bottom: 1.5rem;">تم تحويل عرض السعر إلى أمر شغل. يمكنك الآن إرساله إلى المصمم للبدء في التصميم.</p>
-                <form action="{{ route('work-orders.mark-as-sent-to-designer', $workOrder) }}" method="POST">
+                <form action="{{ route('work-orders.mark-as-sent-to-designer', $workOrder) }}" method="POST" id="mark-as-sent-to-designer-form">
                     @csrf
-                    <button type="submit" onclick="return confirm('هل أنت متأكد من إرسال أمر الشغل إلى المصمم؟')" style="display: inline-flex; align-items: center; padding: 0.875rem 1.5rem; background-color: #8b5cf6; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(139, 92, 246, 0.3);">
+                    <button type="submit" onclick="event.preventDefault(); handleMarkAsSentToDesigner(event);" style="display: inline-flex; align-items: center; padding: 0.875rem 1.5rem; background-color: #8b5cf6; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(139, 92, 246, 0.3);">
                         <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
                         </svg>
@@ -199,9 +199,9 @@
                     لم يرد العميل على عرض السعر. يمكنك أرشفته لإزالة العرض من القائمة النشطة.
                 @endif
             </p>
-            <form action="{{ route('work-orders.archive-quote', $workOrder) }}" method="POST">
+            <form action="{{ route('work-orders.archive-quote', $workOrder) }}" method="POST" id="archive-quote-form">
                 @csrf
-                <button type="submit" onclick="return confirm('هل أنت متأكد من أرشفة عرض السعر؟ سيتم تغيير الحالة إلى ملغي.')" style="display: inline-flex; align-items: center; padding: 0.875rem 1.5rem; background-color: #6b7280; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(107, 114, 128, 0.3);">
+                <button type="submit" onclick="event.preventDefault(); handleArchiveQuote(event);" style="display: inline-flex; align-items: center; padding: 0.875rem 1.5rem; background-color: #6b7280; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(107, 114, 128, 0.3);">
                     <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
                     </svg>
@@ -828,4 +828,117 @@
         <div style="font-size: 0.875rem; color: #111827; line-height: 1.6; white-space: pre-wrap;">{{ $workOrder->notes }}</div>
     </div>
     @endif
+
+    <script>
+        // Handle Mark as Sent
+        function handleMarkAsSent(event) {
+            Swal.fire({
+                title: 'تأكيد الإرسال',
+                text: 'هل أنت متأكد من أنك أرسلت عرض السعر للعميل؟',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'نعم، تم الإرسال',
+                cancelButtonText: 'إلغاء',
+                confirmButtonColor: '#f59e0b',
+                cancelButtonColor: '#6b7280',
+                customClass: {
+                    popup: 'rtl-popup'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('mark-as-sent-form').submit();
+                }
+            });
+        }
+
+        // Handle Client Response
+        function handleClientResponse(event, response, message) {
+            Swal.fire({
+                title: 'تأكيد الرد',
+                text: message,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'نعم',
+                cancelButtonText: 'إلغاء',
+                confirmButtonColor: response === 'موافق' ? '#10b981' : response === 'رفض' ? '#dc2626' : '#6b7280',
+                cancelButtonColor: '#6b7280',
+                customClass: {
+                    popup: 'rtl-popup'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if (response === 'موافق') {
+                        document.getElementById('client-response-approved-form').submit();
+                    } else if (response === 'رفض') {
+                        document.getElementById('client-response-rejected-form').submit();
+                    } else {
+                        document.getElementById('client-response-no-response-form').submit();
+                    }
+                }
+            });
+        }
+
+        // Handle Request Proof from Designer
+        function handleRequestProof(event) {
+            Swal.fire({
+                title: 'طلب البروفا من المصمم',
+                text: 'هل أنت متأكد من طلب البروفا من المصمم؟ سيتم تحويل عرض السعر إلى بروفا وإرساله إلى المصمم تلقائياً.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'نعم، طلب البروفا',
+                cancelButtonText: 'إلغاء',
+                confirmButtonColor: '#8b5cf6',
+                cancelButtonColor: '#6b7280',
+                customClass: {
+                    popup: 'rtl-popup'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('request-proof-form').submit();
+                }
+            });
+        }
+
+        // Handle Mark as Sent to Designer
+        function handleMarkAsSentToDesigner(event) {
+            Swal.fire({
+                title: 'إرسال إلى المصمم',
+                text: 'هل أنت متأكد من إرسال أمر الشغل إلى المصمم؟',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'نعم، إرسال',
+                cancelButtonText: 'إلغاء',
+                confirmButtonColor: '#8b5cf6',
+                cancelButtonColor: '#6b7280',
+                customClass: {
+                    popup: 'rtl-popup'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('mark-as-sent-to-designer-form').submit();
+                }
+            });
+        }
+
+        // Handle Archive Quote
+        function handleArchiveQuote(event) {
+            Swal.fire({
+                title: 'أرشفة عرض السعر',
+                text: 'هل أنت متأكد من أرشفة عرض السعر؟ سيتم تغيير الحالة إلى ملغي.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'نعم، أرشفة',
+                cancelButtonText: 'إلغاء',
+                confirmButtonColor: '#6b7280',
+                cancelButtonColor: '#dc2626',
+                customClass: {
+                    popup: 'rtl-popup'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('archive-quote-form').submit();
+                }
+            });
+        }
+    </script>
 </x-app-layout>

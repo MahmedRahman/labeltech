@@ -19,10 +19,13 @@ class AppLayout extends Component
         $preparationsCount = 0;
         $productionCount = 0;
         $archiveCount = 0;
+        $sentToDesignerCount = 0;
+        $designerWorkOrdersCount = 0;
 
         if (auth('employee')->check()) {
             $employee = auth('employee')->user();
             $isSalesEmployee = $employee->account_type === 'مبيعات';
+            $isDesignEmployee = $employee->account_type === 'تصميم';
             
             if ($isSalesEmployee || auth('web')->check()) {
                 // Price quotes count (status != work_order and != cancelled)
@@ -71,6 +74,26 @@ class AppLayout extends Component
                 }
                 
                 $productionCount = $productionQuery->count();
+
+                // Sent to designer count (sent_to_designer = yes and status = work_order)
+                $sentToDesignerQuery = WorkOrder::where('sent_to_designer', 'yes')
+                    ->where('status', 'work_order');
+                
+                if ($isSalesEmployee) {
+                    $sentToDesignerQuery->where('created_by', $employee->name);
+                }
+                
+                $sentToDesignerCount = $sentToDesignerQuery->count();
+            }
+            
+            // Designer work orders count (for design employees)
+            if ($isDesignEmployee) {
+                $designerWorkOrdersCount = WorkOrder::where('sent_to_designer', 'yes')
+                    ->where('status', 'work_order')
+                    ->count();
+                
+                // Preparations count for designers (all in_progress orders)
+                $preparationsCount = WorkOrder::where('status', 'in_progress')->count();
             }
         } elseif (auth('web')->check()) {
             // Admin users see all counts
@@ -82,6 +105,9 @@ class AppLayout extends Component
             $preparationsCount = WorkOrder::where('status', 'in_progress')->count();
             $productionCount = WorkOrder::where('status', 'completed')->count();
             $archiveCount = WorkOrder::where('status', 'cancelled')->count();
+            $sentToDesignerCount = WorkOrder::where('sent_to_designer', 'yes')
+                ->where('status', 'work_order')
+                ->count();
         }
 
         return view('layouts.app', [
@@ -90,6 +116,8 @@ class AppLayout extends Component
             'preparationsCount' => $preparationsCount,
             'productionCount' => $productionCount,
             'archiveCount' => $archiveCount,
+            'sentToDesignerCount' => $sentToDesignerCount,
+            'designerWorkOrdersCount' => $designerWorkOrdersCount,
         ]);
     }
 }

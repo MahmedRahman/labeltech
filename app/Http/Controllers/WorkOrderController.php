@@ -196,12 +196,18 @@ class WorkOrderController extends Controller
 
         // Calculate statistics
         $totalCount = $workOrders->count();
-        $sentToDesignerCount = $workOrders->filter(function($order) {
-            return ($order->sent_to_designer ?? 'no') == 'yes';
+        
+        // Count work orders where client approved the design (client_design_approval === 'موافق')
+        $approvedCount = $workOrders->filter(function($order) {
+            return ($order->client_design_approval ?? '') === 'موافق';
         })->count();
-        $notSentToDesignerCount = $totalCount - $sentToDesignerCount;
+        
+        // Count work orders where preparations were not requested (client_design_approval != 'موافق')
+        $notRequestedPreparationsCount = $workOrders->filter(function($order) {
+            return ($order->client_design_approval ?? '') !== 'موافق';
+        })->count();
 
-        return view('work-orders.work-orders-list', compact('workOrders', 'clients', 'totalCount', 'sentToDesignerCount', 'notSentToDesignerCount'));
+        return view('work-orders.work-orders-list', compact('workOrders', 'clients', 'totalCount', 'approvedCount', 'notRequestedPreparationsCount'));
     }
 
     /**
@@ -210,14 +216,19 @@ class WorkOrderController extends Controller
     public function preparationsList(Request $request)
     {
         $query = WorkOrder::with('client')
-            ->where('status', 'completed');
+            ->where('status', 'in_progress');
 
         // Filter work orders based on user type:
-        // - Employees: show only work orders they created
+        // - Sales Employees: show only work orders they created
+        // - Design Employees: show all work orders (no filter)
         // - Admin (web guard): show all work orders (no filter)
         if (auth('employee')->check()) {
-            $employeeName = auth('employee')->user()->name;
-            $query->where('created_by', $employeeName);
+            $employee = auth('employee')->user();
+            $isSalesEmployee = $employee->account_type === 'مبيعات';
+            // Only filter by created_by for sales employees, not for design employees
+            if ($isSalesEmployee) {
+                $query->where('created_by', $employee->name);
+            }
         }
         // Admin users (auth('web')->check()) will see all work orders
         // No additional filter is applied for admin users
@@ -237,8 +248,22 @@ class WorkOrderController extends Controller
         // Get all clients for filter dropdown
         $clients = Client::orderBy('name')->get();
 
-        // Calculate total count
-        $totalCount = $workOrders->count();
+        // Calculate total count (before filtering by client/order number for display)
+        $totalCountQuery = WorkOrder::where('status', 'in_progress');
+        if (auth('employee')->check()) {
+            $employee = auth('employee')->user();
+            $isSalesEmployee = $employee->account_type === 'مبيعات';
+            // Only filter by created_by for sales employees, not for design employees
+            if ($isSalesEmployee) {
+                $totalCountQuery->where('created_by', $employee->name);
+            }
+        }
+        $totalCount = $totalCountQuery->count();
+
+        // Ensure $workOrders is always a collection, even if empty
+        if (!$workOrders) {
+            $workOrders = collect();
+        }
 
         return view('work-orders.preparations-list', compact('workOrders', 'clients', 'totalCount'));
     }
@@ -280,6 +305,57 @@ class WorkOrderController extends Controller
         $totalCount = $workOrders->count();
 
         return view('work-orders.production-list', compact('workOrders', 'clients', 'totalCount'));
+    }
+
+    /**
+     * Display work orders sent to designer list.
+     */
+    public function sentToDesignerList(Request $request)
+    {
+        $query = WorkOrder::with('client')
+            ->where('sent_to_designer', 'yes')
+            ->where('status', 'work_order');
+
+        // Filter work orders based on user type:
+        // - Employees: show only work orders they created
+        // - Admin (web guard): show all work orders (no filter)
+        if (auth('employee')->check()) {
+            $employeeName = auth('employee')->user()->name;
+            $query->where('created_by', $employeeName);
+        }
+        // Admin users (auth('web')->check()) will see all work orders
+        // No additional filter is applied for admin users
+
+        // Filter by client
+        if ($request->filled('client_id')) {
+            $query->where('client_id', $request->client_id);
+        }
+
+        // Filter by order number
+        if ($request->filled('order_number')) {
+            $query->where('order_number', 'like', '%' . $request->order_number . '%');
+        }
+
+        $workOrders = $query->latest()->get();
+
+        // Get all clients for filter dropdown
+        $clients = Client::orderBy('name')->get();
+
+        // Calculate total count
+        $totalCountQuery = WorkOrder::where('sent_to_designer', 'yes')
+            ->where('status', 'work_order');
+        if (auth('employee')->check()) {
+            $employeeName = auth('employee')->user()->name;
+            $totalCountQuery->where('created_by', $employeeName);
+        }
+        $totalCount = $totalCountQuery->count();
+
+        // Ensure $workOrders is always a collection, even if empty
+        if (!$workOrders) {
+            $workOrders = collect();
+        }
+
+        return view('work-orders.sent-to-designer-list', compact('workOrders', 'clients', 'totalCount'));
     }
 
     /**
@@ -465,6 +541,112 @@ class WorkOrderController extends Controller
     /**
      * Show work order for designer (simplified view)
      */
+    /**
+     * Display preparations list for designer employees.
+     */
+    public function designerPreparationsList(Request $request)
+    {
+        $employee = auth('employee')->user();
+        if ($employee->account_type !== 'تصميم') {
+            abort(403);
+        }
+
+        $query = WorkOrder::with('client')
+            ->where('status', 'in_progress');
+
+        // Designers see all work orders in preparations (no filter by created_by)
+
+        // Filter by client
+        if ($request->filled('client_id')) {
+            $query->where('client_id', $request->client_id);
+        }
+
+        // Filter by order number
+        if ($request->filled('order_number')) {
+            $query->where('order_number', 'like', '%' . $request->order_number . '%');
+        }
+
+        $workOrders = $query->latest()->get();
+
+        // Ensure $workOrders is always a collection, even if empty
+        if (!$workOrders) {
+            $workOrders = collect();
+        }
+
+        return view('employee.designer-preparations', compact('workOrders'));
+    }
+
+    /**
+     * Show preparations work order details for designer.
+     */
+    public function showDesignerPreparations(WorkOrder $workOrder)
+    {
+        $employee = auth('employee')->user();
+        if ($employee->account_type !== 'تصميم') {
+            abort(403);
+        }
+
+        // Verify that this is in preparations (status = 'in_progress')
+        if ($workOrder->status !== 'in_progress') {
+            abort(404, 'هذا العنصر غير موجود في التجهيزات');
+        }
+        
+        $workOrder->load('client', 'designKnife');
+        
+        // Calculate all values dynamically
+        $calculations = $this->calculateAllValues($workOrder);
+        
+        return view('work-orders.preparations-show', compact('workOrder', 'calculations'));
+    }
+
+    /**
+     * Show edit form for designer preparations.
+     */
+    public function editDesignerPreparations(WorkOrder $workOrder)
+    {
+        $employee = auth('employee')->user();
+        if ($employee->account_type !== 'تصميم') {
+            abort(403);
+        }
+
+        // Verify that this is in preparations (status = 'in_progress')
+        if ($workOrder->status !== 'in_progress') {
+            abort(404, 'هذا العنصر غير موجود في التجهيزات');
+        }
+        
+        $workOrder->load('client');
+        
+        return view('employee.designer-preparations-edit', compact('workOrder'));
+    }
+
+    /**
+     * Update designer preparations.
+     */
+    public function updateDesignerPreparations(Request $request, WorkOrder $workOrder)
+    {
+        $employee = auth('employee')->user();
+        if ($employee->account_type !== 'تصميم') {
+            abort(403);
+        }
+
+        // Verify that this is in preparations (status = 'in_progress')
+        if ($workOrder->status !== 'in_progress') {
+            abort(404, 'هذا العنصر غير موجود في التجهيزات');
+        }
+
+        $validated = $request->validate([
+            'designer_number_of_colors' => 'nullable|integer|min:1',
+            'designer_drills' => 'nullable|string|max:255',
+            'designer_breaking_gear' => 'nullable|string|max:255',
+            'designer_paper_width' => 'nullable|numeric|min:0|max:20',
+        ]);
+
+        $workOrder->update($validated);
+
+        return redirect()->route('employee.designer.preparations.show', $workOrder)
+            ->with('success', 'تم تحديث التجهيزات بنجاح');
+    }
+
     public function showForDesigner(WorkOrder $workOrder)
     {
         $employee = auth('employee')->user();
@@ -516,6 +698,42 @@ class WorkOrderController extends Controller
         $calculations = $this->calculateAllValues($workOrder);
         
         return view('work-orders.archive-show', compact('workOrder', 'calculations'));
+    }
+
+    /**
+     * Show preparations work order from preparations list page
+     */
+    public function showPreparations(WorkOrder $workOrder)
+    {
+        // Verify that this is in preparations (status = 'in_progress')
+        if ($workOrder->status !== 'in_progress') {
+            abort(404, 'هذا العنصر غير موجود في التجهيزات');
+        }
+        
+        $workOrder->load('client', 'designKnife');
+        
+        // Calculate all values dynamically
+        $calculations = $this->calculateAllValues($workOrder);
+        
+        return view('work-orders.preparations-show', compact('workOrder', 'calculations'));
+    }
+
+    /**
+     * Show sent to designer work order from sent-to-designer list page
+     */
+    public function showSentToDesigner(WorkOrder $workOrder)
+    {
+        // Verify that this is sent to designer (sent_to_designer = yes and status = work_order)
+        if (($workOrder->sent_to_designer ?? 'no') !== 'yes' || $workOrder->status !== 'work_order') {
+            abort(404, 'هذا العنصر غير موجود في قائمة أوامر الشغل المرسلة إلى المصمم');
+        }
+        
+        $workOrder->load('client', 'designKnife');
+        
+        // Calculate all values dynamically
+        $calculations = $this->calculateAllValues($workOrder);
+        
+        return view('work-orders.sent-to-designer-show', compact('workOrder', 'calculations'));
     }
 
     /**
@@ -958,15 +1176,21 @@ class WorkOrderController extends Controller
             'client_response' => 'required|in:موافق,رفض,لم يرد',
         ]);
 
+        // If client rejected or didn't respond, change status to cancelled and redirect to archive page
+        if (in_array($validated['client_response'], ['رفض', 'لم يرد'])) {
+            $workOrder->update([
+                'client_response' => $validated['client_response'],
+                'status' => 'cancelled'
+            ]);
+
+            return redirect()->route('work-orders.archive')
+                ->with('success', 'تم تحديث حالة رد العميل بنجاح وتم نقل عرض السعر إلى الأرشيف');
+        }
+
+        // If client approved, update client_response only
         $workOrder->update([
             'client_response' => $validated['client_response']
         ]);
-
-        // If client rejected or didn't respond, redirect to archive page
-        if (in_array($validated['client_response'], ['رفض', 'لم يرد'])) {
-            return redirect()->route('work-orders.archive')
-                ->with('success', 'تم تحديث حالة رد العميل بنجاح');
-        }
 
         // If client approved, convert to work_order, send to designer, and redirect to proofs page
         if ($validated['client_response'] === 'موافق') {
@@ -1002,6 +1226,23 @@ class WorkOrderController extends Controller
     }
 
     /**
+     * Update notes for a work order (from profile show page).
+     */
+    public function updateNotes(Request $request, WorkOrder $workOrder)
+    {
+        $validated = $request->validate([
+            'notes' => 'nullable|string|max:5000',
+        ]);
+
+        $workOrder->update([
+            'notes' => $validated['notes'] ?? null
+        ]);
+
+        return redirect()->back()
+            ->with('success', 'تم تحديث الملاحظات بنجاح');
+    }
+
+    /**
      * Move work order to preparations (change status to in_progress).
      */
     public function moveToPreparations(WorkOrder $workOrder)
@@ -1025,6 +1266,26 @@ class WorkOrderController extends Controller
 
         return redirect()->route('work-orders.preparations')
             ->with('success', 'تم نقل البروفا إلى التجهيزات بنجاح');
+    }
+
+    /**
+     * Move work order to production (change status to completed).
+     */
+    public function moveToProduction(WorkOrder $workOrder)
+    {
+        // Only allow if status is in_progress
+        if ($workOrder->status !== 'in_progress') {
+            return redirect()->route('work-orders.preparations')
+                ->with('error', 'يمكن نقل الطلبات جاري التجهيز فقط إلى التشغيل');
+        }
+
+        // Update status to completed
+        $workOrder->update([
+            'status' => 'completed'
+        ]);
+
+        return redirect()->route('work-orders.production')
+            ->with('success', 'تم نقل الطلب إلى التشغيل بنجاح');
     }
 
     /**

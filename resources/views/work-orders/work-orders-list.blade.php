@@ -157,30 +157,30 @@
             <p class="stat-card-value">{{ $totalCount ?? 0 }}</p>
         </div>
 
-        <!-- Sent to Designer Card -->
-        <div class="stat-card" data-filter="sent" onclick="filterTable('sent')">
+        <!-- Approved Card -->
+        <div class="stat-card" data-filter="approved" onclick="filterTable('approved')">
             <div class="stat-card-header">
-                <h3 class="stat-card-title">تم الإرسال إلى المصمم</h3>
+                <h3 class="stat-card-title">طلبات تم الموافقة عليها</h3>
                 <div class="stat-card-icon" style="background-color: #d1fae5;">
                     <svg style="width: 24px; height: 24px; color: #10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                     </svg>
                 </div>
             </div>
-            <p class="stat-card-value" style="color: #10b981;">{{ $sentToDesignerCount ?? 0 }}</p>
+            <p class="stat-card-value" style="color: #10b981;">{{ $approvedCount ?? 0 }}</p>
         </div>
 
-        <!-- Not Sent to Designer Card -->
-        <div class="stat-card" data-filter="not-sent" onclick="filterTable('not-sent')">
+        <!-- Not Requested Preparations Card -->
+        <div class="stat-card" data-filter="not-requested-preparations" onclick="filterTable('not-requested-preparations')">
             <div class="stat-card-header">
-                <h3 class="stat-card-title">لم يتم الإرسال إلى المصمم</h3>
-                <div class="stat-card-icon" style="background-color: #fee2e2;">
-                    <svg style="width: 24px; height: 24px; color: #dc2626;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                <h3 class="stat-card-title">لم يتم طلب التجهيزات من المصمم</h3>
+                <div class="stat-card-icon" style="background-color: #fef3c7;">
+                    <svg style="width: 24px; height: 24px; color: #f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
             </div>
-            <p class="stat-card-value" style="color: #dc2626;">{{ $notSentToDesignerCount ?? 0 }}</p>
+            <p class="stat-card-value" style="color: #f59e0b;">{{ $notRequestedPreparationsCount ?? 0 }}</p>
         </div>
     </div>
 
@@ -215,7 +215,7 @@
                             $color = $statusColors[$workOrder->status] ?? '#6b7280';
                             $label = $statusLabels[$workOrder->status] ?? $workOrder->status;
                         @endphp
-                        <tr data-sent-to-designer="{{ ($workOrder->sent_to_designer ?? 'no') == 'yes' ? 'sent' : 'not-sent' }}">
+                        <tr data-sent-to-designer="{{ ($workOrder->sent_to_designer ?? 'no') == 'yes' ? 'sent' : 'not-sent' }}" data-preparations-requested="{{ ($workOrder->client_design_approval ?? '') === 'موافق' ? 'requested' : 'not-requested' }}">
                             <td>
                                 @if($workOrder->created_at)
                                     {{ $workOrder->created_at->format('Y-m-d') }}
@@ -330,16 +330,17 @@
             
             rows.forEach(row => {
                 const sentStatus = row.getAttribute('data-sent-to-designer');
+                const preparationsStatus = row.getAttribute('data-preparations-requested');
                 
                 if (filterType === 'all') {
                     // Show all rows
                     row.style.display = '';
-                } else if (filterType === 'sent') {
-                    // Show only sent rows
-                    row.style.display = sentStatus === 'sent' ? '' : 'none';
-                } else if (filterType === 'not-sent') {
-                    // Show only not sent rows
-                    row.style.display = sentStatus === 'not-sent' ? '' : 'none';
+                } else if (filterType === 'approved') {
+                    // Show only approved rows (where client_design_approval === 'موافق')
+                    row.style.display = preparationsStatus === 'requested' ? '' : 'none';
+                } else if (filterType === 'not-requested-preparations') {
+                    // Show only rows where preparations were not requested
+                    row.style.display = preparationsStatus === 'not-requested' ? '' : 'none';
                 }
             });
         }
