@@ -26,6 +26,7 @@ class AppLayout extends Component
             $employee = auth('employee')->user();
             $isSalesEmployee = $employee->account_type === 'مبيعات';
             $isDesignEmployee = $employee->account_type === 'تصميم';
+            $isProductionEmployee = $employee->account_type === 'تشغيل';
             
             if ($isSalesEmployee || auth('web')->check()) {
                 // Price quotes count (status != work_order and != cancelled)
@@ -94,6 +95,11 @@ class AppLayout extends Component
                 
                 // Preparations count for designers (all in_progress orders)
                 $preparationsCount = WorkOrder::where('status', 'in_progress')->count();
+            }
+            
+            // Production count for production employees (all completed orders)
+            if ($isProductionEmployee) {
+                $productionCount = WorkOrder::where('status', 'completed')->count();
             }
         } elseif (auth('web')->check()) {
             // Admin users see all counts

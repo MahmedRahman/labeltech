@@ -67,6 +67,7 @@ class WorkOrder extends Model
         'designer_drills',
         'designer_breaking_gear',
         'designer_paper_width',
+        'designer_gap',
     ];
 
     protected $casts = [
@@ -101,6 +102,7 @@ class WorkOrder extends Model
         'linear_meter' => 'decimal:2',
         'designer_number_of_colors' => 'integer',
         'designer_paper_width' => 'decimal:2',
+        'designer_gap' => 'decimal:2',
     ];
 
     /**

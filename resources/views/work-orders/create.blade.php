@@ -1049,7 +1049,8 @@
                     </div>
                 </div>
 
-                <!-- Final Product Shape & Production Method Data -->
+                {{-- Final Product Shape & Production Method Data - Hidden in create page --}}
+                {{-- 
                 <div style="margin-top: 2rem; padding: 1.5rem; background-color: #f9fafb; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
                     <h3 style="font-size: 1rem; font-weight: 600; color: #111827; margin-bottom: 1.5rem;">شكل المنتج النهائي وبيانات طريقة التشغيل</h3>
                     
@@ -1164,6 +1165,7 @@
                         </div>
                     </div>
                 </div>
+                --}}
 
                 <!-- معلومات إضافية -->
                 <div style="margin-bottom: 2rem; padding: 1.5rem; background-color: #f9fafb; border-radius: 0.5rem; border: 1px solid #e5e7eb;">

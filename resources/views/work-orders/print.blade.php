@@ -262,9 +262,31 @@
         <div class="section">
             <div class="section-title">المبيعات</div>
             <div class="section-content">
+                <!-- First Row: Order Number, Client Name, Pull Direction, Additions, Number of Colors -->
+                <div class="section-row">
+                    <span class="section-label">أمر الشغل:</span>
+                    <span class="section-value">{{ $workOrder->order_number ?? 'بدون رقم' }}</span>
+                </div>
+                <div class="section-row">
+                    <span class="section-label">أسم العميل:</span>
+                    <span class="section-value">{{ $workOrder->client->name }}</span>
+                </div>
+                <div class="section-row">
+                    <span class="section-label">أتجاه الجر:</span>
+                    <span class="section-value">{{ $workOrder->winding_direction == 'yes' ? 'نعم' : ($workOrder->winding_direction == 'no' ? 'لا' : 'لا يوجد') }}</span>
+                </div>
+                <div class="section-row">
+                    <span class="section-label">الاضافات:</span>
+                    <span class="section-value">{{ $workOrder->additions ?? 'لا يوجد' }}</span>
+                </div>
+                <div class="section-row">
+                    <span class="section-label">عدد الألوان:</span>
+                    <span class="section-value">{{ $workOrder->number_of_colors ?? '-' }}</span>
+                </div>
+                <!-- Second Row: Job Name, Date, Width, Material Type, Quantity, Winding Direction -->
                 <div class="section-row">
                     <span class="section-label">اسم الشغلانة:</span>
-                    <span class="section-value">{{ $workOrder->order_number ?? 'بدون رقم' }} - {{ $workOrder->client->name }} @if($workOrder->width && $workOrder->length){{ number_format($workOrder->width, 1) }}×{{ number_format($workOrder->length, 1) }}@endif</span>
+                    <span class="section-value">{{ $workOrder->job_name ?? ($workOrder->order_number ?? 'بدون رقم') }}</span>
                 </div>
                 <div class="section-row">
                     <span class="section-label">التاريخ:</span>
@@ -288,11 +310,11 @@
                 </div>
             </div>
             
-            <!-- شيت / بكر -->
+            <!-- شكل المنتج النهائي وبيانات طريقة التشغيل -->
             <div class="two-columns" style="margin-top: 12px;">
                 <div>
                     <div class="checkbox-group">
-                        <span class="checkbox"></span>
+                        <span class="checkbox" style="{{ $workOrder->final_product_shape == 'شيت' ? 'background: #000;' : '' }}"></span>
                         <strong>شيت</strong>
                     </div>
                     <div class="section-row">
@@ -311,7 +333,7 @@
                     </div>
                     <div class="section-row">
                         <span class="section-label">عدد التكت بالبكرة:</span>
-                        <span class="section-value">{{ $calculations['pieces_per_roll'] ?? ($workOrder->number_of_rolls ? number_format($workOrder->quantity / $workOrder->number_of_rolls) : '-') }}</span>
+                        <span class="section-value">{{ $calculations['pieces_per_roll'] ?? ($workOrder->number_of_rolls ? number_format($workOrder->quantity / $workOrder->number_of_rolls, 0) : '-') }}</span>
                     </div>
                     <div class="section-row">
                         <span class="section-label">نوع الكور:</span>
@@ -325,65 +347,71 @@
         @if($workOrder->has_design ?? false)
         <div class="section">
             <div class="section-title">التصميم</div>
-            <div class="section-content">
-                @if($workOrder->design_shape)
-                <div class="section-row">
-                    <span class="section-label">الشكل:</span>
-                    <span class="section-value">{{ $workOrder->design_shape }}</span>
+            <div class="two-columns">
+                <!-- Left Column -->
+                <div>
+                    @if($workOrder->designKnife)
+                    <div class="section-row">
+                        <span class="section-label">سكاكين:</span>
+                        <span class="section-value">{{ $workOrder->designKnife->knife_code ?? '-' }}</span>
+                    </div>
+                    @endif
+                    @if($workOrder->design_breaking_gear)
+                    <div class="section-row">
+                        <span class="section-label">ترس التكسير:</span>
+                        <span class="section-value">{{ $workOrder->design_breaking_gear }}</span>
+                    </div>
+                    @endif
+                    @if($workOrder->design_rows_count)
+                    <div class="section-row">
+                        <span class="section-label">عدد الصفوف:</span>
+                        <span class="section-value">{{ $workOrder->design_rows_count }}</span>
+                    </div>
+                    @endif
                 </div>
-                @endif
-                @if($workOrder->design_films)
-                <div class="section-row">
-                    <span class="section-label">أفلام:</span>
-                    <span class="section-value">{{ $workOrder->design_films }}</span>
+                <!-- Right Column -->
+                <div>
+                    @if($workOrder->design_shape)
+                    <div class="section-row">
+                        <span class="section-label">الشكل:</span>
+                        <span class="section-value">{{ $workOrder->design_shape }}</span>
+                    </div>
+                    @endif
+                    @if($workOrder->design_films)
+                    <div class="section-row">
+                        <span class="section-label">افلام:</span>
+                        <span class="section-value">{{ $workOrder->design_films }}</span>
+                    </div>
+                    @else
+                    <div class="section-row">
+                        <span class="section-label">افلام:</span>
+                        <span class="section-value">جديده</span>
+                    </div>
+                    @endif
+                    @if($workOrder->design_drills)
+                    <div class="section-row">
+                        <span class="section-label">الدرافيل:</span>
+                        <span class="section-value">{{ $workOrder->design_drills }}</span>
+                    </div>
+                    @endif
+                    @if($workOrder->design_gab)
+                    <div class="section-row highlight">
+                        <span class="section-label">الجاب:</span>
+                        <span class="section-value">{{ $workOrder->design_gab }}</span>
+                    </div>
+                    @endif
+                    @if($workOrder->design_cliches)
+                    <div class="section-row">
+                        <span class="section-label">الاكلاشيهات المعادة:</span>
+                        <span class="section-value">{{ $workOrder->design_cliches }}</span>
+                    </div>
+                    @else
+                    <div class="section-row">
+                        <span class="section-label">الاكلاشيهات المعادة:</span>
+                        <span class="section-value">0</span>
+                    </div>
+                    @endif
                 </div>
-                @else
-                <div class="section-row">
-                    <span class="section-label">أفلام:</span>
-                    <span class="section-value">جديده</span>
-                </div>
-                @endif
-                @if($workOrder->designKnife)
-                <div class="section-row">
-                    <span class="section-label">سكاكين:</span>
-                    <span class="section-value">{{ $workOrder->designKnife->knife_code ?? '-' }}</span>
-                </div>
-                @endif
-                @if($workOrder->design_drills)
-                <div class="section-row">
-                    <span class="section-label">الدرافيل:</span>
-                    <span class="section-value">{{ $workOrder->design_drills }}</span>
-                </div>
-                @endif
-                @if($workOrder->design_gab)
-                <div class="section-row">
-                    <span class="section-label">الجاب:</span>
-                    <span class="section-value">{{ $workOrder->design_gab }}</span>
-                </div>
-                @endif
-                @if($workOrder->design_breaking_gear)
-                <div class="section-row">
-                    <span class="section-label">ترس التكسير:</span>
-                    <span class="section-value">{{ $workOrder->design_breaking_gear }}</span>
-                </div>
-                @endif
-                @if($workOrder->design_rows_count)
-                <div class="section-row">
-                    <span class="section-label">عدد الصفوف:</span>
-                    <span class="section-value">{{ $workOrder->design_rows_count }}</span>
-                </div>
-                @endif
-                @if($workOrder->design_cliches)
-                <div class="section-row">
-                    <span class="section-label">الأكلاشيهات المعادة:</span>
-                    <span class="section-value">{{ $workOrder->design_cliches }}</span>
-                </div>
-                @else
-                <div class="section-row">
-                    <span class="section-label">الأكلاشيهات المعادة:</span>
-                    <span class="section-value">0</span>
-                </div>
-                @endif
             </div>
         </div>
         @endif
@@ -392,32 +420,35 @@
         <div class="section">
             <div class="section-title">التشغيل</div>
             <div class="three-columns">
+                <!-- Left Column: Calculated Lengths -->
                 <div>
-                    <div class="section-row">
+                    <div class="section-row highlight">
                         <span class="section-label">المتر الطولي الصافي:</span>
-                        <span class="section-value">{{ number_format($calculations['net_linear_meter'] ?? 0, 2) }}</span>
+                        <span class="section-value">{{ number_format($calculations['net_linear_meter'] ?? 0, 3) }}</span>
                     </div>
-                    <div class="section-row">
-                        <span class="section-label">المتر الطولي + نسبة الهاليك:</span>
-                        <span class="section-value">{{ number_format($calculations['linear_meter_with_waste'] ?? 0, 2) }}</span>
+                    <div class="section-row highlight">
+                        <span class="section-label">المتر الطولي + نسبه الهاليك:</span>
+                        <span class="section-value">{{ number_format($calculations['linear_meter_with_waste'] ?? 0, 3) }}</span>
                     </div>
                 </div>
+                <!-- Middle Column: Waste & Weight -->
                 <div>
-                    <div class="section-row">
+                    <div class="section-row highlight">
                         <span class="section-label">نسبة الهاليك:</span>
                         <span class="section-value">{{ $workOrder->waste_percentage ? number_format($workOrder->waste_percentage, 1) : '-' }}%</span>
                     </div>
-                    <div class="section-row">
+                    <div class="section-row highlight">
                         <span class="section-label">الوزن:</span>
                         <span class="section-value">{{ $calculations['weight'] ? number_format($calculations['weight'], 2) : ($workOrder->paper_weight ? number_format($workOrder->paper_weight, 2) : '-') }}</span>
                     </div>
                 </div>
+                <!-- Right Column: Paper/Square Meter -->
                 <div>
-                    <div class="section-row">
+                    <div class="section-row highlight">
                         <span class="section-label">عرض الورق:</span>
-                        <span class="section-value">{{ $workOrder->paper_width ? number_format($workOrder->paper_width, 2) : '-' }}</span>
+                        <span class="section-value">{{ $workOrder->paper_width ? number_format($workOrder->paper_width, 3) : '-' }}</span>
                     </div>
-                    <div class="section-row">
+                    <div class="section-row highlight">
                         <span class="section-label">المتر المربع:</span>
                         <span class="section-value">{{ number_format($calculations['square_meter'] ?? 0, 3) }}</span>
                     </div>

@@ -277,11 +277,19 @@ class WorkOrderController extends Controller
             ->where('status', 'completed');
 
         // Filter work orders based on user type:
-        // - Employees: show only work orders they created
+        // - Production employees: see all work orders in production (no filter by created_by)
+        // - Sales employees: show only work orders they created
         // - Admin (web guard): show all work orders (no filter)
         if (auth('employee')->check()) {
-            $employeeName = auth('employee')->user()->name;
-            $query->where('created_by', $employeeName);
+            $employee = auth('employee')->user();
+            $isProductionEmployee = $employee->account_type === 'تشغيل';
+            $isSalesEmployee = $employee->account_type === 'مبيعات';
+            
+            // Production employees see all work orders in production
+            if (!$isProductionEmployee && $isSalesEmployee) {
+                $query->where('created_by', $employee->name);
+            }
+            // If production employee, no filter is applied (see all)
         }
         // Admin users (auth('web')->check()) will see all work orders
         // No additional filter is applied for admin users
@@ -305,6 +313,42 @@ class WorkOrderController extends Controller
         $totalCount = $workOrders->count();
 
         return view('work-orders.production-list', compact('workOrders', 'clients', 'totalCount'));
+    }
+
+    /**
+     * Display production list for production employees (status = completed).
+     */
+    public function productionEmployeeList(Request $request)
+    {
+        $employee = auth('employee')->user();
+        if ($employee->account_type !== 'تشغيل') {
+            abort(403);
+        }
+
+        $query = WorkOrder::with('client')
+            ->where('status', 'completed');
+
+        // Production employees see all work orders in production (no filter by created_by)
+
+        // Filter by client
+        if ($request->filled('client_id')) {
+            $query->where('client_id', $request->client_id);
+        }
+
+        // Filter by order number
+        if ($request->filled('order_number')) {
+            $query->where('order_number', 'like', '%' . $request->order_number . '%');
+        }
+
+        $workOrders = $query->latest()->get();
+
+        // Get all clients for filter dropdown
+        $clients = Client::orderBy('name')->get();
+
+        // Calculate total count
+        $totalCount = $workOrders->count();
+
+        return view('employee.production-work-orders', compact('workOrders', 'clients', 'totalCount'));
     }
 
     /**
@@ -639,6 +683,7 @@ class WorkOrderController extends Controller
             'designer_drills' => 'nullable|string|max:255',
             'designer_breaking_gear' => 'nullable|string|max:255',
             'designer_paper_width' => 'nullable|numeric|min:0|max:20',
+            'designer_gap' => 'nullable|numeric|min:0',
         ]);
 
         $workOrder->update($validated);
@@ -1226,6 +1271,49 @@ class WorkOrderController extends Controller
     }
 
     /**
+     * Complete production data (final product shape and production method data).
+     */
+    public function completeProductionData(Request $request, WorkOrder $workOrder)
+    {
+        // Only allow if client has approved the design
+        if (($workOrder->client_design_approval ?? '') !== 'موافق') {
+            return redirect()->back()
+                ->with('error', 'لا يمكن استكمال البيانات إلا بعد موافقة العميل على التصميم');
+        }
+
+        $validated = $request->validate([
+            'final_product_shape' => 'required|in:بكر,شيت',
+            'number_of_rolls' => 'required_if:final_product_shape,بكر|nullable|integer|min:1',
+            'core_size' => 'required_if:final_product_shape,بكر|nullable|numeric|in:76,40,25',
+            'pieces_per_sheet' => 'required_if:final_product_shape,شيت|nullable|integer|min:1',
+            'sheets_per_stack' => 'required_if:final_product_shape,شيت|nullable|integer|min:1',
+        ]);
+
+        $updateData = [
+            'final_product_shape' => $validated['final_product_shape'],
+        ];
+
+        if ($validated['final_product_shape'] === 'بكر') {
+            $updateData['number_of_rolls'] = $validated['number_of_rolls'];
+            $updateData['core_size'] = $validated['core_size'];
+            // Clear sheet fields
+            $updateData['pieces_per_sheet'] = null;
+            $updateData['sheets_per_stack'] = null;
+        } else {
+            $updateData['pieces_per_sheet'] = $validated['pieces_per_sheet'];
+            $updateData['sheets_per_stack'] = $validated['sheets_per_stack'];
+            // Clear roll fields
+            $updateData['number_of_rolls'] = null;
+            $updateData['core_size'] = null;
+        }
+
+        $workOrder->update($updateData);
+
+        return redirect()->back()
+            ->with('success', 'تم حفظ بيانات شكل المنتج النهائي وطريقة التشغيل بنجاح');
+    }
+
+    /**
      * Update notes for a work order (from profile show page).
      */
     public function updateNotes(Request $request, WorkOrder $workOrder)
@@ -1251,6 +1339,12 @@ class WorkOrderController extends Controller
         if (($workOrder->client_design_approval ?? '') !== 'موافق') {
             return redirect()->back()
                 ->with('error', 'لا يمكن نقل البروفا إلى التجهيزات إلا بعد موافقة العميل على التصميم');
+        }
+
+        // Only allow if production data is completed
+        if (!$workOrder->final_product_shape) {
+            return redirect()->back()
+                ->with('error', 'يرجى استكمال بيانات شكل المنتج النهائي وطريقة التشغيل أولاً');
         }
 
         // Only allow if status is work_order

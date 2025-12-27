@@ -586,7 +586,7 @@
     @endif
 
     <!-- تجهيزات المصمم -->
-    @if($workOrder->designer_number_of_colors || $workOrder->designer_drills || $workOrder->designer_breaking_gear || $workOrder->designer_paper_width)
+    @if($workOrder->designer_number_of_colors || $workOrder->designer_drills || $workOrder->designer_breaking_gear || $workOrder->designer_paper_width || $workOrder->designer_gap)
     <div class="card" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border: 2px solid #2563eb;">
         <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid #2563eb;">
             <svg style="width: 24px; height: 24px; color: #2563eb;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -632,6 +632,13 @@
                 @if($workOrder->paper_width)
                 <small style="font-size: 0.75rem; color: #9ca3af;">(الأصلي: {{ number_format($workOrder->paper_width, 2) }} سم)</small>
                 @endif
+            </div>
+            @endif
+
+            @if($workOrder->designer_gap)
+            <div>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">الجاب الدرافيل</dt>
+                <dd style="font-size: 0.875rem; color: #111827; margin: 0; font-weight: 600;">{{ number_format($workOrder->designer_gap, 2) }}</dd>
             </div>
             @endif
         </div>

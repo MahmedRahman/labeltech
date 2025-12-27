@@ -128,18 +128,34 @@
         }
     </style>
 
+    @php
+        $isEmployee = auth('employee')->check();
+        $employeeAccountType = $isEmployee ? auth('employee')->user()->account_type : null;
+        $isProductionEmployee = $isEmployee && $employeeAccountType === 'تشغيل';
+        $isAdmin = auth('web')->check();
+    @endphp
+
     <!-- Header Actions -->
     <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-            <div>
-                <h2 style="font-size: 1.75rem; font-weight: 700; color: #111827; margin: 0 0 0.25rem 0;">التشغيل</h2>
-                <p style="font-size: 1rem; color: #6b7280; margin: 0;">عرض جميع عروض الأسعار جاري التشغيل</p>
-            </div>
-        <a href="{{ route('work-orders.index') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #6b7280; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
-            <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-            </svg>
-            العودة للقائمة
-        </a>
+        <div>
+            <h2 style="font-size: 1.75rem; font-weight: 700; color: #111827; margin: 0 0 0.25rem 0;">التشغيل</h2>
+            <p style="font-size: 1rem; color: #6b7280; margin: 0;">عرض جميع أوامر الشغل في مرحلة التشغيل</p>
+        </div>
+        @if(!$isProductionEmployee)
+            <a href="{{ route('work-orders.index') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #6b7280; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
+                <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                العودة للقائمة
+            </a>
+        @else
+            <a href="{{ route('employee.production.dashboard') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #6b7280; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);">
+                <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                العودة للوحة التحكم
+            </a>
+        @endif
     </div>
 
     <!-- Statistics Card -->
@@ -167,6 +183,9 @@
                         <th>تاريخ الإنشاء</th>
                         <th>رقم عرض السعر</th>
                         <th>العميل</th>
+                        @if($isProductionEmployee)
+                            <th>موظف المبيعات المسؤول</th>
+                        @endif
                         <th>الخامة</th>
                         <th>الكمية</th>
                         <th>المقاس</th>
@@ -201,6 +220,9 @@
                                 <strong style="color: #111827;">{{ $workOrder->order_number ?? 'بدون رقم' }}</strong>
                             </td>
                             <td>{{ $workOrder->client->name ?? 'غير محدد' }}</td>
+                            @if($isProductionEmployee)
+                                <td>{{ $workOrder->created_by ?? 'غير محدد' }}</td>
+                            @endif
                             <td>{{ $workOrder->material ?? '-' }}</td>
                             <td>{{ number_format($workOrder->quantity ?? 0) }}</td>
                             <td>
@@ -231,11 +253,17 @@
             <svg style="width: 64px; height: 64px; color: #9ca3af; margin: 0 auto 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
             </svg>
-            <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 0.5rem 0;">لا توجد تشغيل</h3>
-            <p style="font-size: 1rem; color: #6b7280; margin: 0 0 1.5rem 0;">لا توجد عروض أسعار جاري التشغيل حالياً</p>
-            <a href="{{ route('work-orders.index') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #2563eb; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500;">
-                العودة للقائمة الرئيسية
-            </a>
+            <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0 0 0.5rem 0;">لا توجد أوامر شغل في التشغيل</h3>
+            <p style="font-size: 1rem; color: #6b7280; margin: 0 0 1.5rem 0;">لا توجد أوامر شغل في مرحلة التشغيل حالياً</p>
+            @if(!$isProductionEmployee)
+                <a href="{{ route('work-orders.index') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #2563eb; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500;">
+                    العودة للقائمة الرئيسية
+                </a>
+            @else
+                <a href="{{ route('employee.production.dashboard') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #2563eb; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500;">
+                    العودة للوحة التحكم
+                </a>
+            @endif
         </div>
     @endif
 </x-app-layout>

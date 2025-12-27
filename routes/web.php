@@ -55,6 +55,7 @@ Route::middleware('auth.any')->group(function () {
     Route::post('work-orders/{workOrder}/mark-as-sent', [\App\Http\Controllers\WorkOrderController::class, 'markAsSentToClient'])->name('work-orders.mark-as-sent');
     Route::post('work-orders/{workOrder}/client-response', [\App\Http\Controllers\WorkOrderController::class, 'updateClientResponse'])->name('work-orders.client-response.update');
     Route::post('work-orders/{workOrder}/client-design-approval', [\App\Http\Controllers\WorkOrderController::class, 'updateClientDesignApproval'])->name('work-orders.client-design-approval.update');
+    Route::post('work-orders/{workOrder}/complete-production-data', [\App\Http\Controllers\WorkOrderController::class, 'completeProductionData'])->name('work-orders.complete-production-data');
     Route::post('work-orders/{workOrder}/move-to-preparations', [\App\Http\Controllers\WorkOrderController::class, 'moveToPreparations'])->name('work-orders.move-to-preparations');
     Route::post('work-orders/{workOrder}/move-to-production', [\App\Http\Controllers\WorkOrderController::class, 'moveToProduction'])->name('work-orders.move-to-production');
     Route::post('work-orders/{workOrder}/convert-to-order', [\App\Http\Controllers\WorkOrderController::class, 'convertToOrder'])->name('work-orders.convert-to-order');
@@ -217,4 +218,7 @@ Route::middleware(['auth:employee'])->prefix('employee')->name('employee.')->gro
         
         return view('employee.production-dashboard', compact('workOrdersCount', 'recentWorkOrders', 'knivesCount', 'recentKnives'));
     })->name('production.dashboard');
+    
+    // Production Work Orders List
+    Route::get('/production/work-orders', [\App\Http\Controllers\WorkOrderController::class, 'productionEmployeeList'])->name('production.work-orders');
 });

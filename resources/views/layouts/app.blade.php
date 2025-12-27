@@ -388,7 +388,7 @@
                         </a>
                     @endif
 
-                    @if($isSalesEmployee || $isProductionEmployee || $isAdmin)
+                    @if($isSalesEmployee || $isAdmin)
                         <!-- أمر التصنيع -->
                         <div class="nav-section-title " style="margin-top: 1rem; font-size: 1.25rem; font-weight: 700; color: #111827; border-top: 1px solid #e5e7eb; padding-top: 1rem;">   
                             امر التصنيع
@@ -418,8 +418,8 @@
                         </a>
                     @endif
                     
-                    @if(!$isDesignEmployee)
-                    <!-- البروفا - لا يظهر للمصمم -->
+                    @if(!$isDesignEmployee && !$isProductionEmployee)
+                    <!-- البروفا - لا يظهر للمصمم والتشغيل -->
                     @php
                         $currentRoute = request()->route()?->getName() ?? '';
                         $isWorkOrderListRoute = $currentRoute === 'work-orders.list';
@@ -435,6 +435,7 @@
                             <span style="background-color: #2563eb; color: white; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; min-width: 1.5rem; text-align: center;">{{ $proofsCount }}</span>
                         @endif
                     </a>
+                    @endif
                     
                     <!-- أوامر الشغل المرسلة إلى المصمم - للادمن فقط -->
                     @if($isAdmin)
@@ -455,7 +456,8 @@
                     </a>
                     @endif
                     
-                    <!-- التجهيزات - لا يظهر للمصمم -->
+                    @if(!$isDesignEmployee && !$isProductionEmployee)
+                    <!-- التجهيزات - لا يظهر للمصمم والتشغيل -->
                     @php
                         $currentRoute = request()->route()?->getName() ?? '';
                         $isPreparationsRoute = $currentRoute === 'work-orders.preparations';
@@ -471,25 +473,30 @@
                             <span style="background-color: #f59e0b; color: white; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; min-width: 1.5rem; text-align: center;">{{ $preparationsCount }}</span>
                         @endif
                     </a>
+                    @endif
                     
+                    @if(!$isDesignEmployee)
                     <!-- التشغيل - لا يظهر للمصمم -->
                     @php
                         $currentRoute = request()->route()?->getName() ?? '';
-                        $isProductionRoute = $currentRoute === 'work-orders.production';
+                        $isProductionRoute = $currentRoute === 'work-orders.production' || $currentRoute === 'employee.production.work-orders';
+                        $productionRoute = $isProductionEmployee ? route('employee.production.work-orders') : route('work-orders.production');
                     @endphp
-                    <a href="{{ route('work-orders.production') }}" class="nav-link {{ $isProductionRoute ? 'active' : '' }}" style="display: flex; align-items: center; justify-content: space-between;">
+                    <a href="{{ $productionRoute }}" class="nav-link {{ $isProductionRoute ? 'active' : '' }}" style="display: flex; align-items: center; justify-content: space-between;">
                         <span style="display: flex; align-items: center;">
                             <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
                             </svg>
                             التشغيل
                         </span>
-                        @if(($isSalesEmployee || $isAdmin) && isset($productionCount) && $productionCount > 0)
+                        @if(($isSalesEmployee || $isAdmin || $isProductionEmployee) && isset($productionCount) && $productionCount > 0)
                             <span style="background-color: #10b981; color: white; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; min-width: 1.5rem; text-align: center;">{{ $productionCount }}</span>
                         @endif
                     </a>
+                    @endif
                     
-                    <!-- الأرشيف - لا يظهر للمصمم -->
+                    @if(!$isDesignEmployee && !$isProductionEmployee)
+                    <!-- الأرشيف - لا يظهر للمصمم والتشغيل -->
                     @php
                         $isArchiveRoute = $currentRoute === 'work-orders.archive';
                     @endphp
