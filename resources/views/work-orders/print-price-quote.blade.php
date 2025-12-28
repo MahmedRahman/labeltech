@@ -21,7 +21,7 @@
             }
             .print-container {
                 border: none;
-                padding: 15mm;
+                padding: 20mm;
                 box-shadow: none;
                 max-width: 100%;
                 min-height: 100vh;
@@ -36,8 +36,8 @@
         
         body {
             font-family: 'Arial', 'Tahoma', sans-serif;
-            font-size: 11px;
-            line-height: 1.4;
+            font-size: 12px;
+            line-height: 1.6;
             color: #000;
             background: #f5f5f5;
             padding: 20px;
@@ -46,11 +46,10 @@
         .print-container {
             width: 210mm;
             min-height: 297mm;
-            max-height: 297mm;
             margin: 0 auto;
             background: white;
             border: 1px solid #ddd;
-            padding: 15mm;
+            padding: 20mm;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             display: flex;
             flex-direction: column;
@@ -58,28 +57,30 @@
         
         .print-header {
             text-align: center;
-            border-bottom: 3px solid #2563eb;
-            padding-bottom: 12px;
-            margin-bottom: 18px;
+            border-bottom: 4px solid #2563eb;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
         }
         
         .print-header .logo {
-            max-width: 180px;
+            max-width: 200px;
             height: auto;
-            margin: 0 auto 12px;
+            margin: 0 auto 15px;
             display: block;
         }
         
         .print-header h1 {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: bold;
             color: #2563eb;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
         }
         
         .print-header .subtitle {
-            font-size: 14px;
+            font-size: 16px;
             color: #666;
+            font-weight: 500;
         }
         
         .content-wrapper {
@@ -90,22 +91,33 @@
         }
         
         .info-section {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         
         .info-section h2 {
-            font-size: 15px;
+            font-size: 18px;
             font-weight: bold;
             color: #111827;
-            margin-bottom: 10px;
-            padding-bottom: 6px;
-            border-bottom: 2px solid #e5e7eb;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #2563eb;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .info-section h2::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: #2563eb;
+            border-radius: 2px;
         }
         
         .info-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
+            gap: 12px;
             margin-bottom: 0;
         }
         
@@ -113,113 +125,136 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 10px;
-            background: #f9fafb;
-            border-radius: 4px;
-            border-right: 3px solid #2563eb;
+            padding: 12px 15px;
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            border-radius: 8px;
+            border-right: 4px solid #2563eb;
+            transition: all 0.2s;
+        }
+        
+        .info-item:hover {
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            transform: translateX(-2px);
         }
         
         .info-label {
             font-weight: 600;
             color: #6b7280;
-            font-size: 11px;
+            font-size: 12px;
         }
         
         .info-value {
             font-weight: 700;
             color: #111827;
-            font-size: 12px;
+            font-size: 13px;
         }
         
         .price-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
             color: white;
-            padding: 18px;
-            border-radius: 8px;
-            margin-top: 15px;
-            margin-bottom: 15px;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
         }
         
         .price-section h2 {
-            font-size: 16px;
+            font-size: 20px;
             font-weight: bold;
-            margin-bottom: 12px;
+            margin-bottom: 20px;
             color: white;
             border-bottom: 2px solid rgba(255, 255, 255, 0.3);
-            padding-bottom: 8px;
+            padding-bottom: 12px;
+        }
+        
+        .price-section h2::before {
+            background: white;
         }
         
         .price-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
         }
         
         .price-item {
             background: rgba(255, 255, 255, 0.15);
-            padding: 12px;
-            border-radius: 6px;
+            padding: 18px;
+            border-radius: 10px;
             backdrop-filter: blur(10px);
             text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .price-label {
-            font-size: 11px;
-            opacity: 0.9;
-            margin-bottom: 6px;
+            font-size: 13px;
+            opacity: 0.95;
+            margin-bottom: 10px;
+            font-weight: 600;
         }
         
         .price-value {
-            font-size: 16px;
+            font-size: 20px;
             font-weight: bold;
         }
         
         .total-price {
             grid-column: 1 / -1;
             background: rgba(255, 255, 255, 0.25);
-            padding: 15px;
-            border-radius: 6px;
+            padding: 25px;
+            border-radius: 12px;
             text-align: center;
-            border: 2px solid rgba(255, 255, 255, 0.4);
-            margin-top: 10px;
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            margin-top: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         
         .total-price .price-label {
-            font-size: 14px;
-            margin-bottom: 8px;
+            font-size: 16px;
+            margin-bottom: 12px;
+            font-weight: 700;
         }
         
         .total-price .price-value {
-            font-size: 26px;
+            font-size: 32px;
+            font-weight: 900;
         }
         
         .footer {
             margin-top: auto;
-            padding-top: 12px;
-            border-top: 2px solid #e5e7eb;
+            padding-top: 20px;
+            border-top: 3px solid #e5e7eb;
             text-align: center;
             color: #6b7280;
-            font-size: 10px;
+            font-size: 11px;
+        }
+        
+        .footer p {
+            margin: 5px 0;
         }
         
         .print-button {
             position: fixed;
             top: 20px;
             left: 20px;
-            padding: 12px 24px;
+            padding: 14px 28px;
             background: #2563eb;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 600;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
             z-index: 1000;
+            transition: all 0.2s;
         }
         
         .print-button:hover {
             background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.3);
         }
         
         @media print {
@@ -262,6 +297,12 @@
                         <span class="info-value">{{ $workOrder->client->company }}</span>
                     </div>
                     @endif
+                    @if($workOrder->created_by)
+                    <div class="info-item">
+                        <span class="info-label">موظف المبيعات:</span>
+                        <span class="info-value">{{ $workOrder->created_by }}</span>
+                    </div>
+                    @endif
                 </div>
             </div>
             
@@ -287,12 +328,33 @@
                     </div>
                     <div class="info-item">
                         <span class="info-label">الطول (سم):</span>
-                        <span class="info-value">{{ number_format($workOrder->length ?? 0, 2) }}</span>
+                        <span class="info-value">
+                            {{ number_format($workOrder->length ?? 0, 2) }}
+                            @if($workOrder->winding_direction)
+                                @php
+                                    $windingDirection = $workOrder->winding_direction;
+                                    if ($windingDirection == 'clockwise') {
+                                        $windingLabel = 'مع عقارب الساعة';
+                                    } elseif ($windingDirection == 'counterclockwise') {
+                                        $windingLabel = 'عكس عقارب الساعة';
+                                    } elseif ($windingDirection == 'yes') {
+                                        $windingLabel = 'نعم';
+                                    } else {
+                                        $windingLabel = 'لا';
+                                    }
+                                @endphp
+                                <span style="color: #2563eb; font-weight: 600; margin-right: 5px;">
+                                    (جابنها الجر: {{ $windingLabel }})
+                                </span>
+                            @endif
+                        </span>
                     </div>
+                    @if($workOrder->additions && $workOrder->additions !== 'لا يوجد')
                     <div class="info-item">
-                        <span class="info-label">البكر به كام تكيت:</span>
-                        <span class="info-value">{{ number_format($calculations['pieces_per_roll'] ?? 0, 0) }}</span>
+                        <span class="info-label">الإضافات:</span>
+                        <span class="info-value">{{ $workOrder->additions }}</span>
                     </div>
+                    @endif
                 </div>
             </div>
             
@@ -303,10 +365,6 @@
                     <div class="price-item">
                         <div class="price-label">سعر الألف</div>
                         <div class="price-value">{{ number_format($calculations['price_per_thousand'] ?? 0, 2) }} ج.م</div>
-                    </div>
-                    <div class="price-item">
-                        <div class="price-label">سعر التكيت</div>
-                        <div class="price-value">{{ number_format($calculations['price_per_unit'] ?? 0, 2) }} ج.م</div>
                     </div>
                     <div class="price-item">
                         <div class="price-label">الكمية</div>
@@ -321,7 +379,7 @@
             
             <!-- Footer -->
             <div class="footer">
-                <p>شكراً لاختياركم خدماتنا</p>
+                <p style="font-weight: 600; color: #374151; margin-bottom: 8px;">شكراً لاختياركم خدماتنا</p>
                 <p>تم إنشاء هذا العرض في: {{ $workOrder->created_at->format('Y-m-d H:i') }}</p>
             </div>
         </div>
@@ -335,4 +393,3 @@
     </script>
 </body>
 </html>
-
