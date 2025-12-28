@@ -1,4 +1,9 @@
 <x-guest-layout>
+    <!-- Logo -->
+    <div style="text-align: center; margin-bottom: 1.5rem; display: flex; justify-content: center; align-items: center;">
+        <img src="{{ asset('images/logo.png') }}" alt="Label Tech Logo" style="max-width: 200px; width: 100%; height: auto; display: block; margin: 0 auto;">
+    </div>
+
     <!-- Session Status -->
     @if (session('status'))
         <div style="margin-bottom: 1rem; padding: 0.75rem; background-color: #dbeafe; border: 1px solid #93c5fd; color: #1e40af; border-radius: 0.375rem; font-size: 0.875rem;">

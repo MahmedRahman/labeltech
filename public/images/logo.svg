@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 180" width="500" height="180">
+  <defs>
+    <!-- Gradient for T -->
+    <linearGradient id="tGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#fb923c;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#dc2626;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Outermost swoosh (dark gray/black) - curves from top-right, down and left -->
+  <path d="M 320 15 Q 280 35, 240 30 Q 200 25, 160 35 Q 120 45, 80 40" 
+        stroke="#1f2937" 
+        stroke-width="10" 
+        fill="none" 
+        stroke-linecap="round"
+        opacity="0.9"/>
+  
+  <!-- Middle swoosh (golden yellow) - similar curve -->
+  <path d="M 310 25 Q 270 45, 230 40 Q 190 35, 150 45 Q 110 55, 70 50" 
+        stroke="#fbbf24" 
+        stroke-width="9" 
+        fill="none" 
+        stroke-linecap="round"
+        opacity="0.95"/>
+  
+  <!-- Innermost swoosh (bright blue) - arches from top-left, over L, ending above T -->
+  <path d="M 50 35 Q 90 25, 130 30 Q 170 35, 210 30 Q 250 25, 290 35" 
+        stroke="#3b82f6" 
+        stroke-width="8" 
+        fill="none" 
+        stroke-linecap="round"
+        opacity="1"/>
+  
+  <!-- Letter L (dark charcoal gray) -->
+  <text x="80" y="90" 
+        font-family="Arial, Helvetica, sans-serif" 
+        font-size="72" 
+        font-weight="900" 
+        fill="#374151" 
+        font-style="italic"
+        letter-spacing="-2">L</text>
+  
+  <!-- Letter T (orange-red with gradient, slightly overlapping L) -->
+  <text x="145" y="90" 
+        font-family="Arial, Helvetica, sans-serif" 
+        font-size="72" 
+        font-weight="900" 
+        fill="url(#tGradient)" 
+        font-style="italic"
+        letter-spacing="-2">T</text>
+  
+  <!-- Label Tech text (dark blue/navy serif) -->
+  <text x="250" y="125" 
+        font-family="Georgia, 'Times New Roman', serif" 
+        font-size="36" 
+        font-weight="bold" 
+        fill="#1e3a8a"
+        letter-spacing="1">Label Tech</text>
+  
+  <!-- Tagline (dark blue sans-serif) -->
+  <text x="250" y="150" 
+        font-family="Arial, Helvetica, sans-serif" 
+        font-size="16" 
+        font-weight="normal" 
+        fill="#1e3a8a"
+        letter-spacing="0.5">for sticker printing service</text>
+</svg>

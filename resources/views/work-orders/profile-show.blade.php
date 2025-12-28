@@ -10,6 +10,14 @@
             <p style="font-size: 1rem; color: #6b7280; margin: 0;">{{ $workOrder->order_number ?? 'بدون رقم' }}</p>
         </div>
         <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            @if(($workOrder->status ?? '') !== 'cancelled' && ($workOrder->status ?? '') !== 'completed' && ($workOrder->status ?? '') !== 'in_progress')
+            <button type="button" onclick="showChangeClientResponsePopup()" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #f59e0b; color: white; border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer;">
+                <svg style="width: 18px; height: 18px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                </svg>
+                تغيير رد العميل على عرض السعر
+            </button>
+            @endif
             <a href="{{ route('work-orders.list') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #6b7280; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500;">
                 العودة للقائمة
             </a>
@@ -242,88 +250,12 @@
     </div>
     @endif
 
-    <!-- تغيير رد العميل على عرض السعر -->
-    @if(($workOrder->status ?? '') !== 'cancelled' && ($workOrder->status ?? '') !== 'completed' && ($workOrder->status ?? '') !== 'in_progress')
+    {{-- تغيير رد العميل على عرض السعر - تم إخفاؤه لأن التغيير يتم من خلال الزر في الـ header --}}
+    {{-- @if(($workOrder->status ?? '') !== 'cancelled' && ($workOrder->status ?? '') !== 'completed' && ($workOrder->status ?? '') !== 'in_progress')
     <div class="card" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 2px solid #f59e0b;">
-        <div style="padding: 1.5rem;">
-            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
-                <svg style="width: 24px; height: 24px; color: #f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
-                </svg>
-                <h3 style="font-size: 1.125rem; font-weight: 600; color: #78350f; margin: 0;">
-                    @if($workOrder->client_response)
-                        تغيير رد العميل على عرض السعر
-                    @else
-                        رد العميل على عرض السعر
-                    @endif
-                </h3>
-            </div>
-            @if($workOrder->client_response)
-                <p style="font-size: 0.875rem; color: #78350f; margin-bottom: 1rem;">
-                    رد العميل الحالي: <strong>{{ $workOrder->client_response }}</strong>
-                </p>
-            @else
-                <p style="font-size: 0.875rem; color: #78350f; margin-bottom: 1.5rem;">يرجى تحديد رد العميل:</p>
-            @endif
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-                <div style="display: flex; flex-direction: column;">
-                    <form action="{{ route('work-orders.client-response.update', $workOrder) }}" method="POST" id="client-response-approved-form">
-                        @csrf
-                        <input type="hidden" name="client_response" value="موافق">
-                        <button type="submit" onclick="event.preventDefault(); handleClientResponse(event, 'موافق', 'هل أنت متأكد أن العميل وافق على عرض السعر؟');" style="width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.25rem; background-color: #10b981; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);">
-                            <svg style="width: 32px; height: 32px; margin-bottom: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            <span style="font-size: 1rem;">العميل موافق</span>
-                            <span style="font-size: 0.75rem; opacity: 0.9; margin-top: 0.25rem;">تم الموافقة على العرض</span>
-                        </button>
-                    </form>
-                    <div style="margin-top: 0.75rem; padding: 0.75rem; background-color: #ecfdf5; border-radius: 0.5rem; border: 1px solid #10b981;">
-                        <p style="font-size: 0.75rem; color: #065f46; margin: 0; line-height: 1.5;">
-                            <strong>ملاحظة:</strong> سيتم قبول عرض السعر وستتم إرساله إلى المصمم لطلب البروفا.
-                        </p>
-                    </div>
-                </div>
-                <div style="display: flex; flex-direction: column;">
-                    <form action="{{ route('work-orders.client-response.update', $workOrder) }}" method="POST" id="client-response-rejected-form">
-                        @csrf
-                        <input type="hidden" name="client_response" value="رفض">
-                        <button type="submit" onclick="event.preventDefault(); handleClientResponse(event, 'رفض', 'هل أنت متأكد أن العميل رفض عرض السعر؟ سيتم إرسال العرض إلى الأرشيف.');" style="width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.25rem; background-color: #dc2626; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);">
-                            <svg style="width: 32px; height: 32px; margin-bottom: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                            <span style="font-size: 1rem;">العميل رفض</span>
-                            <span style="font-size: 0.75rem; opacity: 0.9; margin-top: 0.25rem;">تم رفض العرض</span>
-                        </button>
-                    </form>
-                    <div style="margin-top: 0.75rem; padding: 0.75rem; background-color: #fef2f2; border-radius: 0.5rem; border: 1px solid #dc2626;">
-                        <p style="font-size: 0.75rem; color: #991b1b; margin: 0; line-height: 1.5;">
-                            <strong>ملاحظة:</strong> سيتم إرسال عرض السعر إلى الأرشيف. يمكنك استرجاعه إذا غير العميل رأيه أو رد.
-                        </p>
-                    </div>
-                </div>
-                <div style="display: flex; flex-direction: column;">
-                    <form action="{{ route('work-orders.client-response.update', $workOrder) }}" method="POST" id="client-response-no-response-form">
-                        @csrf
-                        <input type="hidden" name="client_response" value="لم يرد">
-                        <button type="submit" onclick="event.preventDefault(); handleClientResponse(event, 'لم يرد', 'هل تريد تحديد أن العميل لم يرد على عرض السعر؟ سيتم إرسال العرض إلى الأرشيف.');" style="width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.25rem; background-color: #6b7280; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(107, 114, 128, 0.3);">
-                            <svg style="width: 32px; height: 32px; margin-bottom: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            <span style="font-size: 1rem;">العميل لم يرد</span>
-                            <span style="font-size: 0.75rem; opacity: 0.9; margin-top: 0.25rem;">لم يتم الرد بعد</span>
-                        </button>
-                    </form>
-                    <div style="margin-top: 0.75rem; padding: 0.75rem; background-color: #f3f4f6; border-radius: 0.5rem; border: 1px solid #6b7280;">
-                        <p style="font-size: 0.75rem; color: #374151; margin: 0; line-height: 1.5;">
-                            <strong>ملاحظة:</strong> سيتم إرسال عرض السعر إلى الأرشيف. يمكنك استرجاعه إذا غير العميل رأيه أو رد.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
+        ...
     </div>
-    @endif
+    @endif --}}
 
     <!-- معلومات أساسية -->
     <div class="card" style="margin-bottom: 1.5rem;">
@@ -333,133 +265,59 @@
             </svg>
             <h3 style="font-size: 1.125rem; font-weight: 600; color: #111827; margin: 0;">معلومات أساسية</h3>
         </div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">العميل</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0;">
-                    <a href="{{ route('clients.show', $workOrder->client) }}" style="color: #2563eb; text-decoration: none; font-weight: 500;">
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem 2rem;">
+            <!-- Row 1 -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">اسم الشغلانة:</span>
+                <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">{{ $workOrder->job_name ?? '-' }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">أمر الشغل:</span>
+                <span style="font-size: 0.875rem; color: #111827; font-weight: 600;">{{ $workOrder->order_number ?? 'بدون رقم' }}</span>
+            </div>
+            
+            <!-- Row 2 -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">التاريخ:</span>
+                <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">{{ $workOrder->created_at->format('d/m/Y') }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">أسم العميل:</span>
+                <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">
+                    <a href="{{ route('clients.show', $workOrder->client) }}" style="color: #2563eb; text-decoration: none;">
                         {{ $workOrder->client->name }}
                     </a>
-                </dd>
+                </span>
             </div>
-
-            @if($workOrder->order_number)
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">رقم البروفا</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0; font-weight: 600;">{{ $workOrder->order_number }}</dd>
+            
+            <!-- Row 3 -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">العرض:</span>
+                <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">{{ $workOrder->width ? number_format($workOrder->width, 1) : '-' }}</span>
             </div>
-            @endif
-
-            @if($workOrder->job_name)
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">اسم الشغلانه</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0;">{{ $workOrder->job_name }}</dd>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">الطول:</span>
+                <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">{{ $workOrder->length ? number_format($workOrder->length, 1) : '-' }}</span>
             </div>
-            @endif
-
-            @if($workOrder->created_by)
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">الشخص المسؤول</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0;">{{ $workOrder->created_by }}</dd>
+            
+            <!-- Row 4 -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">نوع الخامة:</span>
+                <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">{{ $workOrder->material ?? '-' }}</span>
             </div>
-            @endif
-
-            @if($workOrder->client_response)
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">رد العميل على عرض السعر</dt>
-                <dd style="margin: 0;">
-                    @php
-                        $clientResponseColors = [
-                            'موافق' => '#10b981',
-                            'رفض' => '#dc2626',
-                            'لم يرد' => '#6b7280'
-                        ];
-                        $responseColor = $clientResponseColors[$workOrder->client_response] ?? '#6b7280';
-                    @endphp
-                    <span style="display: inline-block; padding: 0.375rem 0.875rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; background-color: {{ $responseColor }}20; color: {{ $responseColor }};">
-                        {{ $workOrder->client_response }}
-                    </span>
-                </dd>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">الاضافات:</span>
+                <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">{{ $workOrder->additions ?? 'لا يوجد' }}</span>
             </div>
-            @endif
-
-            @if(($workOrder->status ?? '') === 'work_order')
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">إرسال إلى المصمم</dt>
-                <dd style="margin: 0;">
-                    @if(($workOrder->sent_to_designer ?? 'no') == 'yes')
-                        <span style="display: inline-block; padding: 0.375rem 0.875rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; background-color: #8b5cf620; color: #8b5cf6;">
-                            تم الإرسال
-                        </span>
-                    @else
-                        <span style="display: inline-block; padding: 0.375rem 0.875rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; background-color: #6b728020; color: #6b7280;">
-                            لم يتم الإرسال
-                        </span>
-                    @endif
-                </dd>
+            
+            <!-- Row 5 -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">الكمية:</span>
+                <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">{{ number_format($workOrder->quantity) }}</span>
             </div>
-            @endif
-
-
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">الحالة</dt>
-                <dd style="margin: 0;">
-                    @php
-                        $statusColors = [
-                            'draft' => '#6b7280',
-                            'pending' => '#f59e0b',
-                            'in_progress' => '#2563eb',
-                            'completed' => '#10b981',
-                            'cancelled' => '#dc2626',
-                            'work_order' => '#2563eb'
-                        ];
-                        $statusLabels = [
-                            'draft' => 'مسودة',
-                            'pending' => 'قيد الانتظار',
-                            'in_progress' => 'قيد التنفيذ',
-                            'completed' => 'مكتمل',
-                            'cancelled' => 'ملغي',
-                            'work_order' => 'بروفا'
-                        ];
-                        $color = $statusColors[$workOrder->status] ?? '#6b7280';
-                        $label = $statusLabels[$workOrder->status] ?? $workOrder->status;
-                    @endphp
-                    <span style="display: inline-block; padding: 0.375rem 0.875rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; background-color: {{ $color }}20; color: {{ $color }};">
-                        {{ $label }}
-                    </span>
-                </dd>
-            </div>
-
-            @if($workOrder->production_status)
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">حالة الإنتاج</dt>
-                <dd style="margin: 0;">
-                    @php
-                        $productionStatusColors = [
-                            'بدون حالة' => '#6b7280',
-                            'طباعة' => '#2563eb',
-                            'قص' => '#f59e0b',
-                            'تقفيل' => '#10b981',
-                            'أرشيف' => '#9ca3af'
-                        ];
-                        $prodStatus = $workOrder->production_status ?? 'بدون حالة';
-                        $prodColor = $productionStatusColors[$prodStatus] ?? '#6b7280';
-                    @endphp
-                    <span style="display: inline-block; padding: 0.375rem 0.875rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; background-color: {{ $prodColor }}20; color: {{ $prodColor }};">
-                        {{ $prodStatus }}
-                    </span>
-                </dd>
-            </div>
-            @endif
-
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">تاريخ الإنشاء</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0;">{{ $workOrder->created_at->format('Y-m-d H:i') }}</dd>
-            </div>
-
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">آخر تحديث</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0;">{{ $workOrder->updated_at->format('Y-m-d H:i') }}</dd>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">عدد الألوان:</span>
+                <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">{{ $workOrder->number_of_colors ?? '-' }}</span>
             </div>
         </div>
     </div>
@@ -1162,6 +1020,142 @@
                     form.submit();
                 }
             });
+        }
+        
+        // Function to show popup for changing client response
+        function showChangeClientResponsePopup() {
+            const currentResponse = '{{ $workOrder->client_response ?? "" }}';
+            let currentResponseText = '';
+            if (currentResponse) {
+                currentResponseText = `<p style="margin-bottom: 1rem; color: #78350f; font-weight: 500;">الرد الحالي: <strong>${currentResponse}</strong></p>`;
+            }
+            
+            Swal.fire({
+                title: 'تغيير رد العميل على عرض السعر',
+                html: currentResponseText + `
+                    <div style="text-align: center; margin-top: 1.5rem;">
+                        <p style="margin-bottom: 1rem; color: #374151;">اختر رد العميل الجديد:</p>
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            <button id="swal-approved-btn" style="width: 100%; padding: 0.875rem; background-color: #10b981; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                                <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                العميل موافق
+                            </button>
+                            <button id="swal-rejected-btn" style="width: 100%; padding: 0.875rem; background-color: #dc2626; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                                <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                العميل رفض
+                            </button>
+                            <button id="swal-no-response-btn" style="width: 100%; padding: 0.875rem; background-color: #6b7280; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                                <svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                العميل لم يرد
+                            </button>
+                        </div>
+                    </div>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                showConfirmButton: false,
+                cancelButtonText: 'إلغاء',
+                cancelButtonColor: '#6b7280',
+                customClass: {
+                    popup: 'rtl-popup',
+                    htmlContainer: 'swal-html-container'
+                },
+                didOpen: () => {
+                    // Handle approved button
+                    document.getElementById('swal-approved-btn').addEventListener('click', () => {
+                        Swal.fire({
+                            title: 'هل أنت متأكد؟',
+                            text: 'هل أنت متأكد أن العميل وافق على عرض السعر؟',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#10b981',
+                            cancelButtonColor: '#6b7280',
+                            confirmButtonText: 'نعم، متأكد',
+                            cancelButtonText: 'إلغاء',
+                            reverseButtons: true,
+                            customClass: {
+                                popup: 'rtl-popup'
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                submitClientResponse('موافق');
+                            }
+                        });
+                    });
+                    
+                    // Handle rejected button
+                    document.getElementById('swal-rejected-btn').addEventListener('click', () => {
+                        Swal.fire({
+                            title: 'هل أنت متأكد؟',
+                            text: 'هل أنت متأكد أن العميل رفض عرض السعر؟ سيتم إرسال العرض إلى الأرشيف.',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#dc2626',
+                            cancelButtonColor: '#6b7280',
+                            confirmButtonText: 'نعم، متأكد',
+                            cancelButtonText: 'إلغاء',
+                            reverseButtons: true,
+                            customClass: {
+                                popup: 'rtl-popup'
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                submitClientResponse('رفض');
+                            }
+                        });
+                    });
+                    
+                    // Handle no response button
+                    document.getElementById('swal-no-response-btn').addEventListener('click', () => {
+                        Swal.fire({
+                            title: 'هل أنت متأكد؟',
+                            text: 'هل تريد تحديد أن العميل لم يرد على عرض السعر؟ سيتم إرسال العرض إلى الأرشيف.',
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#6b7280',
+                            cancelButtonColor: '#6b7280',
+                            confirmButtonText: 'نعم، متأكد',
+                            cancelButtonText: 'إلغاء',
+                            reverseButtons: true,
+                            customClass: {
+                                popup: 'rtl-popup'
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                submitClientResponse('لم يرد');
+                            }
+                        });
+                    });
+                }
+            });
+        }
+        
+        // Function to submit client response
+        function submitClientResponse(response) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route("work-orders.client-response.update", $workOrder) }}';
+            
+            const csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = '_token';
+            csrfToken.value = '{{ csrf_token() }}';
+            form.appendChild(csrfToken);
+            
+            const responseInput = document.createElement('input');
+            responseInput.type = 'hidden';
+            responseInput.name = 'client_response';
+            responseInput.value = response;
+            form.appendChild(responseInput);
+            
+            document.body.appendChild(form);
+            form.submit();
         }
     </script>
     

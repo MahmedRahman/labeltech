@@ -136,7 +136,7 @@ Route::middleware('guest')->group(function () {
     })->name('employee.login');
 });
 
-// Employee Routes (Sales Employees Only) - Dashboard only
+// Employee Routes (Sales Employees Only) - Dashboard and Work Orders
 Route::middleware(['auth:employee', 'employee.sales'])->prefix('employee')->name('employee.')->group(function () {
     Route::get('/dashboard', function () {
         $workOrdersCount = \App\Models\WorkOrder::where('production_status', '!=', 'أرشيف')->count();
@@ -149,6 +149,9 @@ Route::middleware(['auth:employee', 'employee.sales'])->prefix('employee')->name
         $recentClients = \App\Models\Client::latest()->take(5)->get();
         return view('employee.dashboard', compact('workOrdersCount', 'recentWorkOrders', 'clientsCount', 'recentClients'));
     })->name('dashboard');
+    
+    // Sales Work Orders List
+    Route::get('/sales/work-orders', [\App\Http\Controllers\WorkOrderController::class, 'salesEmployeeList'])->name('sales.work-orders');
     
     // Logout is handled by the main auth routes
     // Work Orders routes are now handled by auth.any middleware above
@@ -169,14 +172,30 @@ Route::middleware(['auth:employee'])->prefix('employee')->name('employee.')->gro
         if ($employee->account_type !== 'تصميم') {
             abort(403);
         }
-        // Get work orders sent to designer
+        // Get work orders sent to designer, ordered by updated_at (newest first)
         $workOrders = \App\Models\WorkOrder::with('client')
             ->where('sent_to_designer', 'yes')
             ->where('status', 'work_order')
-            ->latest()
+            ->latest('updated_at')
             ->get();
         
-        return view('employee.designer-work-orders', compact('workOrders'));
+        // Count approved proofs
+        $approvedCount = \App\Models\WorkOrder::where('sent_to_designer', 'yes')
+            ->where('status', 'work_order')
+            ->where('client_design_approval', 'موافق')
+            ->count();
+        
+        // Count not approved proofs (لم يرد or رفض or null)
+        $notApprovedCount = \App\Models\WorkOrder::where('sent_to_designer', 'yes')
+            ->where('status', 'work_order')
+            ->where(function($query) {
+                $query->whereNull('client_design_approval')
+                     ->orWhere('client_design_approval', 'لم يرد')
+                     ->orWhere('client_design_approval', 'رفض');
+            })
+            ->count();
+        
+        return view('employee.designer-work-orders', compact('workOrders', 'approvedCount', 'notApprovedCount'));
     })->name('designer.work-orders');
     
     Route::get('/designer/work-orders/{workOrder}', [\App\Http\Controllers\WorkOrderController::class, 'showForDesigner'])->name('designer.work-orders.show');

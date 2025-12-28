@@ -38,31 +38,93 @@
             </svg>
             <h3 style="font-size: 1.125rem; font-weight: 600; color: #111827; margin: 0;">معلومات أساسية</h3>
         </div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">العميل</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0; font-weight: 500;">
-                    {{ $workOrder->client->name ?? 'غير محدد' }}
-                </dd>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem 2rem;">
+            <!-- Row 1 -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">اسم الشغلانة:</span>
+                <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">{{ $workOrder->job_name ?? '-' }}</span>
             </div>
-
-            @if($workOrder->order_number)
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">رقم أمر الشغل</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0; font-weight: 600;">{{ $workOrder->order_number }}</dd>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">أمر الشغل:</span>
+                <span style="font-size: 0.875rem; color: #111827; font-weight: 600;">{{ $workOrder->order_number ?? 'بدون رقم' }}</span>
             </div>
-            @endif
-
-            @if($workOrder->job_name)
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">اسم الشغلانه</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0;">{{ $workOrder->job_name }}</dd>
+            
+            <!-- Row 2 -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">التاريخ:</span>
+                <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">{{ $workOrder->created_at->format('d/m/Y') }}</span>
             </div>
-            @endif
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">أسم العميل:</span>
+                <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">{{ $workOrder->client->name ?? 'غير محدد' }}</span>
+            </div>
+            
+            <!-- Row 3 -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">العرض:</span>
+                <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">{{ $workOrder->width ? number_format($workOrder->width, 1) : '-' }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">الطول:</span>
+                <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">{{ $workOrder->length ? number_format($workOrder->length, 1) : '-' }}</span>
+            </div>
+            
+            <!-- Row 4 -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">نوع الخامة:</span>
+                <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">{{ $workOrder->material ?? '-' }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">الاضافات:</span>
+                <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">{{ $workOrder->additions ?? 'لا يوجد' }}</span>
+            </div>
+            
+            <!-- Row 5 -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">الكمية:</span>
+                <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">{{ number_format($workOrder->quantity) }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">عدد الألوان:</span>
+                <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">{{ $workOrder->number_of_colors ?? '-' }}</span>
+            </div>
+        </div>
+    </div>
 
+    <!-- التصميم -->
+    <div class="card">
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid #8b5cf6;">
+            <svg style="width: 24px; height: 24px; color: #8b5cf6;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
+            </svg>
+            <h3 style="font-size: 1.125rem; font-weight: 600; color: #111827; margin: 0;">التصميم</h3>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem 2rem;">
+            <!-- Left Column -->
             <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">تاريخ الإنشاء</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0;">{{ $workOrder->created_at->format('Y-m-d H:i') }}</dd>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                    <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">ترس التكسير:</span>
+                    <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">{{ $workOrder->design_breaking_gear ?? ($workOrder->breaking_gear ?? '-') }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                    <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">عدد الصفوف:</span>
+                    <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">{{ $workOrder->design_rows_count ?? ($workOrder->rows_count ?? '-') }}</span>
+                </div>
+            </div>
+            <!-- Right Column -->
+            <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                    <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">الدرافيل:</span>
+                    <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">{{ $workOrder->design_drills ?? ($workOrder->drills ?? '-') }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                    <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">الجاب:</span>
+                    <span style="font-size: 0.875rem; color: #111827; font-weight: 500; background-color: #fef3c7; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">{{ $workOrder->design_gab ?? ($workOrder->gab ?? '-') }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                    <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">الاكلاشيهات المعادة:</span>
+                    <span style="font-size: 0.875rem; color: #111827; font-weight: 500; border: 2px solid #10b981; padding: 0.25rem 0.5rem; border-radius: 0.25rem;">{{ $workOrder->design_cliches ?? ($workOrder->cliches ?? '0') }}</span>
+                </div>
             </div>
         </div>
     </div>

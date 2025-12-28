@@ -63,6 +63,13 @@
             margin-bottom: 18px;
         }
         
+        .print-header .logo {
+            max-width: 180px;
+            height: auto;
+            margin: 0 auto 12px;
+            display: block;
+        }
+        
         .print-header h1 {
             font-size: 24px;
             font-weight: bold;
@@ -227,6 +234,7 @@
     
     <div class="print-container">
         <div class="print-header">
+            <img src="{{ asset('images/logo.png') }}" alt="Label Tech Logo" class="logo">
             <h1>عرض السعر</h1>
             <div class="subtitle">Price Quote</div>
         </div>

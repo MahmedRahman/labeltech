@@ -244,7 +244,7 @@
             
 
 
-
+            
             .form-label {
                 font-size: 1.0625rem;
                 font-weight: 600;
@@ -283,29 +283,24 @@
                             }
                         }
                     @endphp
-                    <a href="{{ $logoDashboardRoute }}" style="display: flex; align-items: center; text-decoration: none;">
-                        <div style="width: 40px; height: 40px; background-color: #2563eb; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;">
-                            <span style="color: white; font-weight: bold; font-size: 1.125rem;">LT</span>
-                        </div>
-                        <div style="margin-right: 0.75rem;">
-                            <h1 style="font-size: 1.5rem; font-weight: 700; color: #111827; margin: 0; letter-spacing: -0.025em;">LabelTech</h1>
-                            <p style="font-size: 0.9375rem; color: #6b7280; margin: 0.125rem 0 0 0; font-weight: 500;">
-                                @if($isEmployee)
-                                    @php
-                                        $accountType = auth('employee')->user()->account_type;
-                                        $typeLabels = [
-                                            'مبيعات' => 'موظف مبيعات',
-                                            'تصميم' => 'موظف تصميم',
-                                            'تشغيل' => 'موظف تشغيل',
-                                            'حسابات' => 'موظف حسابات',
-                                        ];
-                                    @endphp
-                                    {{ $typeLabels[$accountType] ?? 'موظف' }}
-                                @else
-                                    نظام الإدارة
-                                @endif
-                            </p>
-                        </div>
+                    <a href="{{ $logoDashboardRoute }}" style="display: flex; align-items: center; text-decoration: none; flex-direction: column; gap: 0.5rem;">
+                        <img src="{{ asset('images/logo.png') }}" alt="Label Tech Logo" style="max-width: 120px; width: 100%; height: auto; display: block;">
+                        <p style="font-size: 0.875rem; color: #6b7280; margin: 0; font-weight: 500; text-align: center;">
+                            @if($isEmployee)
+                                @php
+                                    $accountType = auth('employee')->user()->account_type;
+                                    $typeLabels = [
+                                        'مبيعات' => 'موظف مبيعات',
+                                        'تصميم' => 'موظف تصميم',
+                                        'تشغيل' => 'موظف تشغيل',
+                                        'حسابات' => 'موظف حسابات',
+                                    ];
+                                @endphp
+                                {{ $typeLabels[$accountType] ?? 'موظف' }}
+                            @else
+                                نظام الإدارة
+                            @endif
+                        </p>
                     </a>
                 </div>
 
@@ -347,15 +342,15 @@
                     @if($isSalesEmployee || $isAdmin)
                         <!-- إدخال بيانات - للمبيعات والادمن فقط -->
                         <div class="nav-section-title " style="margin-top: 1rem; font-size: 1.25rem; font-weight: 700; color: #111827; border-top: 1px solid #e5e7eb; padding-top: 1rem;">   
-                            إدخال بيانات
-                        </div>
+                        إدخال بيانات
+                    </div>
 
-                        <a href="{{ route('clients.index') }}" class="nav-link {{ request()->routeIs('clients.*') ? 'active' : '' }}">
-                            <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                            </svg>
-                            العملاء
-                        </a>
+                    <a href="{{ route('clients.index') }}" class="nav-link {{ request()->routeIs('clients.*') ? 'active' : '' }}">
+                        <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                        العملاء
+                    </a>
                     @endif
 
                     @if($isAdmin)
@@ -372,20 +367,20 @@
                             </svg>
                             توزيع العملاء
                         </a>
-                        
-                        <a href="{{ route('employees.index') }}" class="nav-link {{ request()->routeIs('employees.*') ? 'active' : '' }}">
-                            <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                            </svg>
-                            الموظفين
-                        </a>
 
-                        <a href="{{ route('suppliers.index') }}" class="nav-link {{ request()->routeIs('suppliers.*') ? 'active' : '' }}">
-                            <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                            </svg>
-                            الموردين
-                        </a>
+                    <a href="{{ route('employees.index') }}" class="nav-link {{ request()->routeIs('employees.*') ? 'active' : '' }}">
+                        <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        الموظفين
+                    </a>
+
+                    <a href="{{ route('suppliers.index') }}" class="nav-link {{ request()->routeIs('suppliers.*') ? 'active' : '' }}">
+                        <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                        </svg>
+                        الموردين
+                    </a>
                     @endif
 
                     @if($isSalesEmployee || $isAdmin)
@@ -393,6 +388,24 @@
                         <div class="nav-section-title " style="margin-top: 1rem; font-size: 1.25rem; font-weight: 700; color: #111827; border-top: 1px solid #e5e7eb; padding-top: 1rem;">   
                             امر التصنيع
                         </div>
+
+                        @if($isSalesEmployee)
+                            @php
+                                $currentRoute = request()->route()?->getName() ?? '';
+                                $isSalesWorkOrdersRoute = $currentRoute === 'employee.sales.work-orders';
+                            @endphp
+                            <a href="{{ route('employee.sales.work-orders') }}" class="nav-link {{ $isSalesWorkOrdersRoute ? 'active' : '' }}" style="display: flex; align-items: center; justify-content: space-between;">
+                                <span style="display: flex; align-items: center;">
+                                    <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    عروض الأسعار
+                                </span>
+                                @if(isset($priceQuotesCount) && $priceQuotesCount > 0)
+                                    <span style="background-color: #2563eb; color: white; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; min-width: 1.5rem; text-align: center;">{{ $priceQuotesCount }}</span>
+                                @endif
+                            </a>
+                        @endif
 
                         @php
                             $currentRoute = request()->route()?->getName() ?? '';
@@ -405,17 +418,19 @@
                                                 str_starts_with($currentRoute, 'work-orders.design.');
                             $isWorkOrderListRoute = $currentRoute === 'work-orders.list';
                         @endphp
-                        <a href="{{ route('work-orders.index') }}" class="nav-link {{ $isWorkOrderRoute ? 'active' : '' }}" style="display: flex; align-items: center; justify-content: space-between;">
-                            <span style="display: flex; align-items: center;">
-                                <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                </svg>
-                                {{ $isSalesEmployee ? 'عرض السعر' : 'البروفا' }}
-                            </span>
-                            @if(($isSalesEmployee || $isAdmin) && isset($priceQuotesCount) && $priceQuotesCount > 0)
-                                <span style="background-color: #2563eb; color: white; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; min-width: 1.5rem; text-align: center;">{{ $priceQuotesCount }}</span>
-                            @endif
-                        </a>
+                        @if($isAdmin)
+                            <a href="{{ route('work-orders.index') }}" class="nav-link {{ $isWorkOrderRoute ? 'active' : '' }}" style="display: flex; align-items: center; justify-content: space-between;">
+                                <span style="display: flex; align-items: center;">
+                                    <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    البروفا
+                                </span>
+                                @if(isset($priceQuotesCount) && $priceQuotesCount > 0)
+                                    <span style="background-color: #2563eb; color: white; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; min-width: 1.5rem; text-align: center;">{{ $priceQuotesCount }}</span>
+                                @endif
+                            </a>
+                        @endif
                     @endif
                     
                     @if(!$isDesignEmployee && !$isProductionEmployee)
@@ -559,25 +574,25 @@
                         <a href="{{ route('work-orders.archive') }}" class="nav-link {{ request()->routeIs('work-orders.archive') ? 'active' : '' }}">
                             <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
-                            </svg>
+                        </svg>
                             الأرشيف
                         </a>
 
                         <div class="nav-section-title " style="margin-top: 1rem; font-size: 1.25rem; font-weight: 700; color: #111827; border-top: 1px solid #e5e7eb; padding-top: 1rem;">   
                             المصروفات
-                        </div>
+                    </div>
                         <a href="{{ route('expenses.index') }}" class="nav-link {{ request()->routeIs('expenses.*') ? 'active' : '' }}">
                             <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
                             </svg>
                             المصروفات
                         </a>
-                        <a href="{{ route('expense-types.index') }}" class="nav-link {{ request()->routeIs('expense-types.*') ? 'active' : '' }}">
-                            <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                            أنواع المصروفات
-                        </a>
+                    <a href="{{ route('expense-types.index') }}" class="nav-link {{ request()->routeIs('expense-types.*') ? 'active' : '' }}">
+                        <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        أنواع المصروفات
+                    </a>
 
                         <!-- الإعدادات -->
                         <div class="nav-section-title " style="margin-top: 1rem; font-size: 1.25rem; font-weight: 700; color: #111827; border-top: 1px solid #e5e7eb; padding-top: 1rem;">   
@@ -591,12 +606,12 @@
                             أقسام الشركة
                         </a>
 
-                        <a href="{{ route('payment-methods.index') }}" class="nav-link {{ request()->routeIs('payment-methods.*') ? 'active' : '' }}">
-                            <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-                            </svg>
-                            طرق السداد
-                        </a>
+                    <a href="{{ route('payment-methods.index') }}" class="nav-link {{ request()->routeIs('payment-methods.*') ? 'active' : '' }}">
+                        <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                        </svg>
+                        طرق السداد
+                    </a>
 
                         <a href="{{ route('materials.index') }}" class="nav-link {{ request()->routeIs('materials.*') ? 'active' : '' }}">
                             <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">

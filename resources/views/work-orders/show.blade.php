@@ -10,12 +10,6 @@
             <p style="font-size: 1rem; color: #6b7280; margin: 0;">{{ $workOrder->order_number ?? 'بدون رقم' }}</p>
         </div>
         <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-            <a href="{{ route('work-orders.print', $workOrder) }}" target="_blank" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #2563eb; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500;">
-                <svg style="width: 18px; height: 18px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
-                </svg>
-                طباعة أمر الشغل
-            </a>
             <a href="{{ route('work-orders.print-price-quote', $workOrder) }}" target="_blank" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #10b981; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500;">
                 <svg style="width: 18px; height: 18px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -226,132 +220,59 @@
             </svg>
             <h3 style="font-size: 1.125rem; font-weight: 600; color: #111827; margin: 0;">معلومات أساسية</h3>
         </div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">العميل</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0;">
-                    <a href="{{ route('clients.show', $workOrder->client) }}" style="color: #2563eb; text-decoration: none; font-weight: 500;">
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem 2rem;">
+            <!-- Row 1 -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">اسم الشغلانة:</span>
+                <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">{{ $workOrder->job_name ?? '-' }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">أمر الشغل:</span>
+                <span style="font-size: 0.875rem; color: #111827; font-weight: 600;">{{ $workOrder->order_number ?? 'بدون رقم' }}</span>
+            </div>
+            
+            <!-- Row 2 -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">التاريخ:</span>
+                <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">{{ $workOrder->created_at->format('d/m/Y') }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">أسم العميل:</span>
+                <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">
+                    <a href="{{ route('clients.show', $workOrder->client) }}" style="color: #2563eb; text-decoration: none;">
                         {{ $workOrder->client->name }}
                     </a>
-                </dd>
+                </span>
             </div>
-
-            @if($workOrder->order_number)
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">رقم أمر الشغل</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0; font-weight: 600;">{{ $workOrder->order_number }}</dd>
+            
+            <!-- Row 3 -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">العرض:</span>
+                <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">{{ $workOrder->width ? number_format($workOrder->width, 1) : '-' }}</span>
             </div>
-            @endif
-
-            @if($workOrder->job_name)
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">اسم الشغلانه</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0;">{{ $workOrder->job_name }}</dd>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">الطول:</span>
+                <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">{{ $workOrder->length ? number_format($workOrder->length, 1) : '-' }}</span>
             </div>
-            @endif
-
-            @if($workOrder->created_by)
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">الشخص المسؤول</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0;">{{ $workOrder->created_by }}</dd>
+            
+            <!-- Row 4 -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">نوع الخامة:</span>
+                <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">{{ $workOrder->material ?? '-' }}</span>
             </div>
-            @endif
-
-            @if($workOrder->client_response)
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">رد العميل على عرض السعر</dt>
-                <dd style="margin: 0;">
-                    @php
-                        $clientResponseColors = [
-                            'موافق' => '#10b981',
-                            'رفض' => '#dc2626',
-                            'لم يرد' => '#6b7280'
-                        ];
-                        $responseColor = $clientResponseColors[$workOrder->client_response] ?? '#6b7280';
-                    @endphp
-                    <span style="display: inline-block; padding: 0.375rem 0.875rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; background-color: {{ $responseColor }}20; color: {{ $responseColor }};">
-                        {{ $workOrder->client_response }}
-                    </span>
-                </dd>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">الاضافات:</span>
+                <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">{{ $workOrder->additions ?? 'لا يوجد' }}</span>
             </div>
-            @endif
-
-            @if(($workOrder->status ?? '') === 'work_order')
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">إرسال إلى المصمم</dt>
-                <dd style="margin: 0;">
-                    @if(($workOrder->sent_to_designer ?? 'no') == 'yes')
-                        <span style="display: inline-block; padding: 0.375rem 0.875rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; background-color: #8b5cf620; color: #8b5cf6;">
-                            تم الإرسال
-                        </span>
-                    @else
-                        <span style="display: inline-block; padding: 0.375rem 0.875rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; background-color: #6b728020; color: #6b7280;">
-                            لم يتم الإرسال
-                        </span>
-                    @endif
-                </dd>
+            
+            <!-- Row 5 -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">الكمية:</span>
+                <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">{{ number_format($workOrder->quantity) }}</span>
             </div>
-            @endif
-
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">الحالة</dt>
-                <dd style="margin: 0;">
-                    @php
-                        $statusColors = [
-                            'draft' => '#6b7280',
-                            'pending' => '#f59e0b',
-                            'in_progress' => '#2563eb',
-                            'completed' => '#10b981',
-                            'cancelled' => '#dc2626',
-                            'work_order' => '#2563eb'
-                        ];
-                        $statusLabels = [
-                            'draft' => 'مسودة',
-                            'pending' => 'قيد الانتظار',
-                            'in_progress' => 'قيد التنفيذ',
-                            'completed' => 'مكتمل',
-                            'cancelled' => 'ملغي',
-                            'work_order' => 'أمر شغل'
-                        ];
-                        $color = $statusColors[$workOrder->status] ?? '#6b7280';
-                        $label = $statusLabels[$workOrder->status] ?? $workOrder->status;
-                    @endphp
-                    <span style="display: inline-block; padding: 0.375rem 0.875rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; background-color: {{ $color }}20; color: {{ $color }};">
-                        {{ $label }}
-                    </span>
-                </dd>
-            </div>
-
-            @if($workOrder->production_status)
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">حالة الإنتاج</dt>
-                <dd style="margin: 0;">
-                    @php
-                        $productionStatusColors = [
-                            'بدون حالة' => '#6b7280',
-                            'طباعة' => '#2563eb',
-                            'قص' => '#f59e0b',
-                            'تقفيل' => '#10b981',
-                            'أرشيف' => '#9ca3af'
-                        ];
-                        $prodStatus = $workOrder->production_status ?? 'بدون حالة';
-                        $prodColor = $productionStatusColors[$prodStatus] ?? '#6b7280';
-                    @endphp
-                    <span style="display: inline-block; padding: 0.375rem 0.875rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 500; background-color: {{ $prodColor }}20; color: {{ $prodColor }};">
-                        {{ $prodStatus }}
-                    </span>
-                </dd>
-            </div>
-            @endif
-
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">تاريخ الإنشاء</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0;">{{ $workOrder->created_at->format('Y-m-d H:i') }}</dd>
-            </div>
-
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">آخر تحديث</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0;">{{ $workOrder->updated_at->format('Y-m-d H:i') }}</dd>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">عدد الألوان:</span>
+                <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">{{ $workOrder->number_of_colors ?? '-' }}</span>
             </div>
         </div>
     </div>

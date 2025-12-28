@@ -23,9 +23,10 @@ class WorkOrderController extends Controller
             })
             ->where(function($q) {
                 // Exclude work_order and cancelled statuses from main index (they have their own pages)
-                $q->where('status', '!=', 'work_order')
-                  ->where('status', '!=', 'cancelled')
-                  ->orWhereNull('status');
+                $q->where(function($subQ) {
+                    $subQ->where('status', '!=', 'work_order')
+                         ->where('status', '!=', 'cancelled');
+                })->orWhereNull('status');
             });
 
         // Filter work orders based on user type:
@@ -48,68 +49,59 @@ class WorkOrderController extends Controller
             $query->where('order_number', 'like', '%' . $request->order_number . '%');
         }
 
-        $workOrders = $query->latest()->get();
+        $workOrders = $query->latest()->limit(1000)->get();
         
-        // Group work orders by production status
-        // Filter out any orders without an ID (shouldn't happen, but safety check)
-        $workOrders = $workOrders->filter(function($order) {
-            return !is_null($order->id);
-        });
-        
+        // Initialize groups (optimized - single pass)
         $groupedOrders = [
-            'بدون حالة' => $workOrders->filter(function($order) {
-                return is_null($order->production_status) || $order->production_status === 'بدون حالة';
-            })->values(),
-            'طباعة' => $workOrders->filter(function($order) {
-                return $order->production_status === 'طباعة';
-            })->values(),
-            'قص' => $workOrders->filter(function($order) {
-                return $order->production_status === 'قص';
-            })->values(),
-            'تقفيل' => $workOrders->filter(function($order) {
-                return $order->production_status === 'تقفيل';
-            })->values(),
+            'بدون حالة' => collect(),
+            'طباعة' => collect(),
+            'قص' => collect(),
+            'تقفيل' => collect(),
         ];
 
-        // Group work orders by status (for status-based cards)
         $statusGroups = [
-            'draft' => $workOrders->filter(function($order) {
-                return ($order->status ?? 'draft') === 'draft';
-            })->values(),
-            'pending' => $workOrders->filter(function($order) {
-                return ($order->status ?? '') === 'pending';
-            })->values(),
-            'client_approved' => $workOrders->filter(function($order) {
-                return ($order->status ?? '') === 'client_approved';
-            })->values(),
-            'client_rejected' => $workOrders->filter(function($order) {
-                return ($order->status ?? '') === 'client_rejected';
-            })->values(),
-            'client_no_response' => $workOrders->filter(function($order) {
-                return ($order->status ?? '') === 'client_no_response';
-            })->values(),
-            'work_order' => $workOrders->filter(function($order) {
-                return ($order->status ?? '') === 'work_order';
-            })->values(),
-            'in_progress' => $workOrders->filter(function($order) {
-                return ($order->status ?? '') === 'in_progress';
-            })->values(),
-            'completed' => $workOrders->filter(function($order) {
-                return ($order->status ?? '') === 'completed';
-            })->values(),
-            'cancelled' => $workOrders->filter(function($order) {
-                return ($order->status ?? '') === 'cancelled';
-            })->values(),
+            'draft' => collect(),
+            'pending' => collect(),
+            'client_approved' => collect(),
+            'client_rejected' => collect(),
+            'client_no_response' => collect(),
+            'work_order' => collect(),
+            'in_progress' => collect(),
+            'completed' => collect(),
+            'cancelled' => collect(),
         ];
 
-        // Count sent and not sent orders
-        $sentCount = $workOrders->filter(function($order) {
-            return ($order->sent_to_client ?? 'no') === 'yes';
-        })->count();
-        
-        $notSentCount = $workOrders->filter(function($order) {
-            return ($order->sent_to_client ?? 'no') === 'no';
-        })->count();
+        $sentCount = 0;
+        $notSentCount = 0;
+
+        // Single pass through work orders to group and count
+        foreach ($workOrders as $order) {
+            if (is_null($order->id)) {
+                continue;
+            }
+
+            // Group by production status
+            $prodStatus = $order->production_status ?? 'بدون حالة';
+            if (isset($groupedOrders[$prodStatus])) {
+                $groupedOrders[$prodStatus]->push($order);
+            } elseif (is_null($order->production_status)) {
+                $groupedOrders['بدون حالة']->push($order);
+            }
+
+            // Group by status
+            $status = $order->status ?? 'draft';
+            if (isset($statusGroups[$status])) {
+                $statusGroups[$status]->push($order);
+            }
+
+            // Count sent/not sent
+            $sentToClient = $order->sent_to_client ?? 'no';
+            if ($sentToClient === 'yes') {
+                $sentCount++;
+            } else {
+                $notSentCount++;
+            }
+        }
 
         // Get all clients for filter dropdown
         $clients = Client::orderBy('name')->get();
@@ -352,6 +344,110 @@ class WorkOrderController extends Controller
     }
 
     /**
+     * Display work orders list for sales employees.
+     */
+    public function salesEmployeeList(Request $request)
+    {
+        $employee = auth('employee')->user();
+        if ($employee->account_type !== 'مبيعات') {
+            abort(403);
+        }
+
+        $query = WorkOrder::with('client')
+            ->where(function($q) {
+                $q->whereNull('production_status')
+                  ->orWhere('production_status', 'بدون حالة')
+                  ->orWhereIn('production_status', ['طباعة', 'قص', 'تقفيل']);
+            })
+            ->where(function($q) {
+                // Exclude work_order and cancelled statuses from main index (they have their own pages)
+                $q->where(function($subQ) {
+                    $subQ->where('status', '!=', 'work_order')
+                         ->where('status', '!=', 'cancelled');
+                })->orWhereNull('status');
+            })
+            ->where('created_by', $employee->name);
+
+        // Filter by client
+        if ($request->filled('client_id')) {
+            $query->where('client_id', $request->client_id);
+        }
+
+        // Filter by order number (رقم عرض السعر)
+        if ($request->filled('order_number')) {
+            $query->where('order_number', 'like', '%' . $request->order_number . '%');
+        }
+
+        $workOrders = $query->latest()->limit(1000)->get();
+        
+        // Initialize groups (optimized - single pass)
+        $groupedOrders = [
+            'بدون حالة' => collect(),
+            'طباعة' => collect(),
+            'قص' => collect(),
+            'تقفيل' => collect(),
+        ];
+
+        $statusGroups = [
+            'draft' => collect(),
+            'pending' => collect(),
+            'client_approved' => collect(),
+            'client_rejected' => collect(),
+            'client_no_response' => collect(),
+            'work_order' => collect(),
+            'in_progress' => collect(),
+            'completed' => collect(),
+            'cancelled' => collect(),
+        ];
+
+        $sentCount = 0;
+        $notSentCount = 0;
+
+        // Single pass through work orders to group and count
+        foreach ($workOrders as $order) {
+            if (is_null($order->id)) {
+                continue;
+            }
+
+            // Group by production status
+            $prodStatus = $order->production_status ?? 'بدون حالة';
+            if (isset($groupedOrders[$prodStatus])) {
+                $groupedOrders[$prodStatus]->push($order);
+            } elseif (is_null($order->production_status)) {
+                $groupedOrders['بدون حالة']->push($order);
+            }
+
+            // Group by status
+            $status = $order->status ?? 'draft';
+            if (isset($statusGroups[$status])) {
+                $statusGroups[$status]->push($order);
+            }
+
+            // Count sent/not sent
+            $sentToClient = $order->sent_to_client ?? 'no';
+            if ($sentToClient === 'yes') {
+                $sentCount++;
+            } else {
+                $notSentCount++;
+            }
+        }
+
+        // Get all clients for filter dropdown
+        $clients = Client::orderBy('name')->get();
+
+        // Check if there's a pending price quote sent to client
+        $hasPendingQuote = WorkOrder::where('sent_to_client', 'yes')
+            ->where('created_by', $employee->name)
+            ->where(function($q) {
+                $q->whereNull('client_response')
+                  ->orWhere('client_response', '');
+            })
+            ->exists();
+
+        return view('employee.sales-work-orders', compact('groupedOrders', 'workOrders', 'clients', 'statusGroups', 'sentCount', 'notSentCount', 'hasPendingQuote'));
+    }
+
+    /**
      * Display work orders sent to designer list.
      */
     public function sentToDesignerList(Request $request)
@@ -544,10 +640,20 @@ class WorkOrderController extends Controller
             $validated['sent_to_client'] = 'no';
         }
 
-        // Generate order number automatically
+        // Generate order number automatically (optimized)
+        $maxId = WorkOrder::max('id') ?? 0;
+        $attempts = 0;
         do {
-            $orderNumber = 'WO-' . str_pad(WorkOrder::count() + 1, 6, '0', STR_PAD_LEFT);
-        } while (WorkOrder::where('order_number', $orderNumber)->exists());
+            $orderNumber = 'WO-' . str_pad($maxId + $attempts + 1, 6, '0', STR_PAD_LEFT);
+            $exists = WorkOrder::where('order_number', $orderNumber)->exists();
+            $attempts++;
+            // Safety check to prevent infinite loop
+            if ($attempts > 100) {
+                // Fallback: use timestamp if too many attempts
+                $orderNumber = 'WO-' . date('Ymd') . '-' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
+                break;
+            }
+        } while ($exists);
         
         $validated['order_number'] = $orderNumber;
 
