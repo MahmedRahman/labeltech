@@ -1361,8 +1361,55 @@
             // Initialize additions styling
             updateAdditionsStyle();
             
-            // Initialize addition price on page load
-            updateAdditionPrice();
+            // Function to update film count options based on number of colors
+            function updateFilmCountOptions() {
+                const numberOfColorsRadiosList = document.querySelectorAll('input[name="number_of_colors"]');
+                const selectedNumberOfColors = Array.from(numberOfColorsRadiosList).find(r => r.checked);
+                const numberOfColors = selectedNumberOfColors ? parseInt(selectedNumberOfColors.value) : 0;
+                
+                // Update film count options
+                const filmCountRadios = document.querySelectorAll('input[name="film_count"]');
+                filmCountRadios.forEach(radio => {
+                    const filmCount = parseInt(radio.value);
+                    const label = radio.closest('label');
+                    
+                    if (filmCount > numberOfColors) {
+                        // Hide and disable options greater than number of colors
+                        if (label) {
+                            label.style.display = 'none';
+                            label.style.pointerEvents = 'none';
+                        }
+                        radio.disabled = true;
+                        
+                        // Uncheck if currently selected
+                        if (radio.checked) {
+                            radio.checked = false;
+                            // Auto-select the highest available option
+                            const availableRadios = Array.from(filmCountRadios)
+                                .filter(r => parseInt(r.value) <= numberOfColors && !r.disabled)
+                                .sort((a, b) => parseInt(b.value) - parseInt(a.value));
+                            if (availableRadios.length > 0) {
+                                availableRadios[0].checked = true;
+                                if (typeof updateFilmCountStyle === 'function') {
+                                    updateFilmCountStyle();
+                                }
+                            }
+                        }
+                    } else {
+                        // Show and enable options less than or equal to number of colors
+                        if (label) {
+                            label.style.display = 'flex';
+                            label.style.pointerEvents = 'auto';
+                        }
+                        radio.disabled = false;
+                    }
+                });
+                
+                // Recalculate total preparations if needed
+                if (typeof calculateTotalPreparations === 'function') {
+                    calculateTotalPreparations();
+                }
+            }
 
             // Handle fingerprint radio buttons
             const fingerprintRadios = document.querySelectorAll('input[name="fingerprint"]');
@@ -1571,6 +1618,9 @@
                     setTimeout(() => {
                         updateNumberOfColorsStyle();
                         updateWastePercentage();
+                        if (typeof updateFilmCountOptions === 'function') {
+                            updateFilmCountOptions();
+                        }
                     }, 0);
                 });
                 
@@ -1580,6 +1630,9 @@
                     setTimeout(() => {
                         updateNumberOfColorsStyle();
                         updateWastePercentage();
+                        if (typeof updateFilmCountOptions === 'function') {
+                            updateFilmCountOptions();
+                        }
                     }, 0);
                 });
                 
@@ -1614,6 +1667,11 @@
             
             // Initialize waste percentage on page load
             updateWastePercentage();
+            
+            // Initialize film count options on page load
+            if (typeof updateFilmCountOptions === 'function') {
+                updateFilmCountOptions();
+            }
             
             // Initialize linear meter with waste on page load
             calculateLinearMeterWithWaste();
@@ -2055,6 +2113,13 @@
             // Recalculate total amount
             calculateTotalAmount();
         }
+        
+        // Initialize addition price on page load (after function definition)
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof updateAdditionPrice === 'function') {
+                updateAdditionPrice();
+            }
+        });
 
         // Toggle fingerprint price field
         function toggleFingerprintPrice() {

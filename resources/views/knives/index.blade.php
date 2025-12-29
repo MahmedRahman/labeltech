@@ -218,7 +218,7 @@
 
     <!-- Filters -->
     <div style="background: white; border-radius: 0.75rem; border: 1px solid #e5e7eb; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);">
-        <form method="GET" action="{{ route('knives.index') }}">
+        <form method="GET" action="{{ route('knives.index') }}" id="filterForm">
             <!-- Filter by Type - Cards -->
             <div style="margin-bottom: 2rem;">
                 <label style="display: block; font-size: 1.0625rem; font-weight: 600; color: #374151; margin-bottom: 1rem;">النوع</label>
@@ -290,43 +290,34 @@
                 </div>
             </div>
 
-            <!-- Filter by Length -->
-            <div id="lengthRow" style="display: {{ request('filter_type') ? 'block' : 'none' }}; margin-bottom: 1.5rem;">
-                <label for="filter_length" style="display: block; font-size: 1.0625rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">الطول</label>
-                <select name="filter_length" 
-                        id="filter_length" 
-                        style="width: 100%; padding: 0.875rem 1.125rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1.125rem; color: #111827; background-color: #fff; min-height: 50px; line-height: 1.5; direction: rtl;">
-                    <option value="" style="font-size: 1.125rem; padding: 0.75rem;">جميع الأطوال</option>
-                    @foreach($lengths as $length)
-                        <option value="{{ $length }}" {{ request('filter_length') == $length ? 'selected' : '' }} style="font-size: 1.125rem; padding: 0.75rem;">{{ number_format($length, 2) }}</option>
-                    @endforeach
-                </select>
+            <!-- Filter by Length - Cards -->
+            <div id="lengthRow" style="display: {{ (request('filter_type') && request('filter_type') != '') ? 'block' : 'none' }}; margin-bottom: 2rem;">
+                <label style="display: block; font-size: 1.0625rem; font-weight: 600; color: #374151; margin-bottom: 1rem;">الطول</label>
+                <div id="lengthCardsContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem;">
+                    <!-- Length cards will be generated dynamically via JavaScript -->
+                </div>
+                <!-- Hidden input to store selected length value -->
+                <input type="hidden" name="filter_length" id="filter_length" value="{{ request('filter_length') }}">
             </div>
 
-            <!-- Filter by Width -->
-            <div id="widthRow" style="display: {{ (request('filter_type') && request('filter_length')) ? 'block' : 'none' }}; margin-bottom: 1.5rem;">
-                <label for="filter_width" style="display: block; font-size: 1.0625rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">العرض</label>
-                <select name="filter_width" 
-                        id="filter_width" 
-                        style="width: 100%; padding: 0.875rem 1.125rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1.125rem; color: #111827; background-color: #fff; min-height: 50px; line-height: 1.5; direction: rtl;">
-                    <option value="" style="font-size: 1.125rem; padding: 0.75rem;">جميع الأعراض</option>
-                    @foreach($widths as $width)
-                        <option value="{{ $width }}" {{ request('filter_width') == $width ? 'selected' : '' }} style="font-size: 1.125rem; padding: 0.75rem;">{{ number_format($width, 2) }}</option>
-                    @endforeach
-                </select>
+            <!-- Filter by Width - Cards -->
+            <div id="widthRow" style="display: {{ (request('filter_type') && request('filter_length')) ? 'block' : 'none' }}; margin-bottom: 2rem;">
+                <label style="display: block; font-size: 1.0625rem; font-weight: 600; color: #374151; margin-bottom: 1rem;">العرض</label>
+                <div id="widthCardsContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem;">
+                    <!-- Width cards will be generated dynamically via JavaScript -->
+                </div>
+                <!-- Hidden input to store selected width value -->
+                <input type="hidden" name="filter_width" id="filter_width" value="{{ request('filter_width') }}">
             </div>
 
-            <!-- Filter by Dragile Drive -->
-            <div id="dragileDriveRow" style="display: {{ (request('filter_type') && request('filter_length') && request('filter_width')) ? 'block' : 'none' }}; margin-bottom: 1.5rem;">
-                <label for="filter_dragile_drive" style="display: block; font-size: 1.0625rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">درافيل</label>
-                <select name="filter_dragile_drive" 
-                        id="filter_dragile_drive" 
-                        style="width: 100%; padding: 0.875rem 1.125rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1.125rem; color: #111827; background-color: #fff; min-height: 50px; line-height: 1.5; direction: rtl;">
-                    <option value="" style="font-size: 1.125rem; padding: 0.75rem;">جميع درافيل</option>
-                    @foreach($dragileDrives as $dragileDrive)
-                        <option value="{{ $dragileDrive }}" {{ request('filter_dragile_drive') == $dragileDrive ? 'selected' : '' }} style="font-size: 1.125rem; padding: 0.75rem;">{{ $dragileDrive }}</option>
-                    @endforeach
-                </select>
+            <!-- Filter by Dragile Drive - Cards -->
+            <div id="dragileDriveRow" style="display: {{ (request('filter_type') && request('filter_length') && request('filter_width')) ? 'block' : 'none' }}; margin-bottom: 2rem;">
+                <label style="display: block; font-size: 1.0625rem; font-weight: 600; color: #374151; margin-bottom: 1rem;">درافيل</label>
+                <div id="dragileDriveCardsContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem;">
+                    <!-- Dragile drive cards will be generated dynamically via JavaScript -->
+                </div>
+                <!-- Hidden input to store selected dragile drive value -->
+                <input type="hidden" name="filter_dragile_drive" id="filter_dragile_drive" value="{{ request('filter_dragile_drive') }}">
             </div>
 
             <!-- Filter Actions -->
@@ -554,24 +545,9 @@
                 });
             }
             
-            // Initialize Select2 on all select elements
+            // Initialize Select2 (not needed anymore as all filters are cards)
             function initSelect2() {
-                $('#filter_length, #filter_width, #filter_dragile_drive').each(function() {
-                    if (!$(this).hasClass('select2-hidden-accessible')) {
-                        $(this).select2({
-                            theme: 'bootstrap-5',
-                            dir: 'rtl',
-                            language: {
-                                noResults: function() {
-                                    return "لا توجد نتائج";
-                                },
-                                searching: function() {
-                                    return "جاري البحث...";
-                                }
-                            }
-                        });
-                    }
-                });
+                // No select elements need Select2 anymore
             }
             
             // Initialize Select2 on page load
@@ -584,38 +560,17 @@
             const lengthRow = document.getElementById('lengthRow');
             const widthRow = document.getElementById('widthRow');
             const dragileDriveRow = document.getElementById('dragileDriveRow');
-
-            // Function to get selected type
-            function getSelectedType() {
-                const selected = document.querySelector('input[name="filter_type"]:checked');
-                return selected ? selected.value : '';
-            }
-
-            // Function to update filter options progressively
-            function updateFilterOptions(type, length, width) {
-                const params = new URLSearchParams();
-                if (type) params.append('type', type);
-                if (length) params.append('length', length);
-                if (width) params.append('width', width);
-
-                // Get the route URL - use relative URL to avoid mixed content issues
-                const routeUrl = '{{ route('knives.get-filter-values') }}';
-                // Convert to relative URL if it's absolute to avoid mixed content
-                let url = routeUrl;
-                if (url.startsWith('http://') || url.startsWith('https://')) {
-                    // Extract path from full URL
-                    try {
-                        const urlObj = new URL(routeUrl);
-                        url = urlObj.pathname;
-                    } catch (e) {
-                        // If URL parsing fails, use the route as is but make it relative
-                        url = routeUrl.replace(/^https?:\/\/[^\/]+/, '');
-                    }
-                }
-                url = `${url}?${params.toString()}`;
-
-                // Fetch filter values from server
-                fetch(url, {
+            const lengthCardsContainer = document.getElementById('lengthCardsContainer');
+            const widthCardsContainer = document.getElementById('widthCardsContainer');
+            const dragileDriveCardsContainer = document.getElementById('dragileDriveCardsContainer');
+            
+            // Store all filter data
+            let allFilterData = {};
+            
+            // Load all filter data on page load
+            function loadAllFilterData() {
+                const routeUrl = '{{ route('knives.get-all-filter-data') }}';
+                fetch(routeUrl, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -624,132 +579,524 @@
                     },
                     credentials: 'same-origin'
                 })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! status: ${response.status}`);
+                .then(response => response.json())
+                .then(data => {
+                    allFilterData = data;
+                    // Initialize filters after data is loaded
+                    initializeFilters();
+                })
+                .catch(error => {
+                    console.error('Error loading filter data:', error);
+                });
+            }
+            
+            // Function to create length cards
+            function createLengthCards(lengths, selectedLength) {
+                if (!lengthCardsContainer) return;
+                
+                lengthCardsContainer.innerHTML = '';
+                
+                if (!lengths || lengths.length === 0) {
+                    lengthCardsContainer.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 1rem;">لا توجد أطوال متاحة</p>';
+                    return;
+                }
+                
+                lengths.forEach(length => {
+                    const lengthValue = length.value || length;
+                    const lengthLabel = length.label || parseFloat(lengthValue).toFixed(2);
+                    const isSelected = selectedLength === lengthValue;
+                    
+                    const card = document.createElement('label');
+                    card.className = 'length-card';
+                    card.style.cssText = `
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 1.25rem 1rem;
+                        border: 2px solid ${isSelected ? '#2563eb' : '#e5e7eb'};
+                        border-radius: 0.75rem;
+                        background-color: ${isSelected ? '#eff6ff' : '#ffffff'};
+                        cursor: pointer;
+                        transition: all 0.2s;
+                        text-align: center;
+                        min-height: 100px;
+                        box-shadow: ${isSelected ? '0 4px 6px rgba(0, 0, 0, 0.1)' : '0 1px 3px rgba(0, 0, 0, 0.05)'};
+                    `;
+                    
+                    const radio = document.createElement('input');
+                    radio.type = 'radio';
+                    radio.name = 'filter_length_radio';
+                    radio.value = lengthValue;
+                    radio.checked = isSelected;
+                    radio.style.display = 'none';
+                    
+                    card.onmouseover = function() {
+                        const radio = this.querySelector('input[type="radio"]');
+                        const currentlySelected = radio && radio.checked;
+                        if (!currentlySelected) {
+                            this.style.borderColor = '#2563eb';
+                            this.style.backgroundColor = '#eff6ff';
+                            this.style.transform = 'translateY(-2px)';
+                            this.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
                         }
-                        return response.json();
-                    })
-                    .then(data => {
-                        // Update Length options (only if type is selected and length/width are not)
-                        if (type && !length && !width) {
-                            filterLength.innerHTML = '<option value="">جميع الأطوال</option>';
-                            if (data.lengths && data.lengths.length > 0) {
-                                data.lengths.forEach(item => {
-                                    const option = document.createElement('option');
-                                    option.value = item.value;
-                                    option.textContent = item.label;
-                                    filterLength.appendChild(option);
-                                });
-                            }
-                            // Reinitialize Select2
-                            if ($('#filter_length').hasClass('select2-hidden-accessible')) {
-                                $('#filter_length').select2('destroy');
-                            }
-                            $('#filter_length').select2({
-                                theme: 'bootstrap-5',
-                                dir: 'rtl',
-                                language: {
-                                    noResults: function() {
-                                        return "لا توجد نتائج";
-                                    },
-                                    searching: function() {
-                                        return "جاري البحث...";
-                                    }
-                                }
+                    };
+                    
+                    card.onmouseout = function() {
+                        const radio = this.querySelector('input[type="radio"]');
+                        const currentlySelected = radio && radio.checked;
+                        if (!currentlySelected) {
+                            this.style.borderColor = '#e5e7eb';
+                            this.style.backgroundColor = '#ffffff';
+                            this.style.transform = 'translateY(0)';
+                            this.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.05)';
+                        }
+                    };
+                    
+                    card.onclick = function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const radio = this.querySelector('input[type="radio"]');
+                        if (radio) {
+                            // Uncheck all other radios first
+                            document.querySelectorAll('input[name="filter_length_radio"]').forEach(r => {
+                                r.checked = false;
                             });
-                            lengthRow.style.display = 'block';
-                            // Reset and hide width and dragile drive
+                            // Check the selected radio
+                            radio.checked = true;
+                            updateLengthCardsStyle();
+                            const lengthValue = radio.value;
+                            filterLength.value = lengthValue;
+                            
+                            // Reset width selection when length changes
                             filterWidth.value = '';
-                            if ($('#filter_width').hasClass('select2-hidden-accessible')) {
-                                $('#filter_width').select2('destroy');
+                            if (widthCardsContainer) {
+                                widthCardsContainer.innerHTML = '';
                             }
-                            filterDragileDrive.value = '';
-                            if ($('#filter_dragile_drive').hasClass('select2-hidden-accessible')) {
-                                $('#filter_dragile_drive').select2('destroy');
-                            }
-                            widthRow.style.display = 'none';
+                            document.querySelectorAll('input[name="filter_width_radio"]').forEach(r => {
+                                r.checked = false;
+                            });
+                            // Hide dragile drive when length changes
                             dragileDriveRow.style.display = 'none';
+                            filterDragileDrive.value = '';
+                            if (dragileDriveCardsContainer) {
+                                dragileDriveCardsContainer.innerHTML = '';
+                            }
+                            document.querySelectorAll('input[name="filter_dragile_drive_radio"]').forEach(r => {
+                                r.checked = false;
+                            });
+                            
+                            // Trigger change event manually
+                            const changeEvent = new Event('change', { bubbles: true });
+                            radio.dispatchEvent(changeEvent);
+                            
+                            // Update width cards based on selected length - show widths that match the selected length
+                            const type = getSelectedType();
+                            if (type && lengthValue) {
+                                updateWidthCards(type, lengthValue, '');
+                            }
                         }
-                        // Update Width options (if type and length are selected, but not width)
-                        else if (type && length && !width) {
-                            filterWidth.innerHTML = '<option value="">جميع الأعراض</option>';
-                            if (data.widths && data.widths.length > 0) {
-                                data.widths.forEach(item => {
-                                    const option = document.createElement('option');
-                                    option.value = item.value;
-                                    option.textContent = item.label;
-                                    filterWidth.appendChild(option);
-                                });
+                    };
+                    
+                    const icon = document.createElement('div');
+                    icon.style.cssText = 'font-size: 2rem; margin-bottom: 0.5rem;';
+                    icon.textContent = '📏';
+                    
+                    const label = document.createElement('div');
+                    label.style.cssText = 'font-size: 1.125rem; font-weight: 600; color: #111827;';
+                    label.textContent = lengthLabel;
+                    
+                    card.appendChild(radio);
+                    card.appendChild(icon);
+                    card.appendChild(label);
+                    lengthCardsContainer.appendChild(card);
+                });
+            }
+            
+            // Function to update length cards style
+            function updateLengthCardsStyle() {
+                const selectedRadio = document.querySelector('input[name="filter_length_radio"]:checked');
+                document.querySelectorAll('.length-card').forEach(card => {
+                    const radio = card.querySelector('input[type="radio"]');
+                    const isSelected = radio && radio.checked;
+                    
+                    if (isSelected) {
+                        card.style.borderColor = '#2563eb';
+                        card.style.backgroundColor = '#eff6ff';
+                        card.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+                    } else {
+                        card.style.borderColor = '#e5e7eb';
+                        card.style.backgroundColor = '#ffffff';
+                        card.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.05)';
+                    }
+                });
+            }
+            
+            // Update width cards based on selected type and length (client-side filtering)
+            function updateWidthCards(type, length, selectedWidth) {
+                if (!widthCardsContainer) return;
+                
+                widthCardsContainer.innerHTML = '';
+                
+                if (!type || !length || !allFilterData[type]) {
+                    widthRow.style.display = 'none';
+                    return;
+                }
+                
+                // Get widths that match the selected length
+                const typeData = allFilterData[type];
+                const lengthWidthMap = typeData.lengthWidthMap || {};
+                
+                // Get widths available for the selected length
+                const filteredWidths = lengthWidthMap[length] || [];
+                
+                if (filteredWidths.length === 0) {
+                    widthCardsContainer.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 1rem;">لا توجد أعراض متاحة لهذا الطول</p>';
+                    widthRow.style.display = 'block';
+                    return;
+                }
+                
+                createWidthCards(filteredWidths, selectedWidth);
+                widthRow.style.display = 'block';
+            }
+            
+            // Function to create width cards
+            function createWidthCards(widths, selectedWidth) {
+                if (!widthCardsContainer) return;
+                
+                widthCardsContainer.innerHTML = '';
+                
+                if (!widths || widths.length === 0) {
+                    widthCardsContainer.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 1rem;">لا توجد أعراض متاحة</p>';
+                    return;
+                }
+                
+                widths.forEach(width => {
+                    const widthValue = width.value || width;
+                    const widthLabel = width.label || parseFloat(widthValue).toFixed(2);
+                    const isSelected = selectedWidth === widthValue;
+                    
+                    const card = document.createElement('label');
+                    card.className = 'width-card';
+                    card.style.cssText = `
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 1.25rem 1rem;
+                        border: 2px solid ${isSelected ? '#2563eb' : '#e5e7eb'};
+                        border-radius: 0.75rem;
+                        background-color: ${isSelected ? '#eff6ff' : '#ffffff'};
+                        cursor: pointer;
+                        transition: all 0.2s;
+                        text-align: center;
+                        min-height: 100px;
+                        box-shadow: ${isSelected ? '0 4px 6px rgba(0, 0, 0, 0.1)' : '0 1px 3px rgba(0, 0, 0, 0.05)'};
+                    `;
+                    
+                    const radio = document.createElement('input');
+                    radio.type = 'radio';
+                    radio.name = 'filter_width_radio';
+                    radio.value = widthValue;
+                    radio.checked = isSelected;
+                    radio.style.display = 'none';
+                    
+                    card.onmouseover = function() {
+                        const radio = this.querySelector('input[type="radio"]');
+                        const currentlySelected = radio && radio.checked;
+                        if (!currentlySelected) {
+                            this.style.borderColor = '#2563eb';
+                            this.style.backgroundColor = '#eff6ff';
+                            this.style.transform = 'translateY(-2px)';
+                            this.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+                        }
+                    };
+                    
+                    card.onmouseout = function() {
+                        const radio = this.querySelector('input[type="radio"]');
+                        const currentlySelected = radio && radio.checked;
+                        if (!currentlySelected) {
+                            this.style.borderColor = '#e5e7eb';
+                            this.style.backgroundColor = '#ffffff';
+                            this.style.transform = 'translateY(0)';
+                            this.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.05)';
+                        }
+                    };
+                    
+                    card.onclick = function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const radio = this.querySelector('input[type="radio"]');
+                        if (radio) {
+                            // Uncheck all other radios first
+                            document.querySelectorAll('input[name="filter_width_radio"]').forEach(r => {
+                                r.checked = false;
+                            });
+                            // Check the selected radio
+                            radio.checked = true;
+                            updateWidthCardsStyle();
+                            const widthValue = radio.value;
+                            filterWidth.value = widthValue;
+                            
+                            // Trigger change event manually
+                            const changeEvent = new Event('change', { bubbles: true });
+                            radio.dispatchEvent(changeEvent);
+                            
+                            // Load dragile drives from server
+                            const type = getSelectedType();
+                            const length = filterLength.value;
+                            if (type && length && widthValue) {
+                                loadDragileDrives(type, length, widthValue);
                             }
-                            // Reinitialize Select2
-                            if ($('#filter_width').hasClass('select2-hidden-accessible')) {
-                                $('#filter_width').select2('destroy');
+                        }
+                    };
+                    
+                    const icon = document.createElement('div');
+                    icon.style.cssText = 'font-size: 2rem; margin-bottom: 0.5rem;';
+                    icon.textContent = '📐';
+                    
+                    const label = document.createElement('div');
+                    label.style.cssText = 'font-size: 1.125rem; font-weight: 600; color: #111827;';
+                    label.textContent = widthLabel;
+                    
+                    card.appendChild(radio);
+                    card.appendChild(icon);
+                    card.appendChild(label);
+                    widthCardsContainer.appendChild(card);
+                });
+            }
+            
+            // Function to update width cards style
+            function updateWidthCardsStyle() {
+                const selectedRadio = document.querySelector('input[name="filter_width_radio"]:checked');
+                document.querySelectorAll('.width-card').forEach(card => {
+                    const radio = card.querySelector('input[type="radio"]');
+                    const isSelected = radio && radio.checked;
+                    
+                    if (isSelected) {
+                        card.style.borderColor = '#2563eb';
+                        card.style.backgroundColor = '#eff6ff';
+                        card.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+                    } else {
+                        card.style.borderColor = '#e5e7eb';
+                        card.style.backgroundColor = '#ffffff';
+                        card.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.05)';
+                    }
+                });
+            }
+            
+            // Function to create dragile drive cards
+            function createDragileDriveCards(dragileDrives, selectedDragileDrive) {
+                if (!dragileDriveCardsContainer) return;
+                
+                dragileDriveCardsContainer.innerHTML = '';
+                
+                if (!dragileDrives || dragileDrives.length === 0) {
+                    dragileDriveCardsContainer.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 1rem;">لا توجد درافيل متاحة</p>';
+                    return;
+                }
+                
+                dragileDrives.forEach(dragileDrive => {
+                    const driveValue = dragileDrive.value || dragileDrive;
+                    const driveLabel = dragileDrive.label || driveValue;
+                    const isSelected = selectedDragileDrive === driveValue;
+                    
+                    const card = document.createElement('label');
+                    card.className = 'dragile-drive-card';
+                    card.style.cssText = `
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 1.25rem 1rem;
+                        border: 2px solid ${isSelected ? '#2563eb' : '#e5e7eb'};
+                        border-radius: 0.75rem;
+                        background-color: ${isSelected ? '#eff6ff' : '#ffffff'};
+                        cursor: pointer;
+                        transition: all 0.2s;
+                        text-align: center;
+                        min-height: 100px;
+                        box-shadow: ${isSelected ? '0 4px 6px rgba(0, 0, 0, 0.1)' : '0 1px 3px rgba(0, 0, 0, 0.05)'};
+                    `;
+                    
+                    const radio = document.createElement('input');
+                    radio.type = 'radio';
+                    radio.name = 'filter_dragile_drive_radio';
+                    radio.value = driveValue;
+                    radio.checked = isSelected;
+                    radio.style.display = 'none';
+                    
+                    card.onmouseover = function() {
+                        const radio = this.querySelector('input[type="radio"]');
+                        const currentlySelected = radio && radio.checked;
+                        if (!currentlySelected) {
+                            this.style.borderColor = '#2563eb';
+                            this.style.backgroundColor = '#eff6ff';
+                            this.style.transform = 'translateY(-2px)';
+                            this.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+                        }
+                    };
+                    
+                    card.onmouseout = function() {
+                        const radio = this.querySelector('input[type="radio"]');
+                        const currentlySelected = radio && radio.checked;
+                        if (!currentlySelected) {
+                            this.style.borderColor = '#e5e7eb';
+                            this.style.backgroundColor = '#ffffff';
+                            this.style.transform = 'translateY(0)';
+                            this.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.05)';
+                        }
+                    };
+                    
+                    card.onclick = function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const radio = this.querySelector('input[type="radio"]');
+                        if (radio) {
+                            // Uncheck all other radios first
+                            document.querySelectorAll('input[name="filter_dragile_drive_radio"]').forEach(r => {
+                                r.checked = false;
+                            });
+                            // Check the selected radio
+                            radio.checked = true;
+                            updateDragileDriveCardsStyle();
+                            const driveValue = radio.value;
+                            filterDragileDrive.value = driveValue;
+                            
+                            // Submit form to search in database
+                            const filterForm = document.getElementById('filterForm');
+                            if (filterForm) {
+                                filterForm.submit();
                             }
-                            $('#filter_width').select2({
-                                theme: 'bootstrap-5',
-                                dir: 'rtl',
-                                language: {
-                                    noResults: function() {
-                                        return "لا توجد نتائج";
-                                    },
-                                    searching: function() {
-                                        return "جاري البحث...";
-                                    }
+                        }
+                    };
+                    
+                    const icon = document.createElement('div');
+                    icon.style.cssText = 'font-size: 2rem; margin-bottom: 0.5rem;';
+                    icon.textContent = '⚙️';
+                    
+                    const label = document.createElement('div');
+                    label.style.cssText = 'font-size: 1.125rem; font-weight: 600; color: #111827;';
+                    label.textContent = driveLabel;
+                    
+                    card.appendChild(radio);
+                    card.appendChild(icon);
+                    card.appendChild(label);
+                    dragileDriveCardsContainer.appendChild(card);
+                });
+            }
+            
+            // Function to update dragile drive cards style
+            function updateDragileDriveCardsStyle() {
+                const selectedRadio = document.querySelector('input[name="filter_dragile_drive_radio"]:checked');
+                document.querySelectorAll('.dragile-drive-card').forEach(card => {
+                    const radio = card.querySelector('input[type="radio"]');
+                    const isSelected = radio && radio.checked;
+                    
+                    if (isSelected) {
+                        card.style.borderColor = '#2563eb';
+                        card.style.backgroundColor = '#eff6ff';
+                        card.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+                    } else {
+                        card.style.borderColor = '#e5e7eb';
+                        card.style.backgroundColor = '#ffffff';
+                        card.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.05)';
+                    }
+                });
+            }
+
+            // Function to get selected type
+            function getSelectedType() {
+                const selected = document.querySelector('input[name="filter_type"]:checked');
+                return selected ? selected.value : '';
+            }
+
+            // Load dragile drives from server (only when width is selected)
+            function loadDragileDrives(type, length, width) {
+                if (!type || !length || !width) {
+                    dragileDriveRow.style.display = 'none';
+                    return;
+                }
+                
+                const routeUrl = '{{ route('knives.get-filter-values') }}';
+                const params = new URLSearchParams();
+                params.append('type', type);
+                params.append('length', length);
+                params.append('width', width);
+                
+                fetch(`${routeUrl}?${params.toString()}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    credentials: 'same-origin'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Get current dragile drive value
+                    const currentDragileDrive = filterDragileDrive ? filterDragileDrive.value : '';
+                    
+                    // Create dragile drive cards
+                    if (data.dragileDrives && data.dragileDrives.length > 0) {
+                        createDragileDriveCards(data.dragileDrives, currentDragileDrive);
+                    } else {
+                        createDragileDriveCards([], '');
+                    }
+                    dragileDriveRow.style.display = 'block';
+                    
+                    return data;
+                })
+                .catch(error => {
+                    console.error('Error loading dragile drives:', error);
+                    throw error;
+                });
+            }
+            
+            // Initialize filters based on current selections
+            function initializeFilters() {
+                const currentType = getSelectedType();
+                const currentLength = filterLength ? filterLength.value : '';
+                const currentWidth = filterWidth ? filterWidth.value : '';
+                const currentDragileDrive = filterDragileDrive ? filterDragileDrive.value : '';
+                
+                if (currentType && currentType !== '') {
+                    lengthRow.style.display = 'block';
+                    // Create length cards
+                    if (allFilterData[currentType] && allFilterData[currentType].lengths) {
+                        createLengthCards(allFilterData[currentType].lengths, currentLength);
+                        // Select current length if exists
+                        if (currentLength) {
+                            setTimeout(() => {
+                                const lengthRadio = document.querySelector(`input[name="filter_length_radio"][value="${currentLength}"]`);
+                                if (lengthRadio) {
+                                    lengthRadio.checked = true;
+                                    updateLengthCardsStyle();
+                                }
+                            }, 100);
+                        }
+                    }
+                    
+                    if (currentLength) {
+                        updateWidthCards(currentType, currentLength, currentWidth);
+                        
+                        if (currentWidth) {
+                            loadDragileDrives(currentType, currentLength, currentWidth).then(() => {
+                                // Select the current dragile drive after cards are created
+                                if (currentDragileDrive) {
+                                    setTimeout(() => {
+                                        const driveRadio = document.querySelector(`input[name="filter_dragile_drive_radio"][value="${currentDragileDrive}"]`);
+                                        if (driveRadio) {
+                                            driveRadio.checked = true;
+                                            updateDragileDriveCardsStyle();
+                                        }
+                                    }, 100);
                                 }
                             });
-                            widthRow.style.display = 'block';
-                            // Reset and hide dragile drive
-                            filterDragileDrive.value = '';
-                            if ($('#filter_dragile_drive').hasClass('select2-hidden-accessible')) {
-                                $('#filter_dragile_drive').select2('destroy');
-                            }
-                            dragileDriveRow.style.display = 'none';
                         }
-                        // Update Dragile Drive options (if type, length, and width are selected)
-                        else if (type && length && width) {
-                            filterDragileDrive.innerHTML = '<option value="">جميع درافيل</option>';
-                            if (data.dragileDrives && data.dragileDrives.length > 0) {
-                                data.dragileDrives.forEach(item => {
-                                    const option = document.createElement('option');
-                                    option.value = item.value;
-                                    option.textContent = item.label;
-                                    filterDragileDrive.appendChild(option);
-                                });
-                            }
-                            // Reinitialize Select2
-                            if ($('#filter_dragile_drive').hasClass('select2-hidden-accessible')) {
-                                $('#filter_dragile_drive').select2('destroy');
-                            }
-                            $('#filter_dragile_drive').select2({
-                                theme: 'bootstrap-5',
-                                dir: 'rtl',
-                                language: {
-                                    noResults: function() {
-                                        return "لا توجد نتائج";
-                                    },
-                                    searching: function() {
-                                        return "جاري البحث...";
-                                    }
-                                }
-                            });
-                            dragileDriveRow.style.display = 'block';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error fetching filter values:', error);
-                        console.error('URL:', url);
-                        // Show user-friendly error message
-                        Swal.fire({
-                            title: 'خطأ في تحميل الفلاتر',
-                            text: 'حدث خطأ أثناء تحميل خيارات الفلترة. يرجى المحاولة مرة أخرى.',
-                            icon: 'error',
-                            confirmButtonText: 'حسناً',
-                            customClass: {
-                                popup: 'rtl-popup'
-                            }
-                        });
-                    });
+                    }
+                }
             }
 
             // Listen to type change (radio buttons)
@@ -801,9 +1148,14 @@
                         dragileDriveRow.style.display = 'none';
                         // Reset all filters
                         filterLength.value = '';
-                        if ($('#filter_length').hasClass('select2-hidden-accessible')) {
-                            $('#filter_length').select2('destroy');
+                        // Reset length cards
+                        if (lengthCardsContainer) {
+                            lengthCardsContainer.innerHTML = '';
                         }
+                        // Uncheck all length radios
+                        document.querySelectorAll('input[name="filter_length_radio"]').forEach(radio => {
+                            radio.checked = false;
+                        });
                         filterWidth.value = '';
                         if ($('#filter_width').hasClass('select2-hidden-accessible')) {
                             $('#filter_width').select2('destroy');
@@ -813,123 +1165,118 @@
                             $('#filter_dragile_drive').select2('destroy');
                         }
                     } else {
-                        // Reset dependent filters
-                        filterLength.value = '';
-                        if ($('#filter_length').hasClass('select2-hidden-accessible')) {
-                            $('#filter_length').select2('destroy');
+                        // Show length cards and update them
+                        lengthRow.style.display = 'block';
+                        if (allFilterData[type] && allFilterData[type].lengths) {
+                            createLengthCards(allFilterData[type].lengths, '');
                         }
+                        // Reset width and dragile drive
                         filterWidth.value = '';
-                        if ($('#filter_width').hasClass('select2-hidden-accessible')) {
-                            $('#filter_width').select2('destroy');
+                        if (widthCardsContainer) {
+                            widthCardsContainer.innerHTML = '';
                         }
-                        filterDragileDrive.value = '';
-                        if ($('#filter_dragile_drive').hasClass('select2-hidden-accessible')) {
-                            $('#filter_dragile_drive').select2('destroy');
-                        }
-                        // Hide dependent rows
+                        document.querySelectorAll('input[name="filter_width_radio"]').forEach(radio => {
+                            radio.checked = false;
+                        });
                         widthRow.style.display = 'none';
+                        filterDragileDrive.value = '';
+                        if (dragileDriveCardsContainer) {
+                            dragileDriveCardsContainer.innerHTML = '';
+                        }
+                        document.querySelectorAll('input[name="filter_dragile_drive_radio"]').forEach(radio => {
+                            radio.checked = false;
+                        });
                         dragileDriveRow.style.display = 'none';
-                        // Load lengths for this type
-                        updateFilterOptions(type, null, null);
                     }
                 });
             });
 
-            // Listen to length change
-            $('#filter_length').on('change', function() {
-                const type = getSelectedType();
-                const length = $(this).val();
-                
-                if (!type) {
-                    // If no type selected, hide width and dragile drive
-                    widthRow.style.display = 'none';
+            // Listen to length change (from cards)
+            document.addEventListener('change', function(e) {
+                if (e.target && e.target.name === 'filter_length_radio') {
+                    const type = getSelectedType();
+                    const length = e.target.value;
+                    filterLength.value = length;
+                    updateLengthCardsStyle();
+                    
+                    if (!type || !length) {
+                        widthRow.style.display = 'none';
+                        dragileDriveRow.style.display = 'none';
+                        filterWidth.value = '';
+                        if (widthCardsContainer) {
+                            widthCardsContainer.innerHTML = '';
+                        }
+                        document.querySelectorAll('input[name="filter_width_radio"]').forEach(radio => {
+                            radio.checked = false;
+                        });
+                        filterDragileDrive.value = '';
+                        if ($('#filter_dragile_drive').hasClass('select2-hidden-accessible')) {
+                            $('#filter_dragile_drive').select2('destroy');
+                        }
+                        return;
+                    }
+                    
+                    // Reset width selection when length changes
+                    filterWidth.value = '';
+                    if (widthCardsContainer) {
+                        widthCardsContainer.innerHTML = '';
+                    }
+                    document.querySelectorAll('input[name="filter_width_radio"]').forEach(radio => {
+                        radio.checked = false;
+                    });
+                    // Hide dragile drive when length changes
                     dragileDriveRow.style.display = 'none';
-                    filterWidth.value = '';
-                    if ($('#filter_width').hasClass('select2-hidden-accessible')) {
-                        $('#filter_width').select2('destroy');
-                    }
                     filterDragileDrive.value = '';
                     if ($('#filter_dragile_drive').hasClass('select2-hidden-accessible')) {
                         $('#filter_dragile_drive').select2('destroy');
                     }
-                    return;
-                }
-                
-                if (!length) {
-                    // Hide width and dragile drive
-                    widthRow.style.display = 'none';
-                    dragileDriveRow.style.display = 'none';
-                    filterWidth.value = '';
-                    if ($('#filter_width').hasClass('select2-hidden-accessible')) {
-                        $('#filter_width').select2('destroy');
-                    }
-                    filterDragileDrive.value = '';
-                    if ($('#filter_dragile_drive').hasClass('select2-hidden-accessible')) {
-                        $('#filter_dragile_drive').select2('destroy');
-                    }
-                } else {
-                    // Reset dependent filters
-                    filterWidth.value = '';
-                    if ($('#filter_width').hasClass('select2-hidden-accessible')) {
-                        $('#filter_width').select2('destroy');
-                    }
-                    filterDragileDrive.value = '';
-                    if ($('#filter_dragile_drive').hasClass('select2-hidden-accessible')) {
-                        $('#filter_dragile_drive').select2('destroy');
-                    }
-                    // Load widths for this type and length
-                    updateFilterOptions(type, length, null);
+                    
+                    // Update width cards client-side (no reload) - show widths that match the selected length
+                    updateWidthCards(type, length, '');
                 }
             });
 
-            // Listen to width change
-            $('#filter_width').on('change', function() {
-                const type = getSelectedType();
-                const length = $('#filter_length').val();
-                const width = $(this).val();
+            // Listen to width change (from cards)
+            document.addEventListener('change', function(e) {
+                if (e.target && e.target.name === 'filter_width_radio') {
+                    const type = getSelectedType();
+                    const length = filterLength.value;
+                    const width = e.target.value;
+                    filterWidth.value = width;
+                    updateWidthCardsStyle();
                 
-                if (!type || !length) {
-                    // If type or length not selected, hide dragile drive
-                    dragileDriveRow.style.display = 'none';
-                    filterDragileDrive.value = '';
-                    if ($('#filter_dragile_drive').hasClass('select2-hidden-accessible')) {
-                        $('#filter_dragile_drive').select2('destroy');
+                    if (!type || !length) {
+                        dragileDriveRow.style.display = 'none';
+                        filterDragileDrive.value = '';
+                        if (dragileDriveCardsContainer) {
+                            dragileDriveCardsContainer.innerHTML = '';
+                        }
+                        document.querySelectorAll('input[name="filter_dragile_drive_radio"]').forEach(radio => {
+                            radio.checked = false;
+                        });
+                        return;
                     }
-                    return;
-                }
-                
-                if (!width) {
-                    // Hide dragile drive
-                    dragileDriveRow.style.display = 'none';
-                    filterDragileDrive.value = '';
-                    if ($('#filter_dragile_drive').hasClass('select2-hidden-accessible')) {
-                        $('#filter_dragile_drive').select2('destroy');
+                    
+                    if (!width) {
+                        dragileDriveRow.style.display = 'none';
+                        filterDragileDrive.value = '';
+                        if (dragileDriveCardsContainer) {
+                            dragileDriveCardsContainer.innerHTML = '';
+                        }
+                        document.querySelectorAll('input[name="filter_dragile_drive_radio"]').forEach(radio => {
+                            radio.checked = false;
+                        });
+                    } else {
+                        // Load dragile drives from server (only at this stage)
+                        loadDragileDrives(type, length, width);
                     }
-                } else {
-                    // Reset dragile drive
-                    filterDragileDrive.value = '';
-                    if ($('#filter_dragile_drive').hasClass('select2-hidden-accessible')) {
-                        $('#filter_dragile_drive').select2('destroy');
-                    }
-                    // Load dragile drives for this type, length, and width
-                    updateFilterOptions(type, length, width);
                 }
             });
-
-            // Initialize on page load
-            const currentType = getSelectedType();
-            const currentLength = filterLength.value;
-            const currentWidth = filterWidth.value;
             
-            if (currentType) {
-                if (currentLength && currentWidth) {
-                    updateFilterOptions(currentType, currentLength, currentWidth);
-                } else if (currentLength) {
-                    updateFilterOptions(currentType, currentLength, null);
-                } else {
-                    updateFilterOptions(currentType, null, null);
-                }
-            }
+            // Dragile drive submit is handled in card onclick
+
+            // Load all filter data on page load
+            loadAllFilterData();
         });
 
         // Close modal when clicking outside

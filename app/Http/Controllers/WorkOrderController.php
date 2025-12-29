@@ -617,7 +617,18 @@ class WorkOrderController extends Controller
                 },
             ],
             'film_price' => 'nullable|numeric|min:0',
-            'film_count' => 'nullable|integer|min:1',
+            'film_count' => [
+                'nullable',
+                'integer',
+                'min:1',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($value !== null && $request->number_of_colors !== null) {
+                        if ($value > $request->number_of_colors) {
+                            $fail('العدد في التجهيزات لا يمكن أن يكون أكبر من عدد الألوان المختار (' . $request->number_of_colors . ')');
+                        }
+                    }
+                },
+            ],
             'sales_percentage' => 'nullable|numeric|min:0|max:100',
             'material_price_per_meter' => 'nullable|numeric|min:0',
             'manufacturing_price_per_meter' => 'nullable|numeric|min:0',
@@ -1196,7 +1207,18 @@ class WorkOrderController extends Controller
                 },
             ],
             'film_price' => 'nullable|numeric|min:0',
-            'film_count' => 'nullable|integer|min:1',
+            'film_count' => [
+                'nullable',
+                'integer',
+                'min:1',
+                function ($attribute, $value, $fail) use ($request) {
+                    if ($value !== null && $request->number_of_colors !== null) {
+                        if ($value > $request->number_of_colors) {
+                            $fail('العدد في التجهيزات لا يمكن أن يكون أكبر من عدد الألوان المختار (' . $request->number_of_colors . ')');
+                        }
+                    }
+                },
+            ],
             'sales_percentage' => 'nullable|numeric|min:0|max:100',
             'material_price_per_meter' => 'nullable|numeric|min:0',
             'manufacturing_price_per_meter' => 'nullable|numeric|min:0',

@@ -85,6 +85,8 @@ class KnifeController extends Controller
     public function getFilterValues(Request $request)
     {
         $type = $request->input('type');
+        $length = $request->input('length');
+        $width = $request->input('width');
         
         if (empty($type)) {
             return response()->json([
@@ -96,23 +98,90 @@ class KnifeController extends Controller
 
         $query = Knife::where('type', $type);
         
+        // Get lengths for this type
         $lengths = $query->distinct()->whereNotNull('length')->pluck('length')->sort()->values()->map(function($length) {
             return ['value' => $length, 'label' => number_format($length, 2)];
         });
         
-        $widths = $query->distinct()->whereNotNull('width')->pluck('width')->sort()->values()->map(function($width) {
-            return ['value' => $width, 'label' => number_format($width, 2)];
-        });
+        // Get widths based on type and length (if length is provided)
+        if ($length) {
+            $widthQuery = Knife::where('type', $type)->where('length', $length);
+            $widths = $widthQuery->distinct()->whereNotNull('width')->pluck('width')->sort()->values()->map(function($width) {
+                return ['value' => $width, 'label' => number_format($width, 2)];
+            });
+        } else {
+            $widths = $query->distinct()->whereNotNull('width')->pluck('width')->sort()->values()->map(function($width) {
+                return ['value' => $width, 'label' => number_format($width, 2)];
+            });
+        }
         
-        $dragileDrives = $query->distinct()->whereNotNull('dragile_drive')->pluck('dragile_drive')->sort()->values()->map(function($drive) {
-            return ['value' => $drive, 'label' => $drive];
-        });
+        // Get dragile drives based on type, length, and width (if all are provided)
+        if ($type && $length && $width) {
+            $dragileQuery = Knife::where('type', $type)
+                                 ->where('length', $length)
+                                 ->where('width', $width);
+            $dragileDrives = $dragileQuery->distinct()->whereNotNull('dragile_drive')->pluck('dragile_drive')->sort()->values()->map(function($drive) {
+                return ['value' => $drive, 'label' => $drive];
+            });
+        } else {
+            // If not all filters are provided, return empty array for dragile drives
+            $dragileDrives = collect([]);
+        }
         
         return response()->json([
             'lengths' => $lengths,
             'widths' => $widths,
             'dragileDrives' => $dragileDrives
         ]);
+    }
+
+    /**
+     * Get all filter data at once (for client-side filtering)
+     */
+    public function getAllFilterData()
+    {
+        $allData = [];
+        
+        // Get all types
+        $types = Knife::distinct()->whereNotNull('type')->pluck('type')->sort()->values();
+        
+        // For each type, get all lengths, widths, and dragile drives
+        foreach ($types as $type) {
+            $query = Knife::where('type', $type);
+            
+            $lengths = $query->distinct()->whereNotNull('length')->pluck('length')->sort()->values()->map(function($length) {
+                return ['value' => $length, 'label' => number_format($length, 2)];
+            });
+            
+            // Get all widths for this type
+            $allWidths = $query->distinct()->whereNotNull('width')->pluck('width')->sort()->values()->map(function($width) {
+                return ['value' => $width, 'label' => number_format($width, 2)];
+            });
+            
+            // Create a map of length to available widths
+            $lengthWidthMap = [];
+            foreach ($lengths as $lengthItem) {
+                $lengthValue = $lengthItem['value'];
+                $lengthQuery = Knife::where('type', $type)->where('length', $lengthValue);
+                $widthsForLength = $lengthQuery->distinct()->whereNotNull('width')->pluck('width')->sort()->values()->map(function($width) {
+                    return ['value' => $width, 'label' => number_format($width, 2)];
+                });
+                $lengthWidthMap[$lengthValue] = $widthsForLength;
+            }
+            
+            $dragileDrives = $query->distinct()->whereNotNull('dragile_drive')->pluck('dragile_drive')->sort()->values()->map(function($drive) {
+                return ['value' => $drive, 'label' => $drive];
+            });
+            
+            $allData[$type] = [
+                'lengths' => $lengths,
+                'widths' => $allWidths, // Keep all widths for reference
+                'lengthWidthMap' => $lengthWidthMap, // Map of length to available widths
+                'dragileDrives' => $dragileDrives
+            ];
+        }
+        
+        return response()->json($allData);
     }
 
     /**
