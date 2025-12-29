@@ -569,7 +569,7 @@
             
             // Load all filter data on page load
             function loadAllFilterData() {
-                const routeUrl = '{{ route('knives.get-all-filter-data') }}';
+                const routeUrl = '/knives/get-all-filter-data';
                 fetch(routeUrl, {
                     method: 'GET',
                     headers: {
@@ -1018,7 +1018,7 @@
                     return;
                 }
                 
-                const routeUrl = '{{ route('knives.get-filter-values') }}';
+                const routeUrl = '/knives/get-filter-values';
                 const params = new URLSearchParams();
                 params.append('type', type);
                 params.append('length', length);
