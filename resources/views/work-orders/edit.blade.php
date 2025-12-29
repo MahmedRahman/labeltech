@@ -1,6 +1,6 @@
 <x-app-layout>
     @php
-        $title = 'تعديل أمر الشغل';
+        $title = 'تعديل عرض السعر';
     @endphp
 
     <!-- Select2 CSS -->
@@ -340,8 +340,8 @@
         <div class="form-container">
         <div class="form-card">
             <div class="form-header">
-                <h2>تعديل أمر الشغل</h2>
-                <p>تعديل بيانات أمر الشغل رقم: {{ $workOrder->order_number }}</p>
+                <h2>تعديل عرض السعر</h2>
+                <p>تعديل بيانات عرض السعر رقم: {{ $workOrder->order_number }}</p>
             </div>
 
             <form action="{{ route('work-orders.update', $workOrder) }}" method="POST">
@@ -407,17 +407,6 @@
                         @enderror
                     </div>
 
-                    <!-- Sent to Client -->
-                    <div class="form-group">
-                        <label for="sent_to_client" class="form-label">تم إرسال عرض السعر للعميل</label>
-                        <select name="sent_to_client" id="sent_to_client" class="form-select" required>
-                            <option value="no" {{ old('sent_to_client', $workOrder->sent_to_client ?? 'no') == 'no' ? 'selected' : '' }}>لا</option>
-                            <option value="yes" {{ old('sent_to_client', $workOrder->sent_to_client ?? 'no') == 'yes' ? 'selected' : '' }}>نعم</option>
-                        </select>
-                        @error('sent_to_client')
-                            <p class="error-message">{{ $message }}</p>
-                        @enderror
-                    </div>
                 </div>
 
                 <!-- معلومات المنتج -->
@@ -835,60 +824,6 @@
                         @enderror
                     </div>
 
-                    <!-- Winding Direction -->
-                    <div class="form-group">
-                        <label class="form-label">اتجاه اللف</label>
-                        <div style="display: flex; gap: 2rem; margin-top: 0.5rem; flex-wrap: wrap;">
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ !in_array(old('winding_direction', $workOrder->winding_direction ?? null), ['clockwise', 'counterclockwise']) ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
-                                <input type="radio" 
-                                       name="winding_direction" 
-                                       value="no" 
-                                       id="winding_direction_no"
-                                       {{ !in_array(old('winding_direction', $workOrder->winding_direction ?? null), ['clockwise', 'counterclockwise']) ? 'checked' : '' }}
-                                       onchange="toggleWindingDirectionOptions()"
-                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
-                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">لا يوجد</span>
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ in_array(old('winding_direction', $workOrder->winding_direction ?? null), ['clockwise', 'counterclockwise']) ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
-                                <input type="radio" 
-                                       name="winding_direction" 
-                                       value="yes" 
-                                       id="winding_direction_yes"
-                                       {{ in_array(old('winding_direction', $workOrder->winding_direction ?? null), ['clockwise', 'counterclockwise']) ? 'checked' : '' }}
-                                       onchange="toggleWindingDirectionOptions()"
-                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
-                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">يوجد</span>
-                            </label>
-                        </div>
-                        
-                        <!-- Winding Direction Options (shown when "يوجد" is selected) -->
-                        <div id="winding_direction_options" style="display: {{ in_array(old('winding_direction', $workOrder->winding_direction ?? null), ['clockwise', 'counterclockwise']) ? 'flex' : 'none' }}; gap: 2rem; margin-top: 1rem; padding-right: 1.5rem;">
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('winding_direction', $workOrder->winding_direction ?? null) == 'clockwise' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
-                                <input type="radio" 
-                                       name="winding_direction" 
-                                       value="clockwise" 
-                                       id="winding_direction_clockwise"
-                                       {{ old('winding_direction', $workOrder->winding_direction ?? null) == 'clockwise' ? 'checked' : '' }}
-                                       onchange="handleWindingDirectionChange()"
-                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
-                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">في اتجاه عقارب الساعة</span>
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('winding_direction', $workOrder->winding_direction ?? null) == 'counterclockwise' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
-                                <input type="radio" 
-                                       name="winding_direction" 
-                                       value="counterclockwise" 
-                                       id="winding_direction_counterclockwise"
-                                       {{ old('winding_direction', $workOrder->winding_direction ?? null) == 'counterclockwise' ? 'checked' : '' }}
-                                       onchange="handleWindingDirectionChange()"
-                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
-                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">عكس عقارب الساعة</span>
-                            </label>
-                        </div>
-                        @error('winding_direction')
-                            <p class="error-message">{{ $message }}</p>
-                        @enderror
-                    </div>
-
                     <!-- Knife Exists -->
                     <div class="form-group">
                         <label class="form-label">السكينة</label>
@@ -1018,131 +953,6 @@
                     </div>
                 </div>
 
-                <!-- Final Product Shape & Production Method Data -->
-                <div style="margin-top: 2rem; padding: 1.5rem; background-color: #f9fafb; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
-                    <h3 style="font-size: 1rem; font-weight: 600; color: #111827; margin-bottom: 1.5rem;">شكل المنتج النهائي وبيانات طريقة التشغيل</h3>
-                    
-                    <!-- Final Product Shape -->
-                    <div class="form-group">
-                        <label class="form-label">شكل المنتج النهائي</label>
-                        <div style="display: flex; gap: 2rem; margin-top: 0.5rem;">
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('final_product_shape', $workOrder->final_product_shape ?? 'بكر') == 'بكر' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
-                                <input type="radio" 
-                                       name="final_product_shape" 
-                                       value="بكر" 
-                                       id="final_product_shape_roll"
-                                       {{ old('final_product_shape', $workOrder->final_product_shape ?? 'بكر') == 'بكر' ? 'checked' : '' }}
-                                       onchange="toggleProductionFields()"
-                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
-                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">بكر</span>
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('final_product_shape', $workOrder->final_product_shape ?? 'بكر') == 'شيت' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
-                                <input type="radio" 
-                                       name="final_product_shape" 
-                                       value="شيت" 
-                                       id="final_product_shape_sheet"
-                                       {{ old('final_product_shape', $workOrder->final_product_shape ?? 'بكر') == 'شيت' ? 'checked' : '' }}
-                                       onchange="toggleProductionFields()"
-                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
-                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">شيت</span>
-                            </label>
-                        </div>
-                        @error('final_product_shape')
-                            <p class="error-message">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Production Method Data -->
-                    <div style="margin-top: 1.5rem;">
-                        <h4 style="font-size: 0.875rem; font-weight: 600; color: #6b7280; margin-bottom: 1rem;">بيانات طريقة التشغيل</h4>
-                        
-                        <!-- Roll Fields (بكر) -->
-                        <div id="roll-production-fields" style="display: {{ old('final_product_shape', $workOrder->final_product_shape ?? 'بكر') == 'بكر' ? 'block' : 'none' }};">
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label for="number_of_rolls" class="form-label">عدد التكت في البكره</label>
-                                    <input type="number"
-                                           name="number_of_rolls"
-                                           id="number_of_rolls"
-                                           value="{{ old('number_of_rolls', $workOrder->number_of_rolls ?? null) }}"
-                                           min="1"
-                                           class="form-input"
-                                           placeholder="أدخل عدد التكت في البكره">
-                                    @error('number_of_rolls')
-                                        <p class="error-message">{{ $message }}</p>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="core_size" class="form-label">مقاس الكور</label>
-                                    <select name="core_size" 
-                                            id="core_size" 
-                                            class="form-select">
-                                        <option value="">اختر مقاس الكور</option>
-                                        <option value="76" {{ old('core_size', $workOrder->core_size ?? null) == '76' ? 'selected' : '' }}>76</option>
-                                        <option value="40" {{ old('core_size', $workOrder->core_size ?? null) == '40' ? 'selected' : '' }}>40</option>
-                                        <option value="25" {{ old('core_size', $workOrder->core_size ?? null) == '25' ? 'selected' : '' }}>25</option>
-                                    </select>
-                                    @error('core_size')
-                                        <p class="error-message">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Sheet Fields (شيت) -->
-                        <div id="sheet-production-fields" style="display: {{ old('final_product_shape', $workOrder->final_product_shape ?? 'بكر') == 'شيت' ? 'block' : 'none' }};">
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label for="pieces_per_sheet" class="form-label">عدد التكت في الشيت</label>
-                                    <input type="number"
-                                           name="pieces_per_sheet"
-                                           id="pieces_per_sheet"
-                                           value="{{ old('pieces_per_sheet', $workOrder->pieces_per_sheet ?? null) }}"
-                                           min="1"
-                                           class="form-input"
-                                           placeholder="أدخل عدد التكت في الشيت">
-                                    @error('pieces_per_sheet')
-                                        <p class="error-message">{{ $message }}</p>
-                                    @enderror
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="sheets_per_stack" class="form-label">عدد الشيت في الراكوة</label>
-                                    <input type="number"
-                                           name="sheets_per_stack"
-                                           id="sheets_per_stack"
-                                           value="{{ old('sheets_per_stack', $workOrder->sheets_per_stack ?? null) }}"
-                                           min="1"
-                                           class="form-input"
-                                           placeholder="أدخل عدد الشيت في الراكوة">
-                                    @error('sheets_per_stack')
-                                        <p class="error-message">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- معلومات إضافية -->
-                <div style="margin-bottom: 2rem; padding: 1.5rem; background-color: #f9fafb; border-radius: 0.5rem; border: 1px solid #e5e7eb;">
-                    <h3 style="font-size: 1rem; font-weight: 600; color: #111827; margin-bottom: 1.5rem;">معلومات إضافية</h3>
-                    
-                    <!-- Notes -->
-                    <div class="form-group">
-                        <label for="notes" class="form-label">ملاحظات</label>
-                        <textarea name="notes" 
-                                  id="notes" 
-                                  rows="3"
-                                  class="form-textarea"
-                                  placeholder="أي ملاحظات إضافية">{{ old('notes', $workOrder->notes ?? null) }}</textarea>
-                        @error('notes')
-                            <p class="error-message">{{ $message }}</p>
-                        @enderror
-                    </div>
-                </div>
-
                 <!-- Form Actions -->
                 <div class="form-actions">
                     <a href="{{ route('work-orders.index') }}" class="btn btn-secondary">
@@ -1165,7 +975,7 @@
             @endforeach
         };
 
-        // Handle radio button styling for additions, fingerprint, winding_direction and final_product_shape
+        // Handle radio button styling for additions and fingerprint
         document.addEventListener('DOMContentLoaded', function() {
             // Handle additions radio buttons
             const additionsRadios = document.querySelectorAll('input[name="additions"]');
@@ -1207,6 +1017,12 @@
             
             // Initialize additions styling
             updateAdditionsStyle();
+            
+            // Initialize lastSelectedAddition with current selection on page load
+            const initialAddition = document.querySelector('input[name="additions"]:checked');
+            if (initialAddition && initialAddition.value !== 'لا يوجد') {
+                lastSelectedAddition = initialAddition.value;
+            }
             
             // Initialize addition price on page load
             updateAdditionPrice();
@@ -1251,49 +1067,6 @@
             
             // Initialize fingerprint styling
             updateFingerprintStyle();
-
-            // Handle winding_direction radio buttons (handled by updateWindingDirectionStyle function below)
-
-            // Handle final_product_shape radio buttons
-            const shapeRadios = document.querySelectorAll('input[name="final_product_shape"]');
-            shapeRadios.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    updateFinalProductShapeStyle();
-                    toggleProductionFields();
-                });
-                
-                // Also listen to click on the label
-                const label = radio.closest('label');
-                if (label) {
-                    label.addEventListener('click', function(e) {
-                        // Prevent double triggering
-                        if (e.target !== radio) {
-                            radio.checked = true;
-                            updateFinalProductShapeStyle();
-                            toggleProductionFields();
-                        }
-                    });
-                }
-            });
-            
-            // Function to update final_product_shape styling
-            function updateFinalProductShapeStyle() {
-                document.querySelectorAll('input[name="final_product_shape"]').forEach(r => {
-                    const label = r.closest('label');
-                    if (label) {
-                        if (r.checked) {
-                            label.style.borderColor = '#2563eb';
-                            label.style.backgroundColor = '#eff6ff';
-                        } else {
-                            label.style.borderColor = '#d1d5db';
-                            label.style.backgroundColor = 'transparent';
-                        }
-                    }
-                });
-            }
-            
-            // Initialize final_product_shape styling
-            updateFinalProductShapeStyle();
 
             // Handle knife_exists radio buttons
             const knifeExistsRadios = document.querySelectorAll('input[name="knife_exists"]');
@@ -1380,35 +1153,6 @@
             // Initialize external breaking price on page load
             toggleExternalBreakingPrice();
 
-            // Handle winding_direction radio buttons
-            const windingDirectionRadios = document.querySelectorAll('input[name="winding_direction"]');
-            windingDirectionRadios.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    updateWindingDirectionStyle();
-                    toggleWindingDirectionOptions();
-                });
-                
-                // Also listen to click on the label
-                const label = radio.closest('label');
-                if (label) {
-                    label.addEventListener('click', function(e) {
-                        // Prevent double triggering
-                        if (e.target !== radio) {
-                            radio.checked = true;
-                            updateWindingDirectionStyle();
-                            toggleWindingDirectionOptions();
-                        }
-                    });
-                }
-            });
-
-            // Initialize on page load
-            toggleWindingDirectionOptions();
-            updateWindingDirectionStyle();
-
-            // Initialize production fields on page load
-            toggleProductionFields();
-            
             // Handle number_of_colors radio buttons
             const numberOfColorsRadios = document.querySelectorAll('input[name="number_of_colors"]');
             numberOfColorsRadios.forEach(radio => {
@@ -1474,7 +1218,13 @@
                 // Function to handle calculations
                 const handleRowsCountChange = function() {
                     updateRowsCountStyle();
-                    // Calculate linear meter only (paper width is not auto-calculated in edit page)
+                    // Remove manual change flag to allow recalculation when rows count changes
+                    const paperWidthInput = document.getElementById('paper_width');
+                    if (paperWidthInput) {
+                        paperWidthInput.removeAttribute('data-manually-changed');
+                    }
+                    // Calculate immediately with forceRecalculate flag to ensure recalculation
+                    calculatePaperWidth(true);
                     calculateLinearMeter();
                 };
                 
@@ -1520,7 +1270,7 @@
             updateRowsCountStyle();
             
             // Calculate on page load if rows_count is already selected
-            // Note: paper width is not auto-calculated in edit page, only linear meter
+            calculatePaperWidth();
             calculateLinearMeter();
             
             // Handle film_count radio buttons
@@ -1667,79 +1417,8 @@
             });
         }
 
-        // Toggle production fields based on final_product_shape selection
-        function toggleProductionFields() {
-            const rollRadio = document.getElementById('final_product_shape_roll');
-            const sheetRadio = document.getElementById('final_product_shape_sheet');
-            const rollFields = document.getElementById('roll-production-fields');
-            const sheetFields = document.getElementById('sheet-production-fields');
-
-            if (rollRadio && rollRadio.checked) {
-                if (rollFields) rollFields.style.display = 'block';
-                if (sheetFields) sheetFields.style.display = 'none';
-            } else if (sheetRadio && sheetRadio.checked) {
-                if (rollFields) rollFields.style.display = 'none';
-                if (sheetFields) sheetFields.style.display = 'block';
-            } else {
-                if (rollFields) rollFields.style.display = 'none';
-                if (sheetFields) sheetFields.style.display = 'none';
-            }
-        }
-
-        // Toggle winding direction options based on selection
-        function toggleWindingDirectionOptions() {
-            const noRadio = document.getElementById('winding_direction_no');
-            const yesRadio = document.getElementById('winding_direction_yes');
-            const optionsDiv = document.getElementById('winding_direction_options');
-            const clockwiseRadio = document.getElementById('winding_direction_clockwise');
-            const counterclockwiseRadio = document.getElementById('winding_direction_counterclockwise');
-
-            if (yesRadio && yesRadio.checked) {
-                if (optionsDiv) optionsDiv.style.display = 'flex';
-                // If no detailed option is selected, select clockwise by default
-                if (clockwiseRadio && counterclockwiseRadio && !clockwiseRadio.checked && !counterclockwiseRadio.checked) {
-                    clockwiseRadio.checked = true;
-                    handleWindingDirectionChange();
-                }
-            } else if (noRadio && noRadio.checked) {
-                if (optionsDiv) optionsDiv.style.display = 'none';
-                // Uncheck the detailed options if "no" is selected
-                if (clockwiseRadio) clockwiseRadio.checked = false;
-                if (counterclockwiseRadio) counterclockwiseRadio.checked = false;
-                updateWindingDirectionStyle();
-            }
-        }
-
-        // Handle winding direction change (when detailed option is selected)
-        function handleWindingDirectionChange() {
-            const clockwiseRadio = document.getElementById('winding_direction_clockwise');
-            const counterclockwiseRadio = document.getElementById('winding_direction_counterclockwise');
-            const yesRadio = document.getElementById('winding_direction_yes');
-            
-            // Uncheck "yes" radio when a detailed option is selected
-            if (yesRadio && (clockwiseRadio?.checked || counterclockwiseRadio?.checked)) {
-                yesRadio.checked = false;
-            }
-            
-            updateWindingDirectionStyle();
-        }
-
-        // Update winding direction style
-        function updateWindingDirectionStyle() {
-            const allRadios = document.querySelectorAll('input[name="winding_direction"]');
-            allRadios.forEach(radio => {
-                const label = radio.closest('label');
-                if (label) {
-                    if (radio.checked) {
-                        label.style.borderColor = '#2563eb';
-                        label.style.backgroundColor = '#eff6ff';
-                    } else {
-                        label.style.borderColor = '#d1d5db';
-                        label.style.backgroundColor = 'transparent';
-                    }
-                }
-            });
-        }
+        // Track the last selected addition to detect changes
+        let lastSelectedAddition = null;
 
         // Update addition price field based on selected addition
         function updateAdditionPrice() {
@@ -1759,15 +1438,25 @@
                 if (minPriceInput) minPriceInput.value = defaultPrice;
                 if (minPriceDisplay) minPriceDisplay.textContent = defaultPrice.toFixed(2);
                 
-                // Set default price if not already set or if current value is less than minimum
+                // Check if this is a new selection (different from last selected)
+                const isNewSelection = lastSelectedAddition !== selectedAddition.value;
+                
+                // Always set the minimum price as default value when selecting an addition
                 if (priceInput) {
-                    const currentValue = parseFloat(priceInput.value) || 0;
-                    if (currentValue < defaultPrice || !priceInput.value) {
+                    // If this is a new selection, set the minimum price as default
+                    if (isNewSelection) {
+                        priceInput.value = defaultPrice.toFixed(2);
+                    } else if (!priceInput.value || parseFloat(priceInput.value) < defaultPrice) {
+                        // If no value or value is less than minimum, set to minimum
                         priceInput.value = defaultPrice.toFixed(2);
                     }
+                    
                     priceInput.setAttribute('min', defaultPrice);
                     priceInput.setAttribute('required', 'required');
                 }
+                
+                // Update last selected addition
+                lastSelectedAddition = selectedAddition.value;
             } else {
                 // Hide price field if "لا يوجد" is selected
                 if (priceGroup) priceGroup.style.display = 'none';
@@ -1775,6 +1464,8 @@
                     priceInput.value = '';
                     priceInput.removeAttribute('required');
                 }
+                // Reset last selected addition
+                lastSelectedAddition = null;
             }
             
             // Recalculate total amount
@@ -1864,17 +1555,17 @@
         }
 
         // Calculate paper width automatically
-        function calculatePaperWidth() {
+        function calculatePaperWidth(forceRecalculate = false) {
             const rowsCountRadio = document.querySelector('input[name="rows_count"]:checked');
             const widthInput = document.getElementById('width');
             const paperWidthInput = document.getElementById('paper_width');
             
             if (!paperWidthInput) return;
             
-            // Check if user manually changed the paper width
-            const isManuallyChanged = paperWidthInput.getAttribute('data-manually-changed') === 'true';
+            // Check if user manually changed the paper width (unless forceRecalculate is true)
+            const isManuallyChanged = !forceRecalculate && paperWidthInput.getAttribute('data-manually-changed') === 'true';
             
-            // Only auto-calculate if user hasn't manually changed it
+            // Only auto-calculate if user hasn't manually changed it or if forceRecalculate is true
             if (!isManuallyChanged) {
                 const rowsCount = rowsCountRadio ? parseFloat(rowsCountRadio.value) || 0 : 0;
                 const width = parseFloat(widthInput?.value) || 0;
@@ -1882,10 +1573,17 @@
                 // Formula: (العرض × عدد الصفوف) + ((عدد الصفوف - 1) × 0.3) + 1.2
                 if (rowsCount > 0 && width > 0) {
                     const paperWidth = (width * rowsCount) + (((rowsCount - 1) * 0.3) + 1.2);
-                    paperWidthInput.value = paperWidth.toFixed(2);
-                } else {
+                    const formattedValue = paperWidth.toFixed(2);
+                    // Set the value directly
+                    paperWidthInput.value = formattedValue;
+                    // Force input and change events to ensure the value is updated in the DOM and form
+                    paperWidthInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    paperWidthInput.dispatchEvent(new Event('change', { bubbles: true }));
+                } else if (rowsCount === 0 || width === 0) {
                     // Clear if either value is missing
                     paperWidthInput.value = '';
+                    paperWidthInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    paperWidthInput.dispatchEvent(new Event('change', { bubbles: true }));
                 }
             }
             
@@ -2152,8 +1850,7 @@
                 pricePerThousandInput.value = '';
             }
             
-            // Update sidebar calculations
-            updateSidebarCalculations();
+            // Sidebar calculations are handled automatically by the form
         }
 
 
@@ -2376,13 +2073,27 @@
                 }
             });
             
-            // Width input only triggers linear meter calculation, not paper width
+            // Width input triggers both paper width and linear meter calculation
             const widthInput = document.getElementById('width');
             if (widthInput) {
                 widthInput.addEventListener('input', function() {
+                    // Remove manual change flag to allow recalculation when width changes
+                    const paperWidthInput = document.getElementById('paper_width');
+                    if (paperWidthInput) {
+                        paperWidthInput.removeAttribute('data-manually-changed');
+                    }
+                    // Force recalculation when width changes
+                    calculatePaperWidth(true);
                     calculateLinearMeter();
                 });
                 widthInput.addEventListener('change', function() {
+                    // Remove manual change flag to allow recalculation when width changes
+                    const paperWidthInput = document.getElementById('paper_width');
+                    if (paperWidthInput) {
+                        paperWidthInput.removeAttribute('data-manually-changed');
+                    }
+                    // Force recalculation when width changes
+                    calculatePaperWidth(true);
                     calculateLinearMeter();
                 });
             }
