@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>عرض السعر - {{ $workOrder->order_number ?? 'بدون رقم' }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @page {
             size: A4;
-            margin: 0;
+            margin: 10px;
         }
         
         @media print {
@@ -21,7 +23,7 @@
             }
             .print-container {
                 border: none;
-                padding: 20mm;
+                padding: 10px;
                 box-shadow: none;
                 max-width: 100%;
                 min-height: 100vh;
@@ -35,10 +37,10 @@
         }
         
         body {
-            font-family: 'Arial', 'Tahoma', sans-serif;
-            font-size: 12px;
+            font-family: 'Cairo', 'Arial', 'Tahoma', sans-serif;
+            font-size: 14px;
             line-height: 1.6;
-            color: #000;
+            color: #333;
             background: #f5f5f5;
             padding: 20px;
         }
@@ -49,216 +51,203 @@
             margin: 0 auto;
             background: white;
             border: 1px solid #ddd;
-            padding: 20mm;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 10px;
             display: flex;
             flex-direction: column;
         }
         
         .print-header {
             text-align: center;
-            border-bottom: 4px solid #2563eb;
-            padding-bottom: 20px;
-            margin-bottom: 25px;
+            border-bottom: 3px solid #2563eb;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
         }
         
         .print-header .logo {
-            max-width: 200px;
+            max-width: 120px;
             height: auto;
-            margin: 0 auto 15px;
+            margin: 0 auto 10px;
             display: block;
         }
         
         .print-header h1 {
-            font-size: 28px;
-            font-weight: bold;
+            font-size: 24px;
+            font-weight: 600;
             color: #2563eb;
-            margin-bottom: 8px;
-            letter-spacing: 1px;
-        }
-        
-        .print-header .subtitle {
-            font-size: 16px;
-            color: #666;
-            font-weight: 500;
+            margin: 0;
         }
         
         .content-wrapper {
             flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-        }
-        
-        .info-section {
-            margin-bottom: 20px;
-        }
-        
-        .info-section h2 {
-            font-size: 18px;
-            font-weight: bold;
-            color: #111827;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #2563eb;
-            display: flex;
-            align-items: center;
             gap: 10px;
         }
         
-        .info-section h2::before {
-            content: '';
-            width: 4px;
-            height: 20px;
-            background: #2563eb;
-            border-radius: 2px;
+        .info-section {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 10px;
+        }
+        
+        .info-section h2 {
+            font-size: 17px;
+            font-weight: 700;
+            color: #2563eb;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #2563eb;
         }
         
         .info-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 0;
+            gap: 10px;
         }
         
         .info-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 15px;
-            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
-            border-radius: 8px;
-            border-right: 4px solid #2563eb;
-            transition: all 0.2s;
-        }
-        
-        .info-item:hover {
-            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-            transform: translateX(-2px);
+            padding: 12px 10px;
+            background: #f9f9f9;
+            border-radius: 4px;
+            border-right: 3px solid #2563eb;
         }
         
         .info-label {
-            font-weight: 600;
-            color: #6b7280;
-            font-size: 12px;
-        }
-        
-        .info-value {
             font-weight: 700;
-            color: #111827;
+            color: #374151;
             font-size: 13px;
         }
         
+        .info-value {
+            font-weight: 600;
+            color: #111827;
+            font-size: 14px;
+            text-align: left;
+        }
+        
         .price-section {
-            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            background: #2563eb;
             color: white;
-            padding: 25px;
-            border-radius: 12px;
-            margin-top: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            margin-bottom: 10px;
         }
         
         .price-section h2 {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 20px;
+            font-size: 19px;
+            font-weight: 700;
+            margin-bottom: 10px;
             color: white;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
-            padding-bottom: 12px;
-        }
-        
-        .price-section h2::before {
-            background: white;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.4);
+            padding-bottom: 10px;
+            text-align: center;
         }
         
         .price-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+            gap: 10px;
         }
         
         .price-item {
             background: rgba(255, 255, 255, 0.15);
-            padding: 18px;
-            border-radius: 10px;
-            backdrop-filter: blur(10px);
+            padding: 10px;
+            border-radius: 4px;
             text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
         .price-label {
             font-size: 13px;
-            opacity: 0.95;
             margin-bottom: 10px;
-            font-weight: 600;
+            font-weight: 700;
+            opacity: 1;
         }
         
         .price-value {
             font-size: 20px;
-            font-weight: bold;
+            font-weight: 700;
         }
         
         .total-price {
             grid-column: 1 / -1;
-            background: rgba(255, 255, 255, 0.25);
-            padding: 25px;
-            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            border-radius: 4px;
             text-align: center;
-            border: 3px solid rgba(255, 255, 255, 0.5);
-            margin-top: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            margin-top: 10px;
         }
         
         .total-price .price-label {
             font-size: 16px;
-            margin-bottom: 12px;
-            font-weight: 700;
+            margin-bottom: 10px;
+            font-weight: 800;
         }
         
         .total-price .price-value {
             font-size: 32px;
-            font-weight: 900;
+            font-weight: 800;
         }
         
         .footer {
             margin-top: auto;
-            padding-top: 20px;
-            border-top: 3px solid #e5e7eb;
+            padding-top: 10px;
+            border-top: 2px solid #e0e0e0;
             text-align: center;
-            color: #6b7280;
+            color: #666;
             font-size: 11px;
         }
         
         .footer p {
-            margin: 5px 0;
+            margin: 6px 0;
         }
         
-        .print-button {
+        .footer p:first-child {
+            font-weight: 600;
+            color: #333;
+            font-size: 13px;
+        }
+        
+        .print-button, .download-button {
             position: fixed;
             top: 20px;
-            left: 20px;
-            padding: 14px 28px;
+            padding: 12px 24px;
             background: #2563eb;
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
             z-index: 1000;
-            transition: all 0.2s;
+            font-family: 'Cairo', 'Arial', 'Tahoma', sans-serif;
+        }
+        
+        .print-button {
+            left: 20px;
+        }
+        
+        .download-button {
+            left: 150px;
+            background: #10b981;
         }
         
         .print-button:hover {
-            background: #1d4ed8;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 8px rgba(0,0,0,0.3);
+            background: #1e40af;
+        }
+        
+        .download-button:hover {
+            background: #059669;
         }
         
         @media print {
-            .print-button {
+            .print-button, .download-button {
                 display: none;
             }
         }
@@ -266,12 +255,12 @@
 </head>
 <body>
     <button class="print-button no-print" onclick="window.print()">🖨️ طباعة</button>
+    <button class="download-button no-print" onclick="downloadAsPNG()">📥 تحميل PNG</button>
     
-    <div class="print-container">
+    <div class="print-container" id="quote-container">
         <div class="print-header">
             <img src="{{ asset('images/logo.png') }}" alt="Label Tech Logo" class="logo">
             <h1>عرض السعر</h1>
-            <div class="subtitle">Price Quote</div>
         </div>
         
         <div class="content-wrapper">
@@ -316,45 +305,28 @@
                     </div>
                     <div class="info-item">
                         <span class="info-label">نوع الخامة:</span>
-                        <span class="info-value">{{ $workOrder->material ?? 'غير محدد' }}</span>
+                        <span class="info-value">
+                            {{ $workOrder->material ?? 'غير محدد' }}
+                            @if($workOrder->additions && $workOrder->additions !== 'لا يوجد')
+                                <span style="margin-right: 10px; color: #2563eb;">|</span>
+                                <span style="color: #2563eb;">{{ $workOrder->additions }}</span>
+                            @endif
+                        </span>
                     </div>
                     <div class="info-item">
                         <span class="info-label">الكمية:</span>
                         <span class="info-value">{{ number_format($workOrder->quantity ?? 0) }}</span>
                     </div>
-                    <div class="info-item">
-                        <span class="info-label">العرض (سم):</span>
-                        <span class="info-value">{{ number_format($workOrder->width ?? 0, 2) }}</span>
+                    <div class="info-item" style="grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <span class="info-label">العرض (سم):</span>
+                            <span class="info-value">{{ number_format($workOrder->width ?? 0, 2) }}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <span class="info-label">الطول (سم):</span>
+                            <span class="info-value">{{ number_format($workOrder->length ?? 0, 2) }}</span>
+                        </div>
                     </div>
-                    <div class="info-item">
-                        <span class="info-label">الطول (سم):</span>
-                        <span class="info-value">
-                            {{ number_format($workOrder->length ?? 0, 2) }}
-                            @if($workOrder->winding_direction)
-                                @php
-                                    $windingDirection = $workOrder->winding_direction;
-                                    if ($windingDirection == 'clockwise') {
-                                        $windingLabel = 'مع عقارب الساعة';
-                                    } elseif ($windingDirection == 'counterclockwise') {
-                                        $windingLabel = 'عكس عقارب الساعة';
-                                    } elseif ($windingDirection == 'yes') {
-                                        $windingLabel = 'نعم';
-                                    } else {
-                                        $windingLabel = 'لا';
-                                    }
-                                @endphp
-                                <span style="color: #2563eb; font-weight: 600; margin-right: 5px;">
-                                    (جابنها الجر: {{ $windingLabel }})
-                                </span>
-                            @endif
-                        </span>
-                    </div>
-                    @if($workOrder->additions && $workOrder->additions !== 'لا يوجد')
-                    <div class="info-item">
-                        <span class="info-label">الإضافات:</span>
-                        <span class="info-value">{{ $workOrder->additions }}</span>
-                    </div>
-                    @endif
                 </div>
             </div>
             
@@ -367,8 +339,8 @@
                         <div class="price-value">{{ number_format($calculations['price_per_thousand'] ?? 0, 2) }} ج.م</div>
                     </div>
                     <div class="price-item">
-                        <div class="price-label">الكمية</div>
-                        <div class="price-value">{{ number_format($workOrder->quantity ?? 0) }}</div>
+                        <div class="price-label">سعر التجهيزات</div>
+                        <div class="price-value">{{ number_format($calculations['total_preparations'] ?? 0, 2) }} ج.م</div>
                     </div>
                     <div class="total-price">
                         <div class="price-label">إجمالي المبلغ</div>
@@ -379,7 +351,7 @@
             
             <!-- Footer -->
             <div class="footer">
-                <p style="font-weight: 600; color: #374151; margin-bottom: 8px;">شكراً لاختياركم خدماتنا</p>
+                <p>شكراً لاختياركم خدماتنا</p>
                 <p>تم إنشاء هذا العرض في: {{ $workOrder->created_at->format('Y-m-d H:i') }}</p>
             </div>
         </div>
@@ -390,6 +362,49 @@
         // window.onload = function() {
         //     window.print();
         // }
+        
+        // Download as PNG function
+        function downloadAsPNG() {
+            const container = document.getElementById('quote-container');
+            const orderNumber = '{{ $workOrder->order_number ?? "quote" }}';
+            
+            // Show loading state
+            const downloadBtn = document.querySelector('.download-button');
+            const originalText = downloadBtn.innerHTML;
+            downloadBtn.innerHTML = '⏳ جاري التحميل...';
+            downloadBtn.disabled = true;
+            
+            html2canvas(container, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff',
+                width: container.scrollWidth,
+                height: container.scrollHeight
+            }).then(function(canvas) {
+                // Convert canvas to blob
+                canvas.toBlob(function(blob) {
+                    // Create download link
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `عرض_السعر_${orderNumber}_${new Date().getTime()}.png`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                    
+                    // Reset button
+                    downloadBtn.innerHTML = originalText;
+                    downloadBtn.disabled = false;
+                }, 'image/png');
+            }).catch(function(error) {
+                console.error('Error generating PNG:', error);
+                alert('حدث خطأ أثناء تحميل الصورة. يرجى المحاولة مرة أخرى.');
+                downloadBtn.innerHTML = originalText;
+                downloadBtn.disabled = false;
+            });
+        }
     </script>
 </body>
 </html>

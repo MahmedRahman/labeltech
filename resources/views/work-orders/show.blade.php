@@ -464,10 +464,10 @@
             </div>
             @endif
 
-            @if($workOrder->waste_per_roll)
+            @if($calculations['waste_percentage'] ?? $workOrder->waste_percentage)
             <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">عدد الهالك للبكره</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0; font-weight: 600;">{{ number_format($workOrder->waste_per_roll, 0) }}</dd>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">نسبة الهالك</dt>
+                <dd style="font-size: 0.875rem; color: #111827; margin: 0; font-weight: 600;">{{ number_format($calculations['waste_percentage'] ?? $workOrder->waste_percentage ?? 0, 2) }}%</dd>
             </div>
             @endif
         </div>
@@ -663,11 +663,11 @@
                 </dd>
             </div>
 
-            @if($workOrder->waste_per_roll)
+            @if($calculations['waste_percentage'] ?? $workOrder->waste_percentage)
             <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 0.5rem; backdrop-filter: blur(10px);">
-                <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">عدد الهالك للبكره</dt>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">نسبة الهالك</dt>
                 <dd style="font-size: 1.25rem; color: white; margin: 0; font-weight: 700;">
-                    {{ number_format($workOrder->waste_per_roll, 0) }}
+                    {{ number_format($calculations['waste_percentage'] ?? $workOrder->waste_percentage ?? 0, 2) }}%
                 </dd>
             </div>
             @endif
@@ -686,12 +686,6 @@
                 </dd>
             </div>
 
-            <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 0.5rem; backdrop-filter: blur(10px);">
-                <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">إجمالي المبلغ (الأسعار)</dt>
-                <dd style="font-size: 1.25rem; color: white; margin: 0; font-weight: 700;">
-                    {{ number_format($calculations['total_prices_sum'], 2) }} <span style="font-size: 0.875rem; opacity: 0.8;">ج.م</span>
-                </dd>
-            </div>
 
             <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 0.5rem; backdrop-filter: blur(10px);">
                 <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">إجمالي المبلغ</dt>
@@ -727,14 +721,14 @@
             </div>
 
             <div style="background: rgba(255, 255, 255, 0.2); padding: 1.25rem; border-radius: 0.5rem; backdrop-filter: blur(10px); border: 2px solid rgba(255, 255, 255, 0.3);">
-                <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">إجمالي الطلب</dt>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">إجمالي المبلغ + نسبة مبيعات</dt>
                 <dd style="font-size: 1.5rem; color: white; margin: 0; font-weight: 700;">
                     {{ number_format($calculations['total_order'], 2) }} <span style="font-size: 0.875rem; opacity: 0.8;">ج.م</span>
                 </dd>
             </div>
 
             <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 0.5rem; backdrop-filter: blur(10px);">
-                <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">سعر الف</dt>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">سعر الف شامل التجهيزات و نسبة المبيعات</dt>
                 <dd style="font-size: 1.25rem; color: white; margin: 0; font-weight: 700;">
                     {{ number_format($calculations['price_per_thousand'], 2) }} <span style="font-size: 0.875rem; opacity: 0.8;">ج.م</span>
                 </dd>
