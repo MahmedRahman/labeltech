@@ -663,11 +663,11 @@
                 </dd>
             </div>
 
-            @if($calculations['waste_percentage'] ?? $workOrder->waste_percentage)
+            @if($calculations['waste'] ?? $workOrder->waste || $calculations['waste_percentage'] ?? $workOrder->waste_percentage)
             <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 0.5rem; backdrop-filter: blur(10px);">
-                <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">نسبة الهالك</dt>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">الهالك + نسبة الهالك</dt>
                 <dd style="font-size: 1.25rem; color: white; margin: 0; font-weight: 700;">
-                    {{ number_format($calculations['waste_percentage'] ?? $workOrder->waste_percentage ?? 0, 2) }}%
+                    {{ number_format(($calculations['waste'] ?? $workOrder->waste ?? 0) + ($calculations['waste_percentage'] ?? $workOrder->waste_percentage ?? 0), 2) }}
                 </dd>
             </div>
             @endif
