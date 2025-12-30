@@ -222,35 +222,107 @@
 
     <!-- Statistics Cards -->
     <div class="stats-grid">
-        <!-- Work Orders Card -->
-        <div class="stat-card">
-            <div class="stat-card-content">
-                <div class="stat-info">
-                    <div class="stat-label">إجمالي عروض الأسعار</div>
-                    <div class="stat-number">{{ $workOrdersCount }}</div>
-                </div>
-                <div class="stat-icon work-orders">
-                    <svg style="width: 28px; height: 28px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
-                </div>
-            </div>
-        </div>
-
         <!-- Clients Card -->
-        <div class="stat-card">
-            <div class="stat-card-content">
-                <div class="stat-info">
-                    <div class="stat-label">إجمالي العملاء</div>
-                    <div class="stat-number">{{ $clientsCount }}</div>
-                </div>
-                <div class="stat-icon clients">
-                    <svg style="width: 28px; height: 28px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                    </svg>
+        <a href="{{ route('clients.index') }}" style="text-decoration: none; color: inherit;">
+            <div class="stat-card" style="cursor: pointer;">
+                <div class="stat-card-content">
+                    <div class="stat-info">
+                        <div class="stat-label">عدد العملاء</div>
+                        <div class="stat-number">{{ $clientsCount }}</div>
+                    </div>
+                    <div class="stat-icon clients">
+                        <svg style="width: 28px; height: 28px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
                 </div>
             </div>
-        </div>
+        </a>
+
+        <!-- Quotes Card -->
+        <a href="{{ route('work-orders.index') }}" style="text-decoration: none; color: inherit;">
+            <div class="stat-card" style="cursor: pointer;">
+                <div class="stat-card-content">
+                    <div class="stat-info">
+                        <div class="stat-label">عرض الأسعار</div>
+                        <div class="stat-number">{{ $quotesCount ?? $workOrdersCount }}</div>
+                    </div>
+                    <div class="stat-icon work-orders">
+                        <svg style="width: 28px; height: 28px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </a>
+
+        <!-- Profile Card -->
+        <a href="{{ route('work-orders.list') }}" style="text-decoration: none; color: inherit;">
+            <div class="stat-card" style="cursor: pointer;">
+                <div class="stat-card-content">
+                    <div class="stat-info">
+                        <div class="stat-label">البروفا</div>
+                        <div class="stat-number">{{ $profileCount ?? 0 }}</div>
+                    </div>
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); color: #92400e;">
+                        <svg style="width: 28px; height: 28px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </a>
+
+        <!-- Preparations Card -->
+        <a href="{{ route('work-orders.preparations') }}" style="text-decoration: none; color: inherit;">
+            <div class="stat-card" style="cursor: pointer;">
+                <div class="stat-card-content">
+                    <div class="stat-info">
+                        <div class="stat-label">التجهيزات</div>
+                        <div class="stat-number">{{ $preparationsCount ?? 0 }}</div>
+                    </div>
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%); color: #9f1239;">
+                        <svg style="width: 28px; height: 28px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </a>
+
+        <!-- Production Card -->
+        <a href="{{ route('work-orders.production') }}" style="text-decoration: none; color: inherit;">
+            <div class="stat-card" style="cursor: pointer;">
+                <div class="stat-card-content">
+                    <div class="stat-info">
+                        <div class="stat-label">التشغيل</div>
+                        <div class="stat-number">{{ $productionCount ?? 0 }}</div>
+                    </div>
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #ddd6fe 0%, #c4b5fd 100%); color: #5b21b6;">
+                        <svg style="width: 28px; height: 28px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </a>
+
+        <!-- Archive Card -->
+        <a href="{{ route('work-orders.archive') }}" style="text-decoration: none; color: inherit;">
+            <div class="stat-card" style="cursor: pointer;">
+                <div class="stat-card-content">
+                    <div class="stat-info">
+                        <div class="stat-label">الأرشيف</div>
+                        <div class="stat-number">{{ $archiveCount ?? 0 }}</div>
+                    </div>
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%); color: #374151;">
+                        <svg style="width: 28px; height: 28px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </a>
     </div>
 
     <!-- Recent Work Orders Section -->

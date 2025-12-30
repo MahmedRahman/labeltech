@@ -148,7 +148,17 @@ Route::middleware(['auth:employee', 'employee.sales'])->prefix('employee')->name
             ->get();
         $clientsCount = \App\Models\Client::count();
         $recentClients = \App\Models\Client::latest()->take(5)->get();
-        return view('employee.dashboard', compact('workOrdersCount', 'recentWorkOrders', 'clientsCount', 'recentClients'));
+        
+        // Counts for cards
+        $quotesCount = \App\Models\WorkOrder::where('production_status', '!=', 'أرشيف')->count();
+        $profileCount = \App\Models\WorkOrder::where('status', 'work_order')->count();
+        $preparationsCount = \App\Models\WorkOrder::where('production_status', '!=', 'أرشيف')
+            ->whereNotNull('designer_paper_width')
+            ->count();
+        $productionCount = \App\Models\WorkOrder::whereIn('production_status', ['طباعة', 'قص', 'تقفيل'])->count();
+        $archiveCount = \App\Models\WorkOrder::where('production_status', 'أرشيف')->count();
+        
+        return view('employee.dashboard', compact('workOrdersCount', 'recentWorkOrders', 'clientsCount', 'recentClients', 'quotesCount', 'profileCount', 'preparationsCount', 'productionCount', 'archiveCount'));
     })->name('dashboard');
     
     // Sales Work Orders List
