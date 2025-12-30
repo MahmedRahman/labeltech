@@ -313,6 +313,22 @@
                         $isSalesEmployee = $isEmployee && $employeeAccountType === 'مبيعات';
                         $isDesignEmployee = $isEmployee && $employeeAccountType === 'تصميم';
                         $isProductionEmployee = $isEmployee && $employeeAccountType === 'تشغيل';
+                        
+                        // حساب عدد العملاء التابعين لموظف المبيعات
+                        $employeeClientsCount = 0;
+                        if ($isSalesEmployee && !$isAdmin) {
+                            $employee = auth('employee')->user();
+                            $employee->load('salesTeams');
+                            $teamIds = $employee->salesTeams->pluck('id')->toArray();
+                            
+                            if (!empty($teamIds)) {
+                                $employeeClientsCount = \App\Models\Client::whereHas('salesTeams', function($q) use ($teamIds) {
+                                    $q->whereIn('sales_teams.id', $teamIds);
+                                })->count();
+                            }
+                        } elseif ($isAdmin) {
+                            $employeeClientsCount = \App\Models\Client::count();
+                        }
                     @endphp
 
                     <!-- لوحة التحكم - تظهر لجميع المستخدمين -->
@@ -345,11 +361,18 @@
                         إدخال بيانات
                     </div>
 
-                    <a href="{{ route('clients.index') }}" class="nav-link {{ request()->routeIs('clients.*') ? 'active' : '' }}">
-                        <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                        </svg>
-                        العملاء
+                    <a href="{{ route('clients.index') }}" class="nav-link {{ request()->routeIs('clients.*') ? 'active' : '' }}" style="display: flex; align-items: center; justify-content: space-between;">
+                        <span style="display: flex; align-items: center;">
+                            <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            العملاء
+                        </span>
+                        @if($employeeClientsCount > 0)
+                            <span style="background-color: #2563eb; color: white; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; min-width: 1.5rem; text-align: center;">
+                                {{ $employeeClientsCount }}
+                            </span>
+                        @endif
                     </a>
                     @endif
 
