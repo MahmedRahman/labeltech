@@ -466,8 +466,8 @@
 
             @if($calculations['waste_percentage'] ?? $workOrder->waste_percentage)
             <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">الهاللك</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0; font-weight: 600;">{{ number_format($calculations['waste_percentage'] ?? $workOrder->waste_percentage ?? 0, 2) }} م</dd>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">نسبة الهالك</dt>
+                <dd style="font-size: 0.875rem; color: #111827; margin: 0; font-weight: 600;">{{ number_format($calculations['waste_percentage'] ?? $workOrder->waste_percentage ?? 0, 2) }}%</dd>
             </div>
             @endif
         </div>
@@ -500,8 +500,8 @@
 
             @if($workOrder->waste_percentage)
             <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">الهاللك</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0; font-weight: 600;">{{ number_format($workOrder->waste_percentage, 2) }} م</dd>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">نسبة الهالك</dt>
+                <dd style="font-size: 0.875rem; color: #111827; margin: 0; font-weight: 600;">{{ number_format($workOrder->waste_percentage, 2) }}%</dd>
             </div>
             @endif
 
@@ -665,9 +665,9 @@
 
             @if($calculations['waste_percentage'] ?? $workOrder->waste_percentage)
             <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 0.5rem; backdrop-filter: blur(10px);">
-                <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">الهاللك</dt>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">نسبة الهالك</dt>
                 <dd style="font-size: 1.25rem; color: white; margin: 0; font-weight: 700;">
-                    {{ number_format($calculations['waste_percentage'] ?? $workOrder->waste_percentage ?? 0, 2) }} <span style="font-size: 0.875rem; opacity: 0.8;">م</span>
+                    {{ number_format($calculations['waste_percentage'] ?? $workOrder->waste_percentage ?? 0, 2) }}%
                 </dd>
             </div>
             @endif
@@ -688,9 +688,9 @@
 
 
             <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 0.5rem; backdrop-filter: blur(10px);">
-                <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">إجمالي المبلغ شامل نسبة المبيعات و التجهيزات</dt>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">إجمالي المبلغ</dt>
                 <dd style="font-size: 1.25rem; color: white; margin: 0; font-weight: 700;">
-                    {{ number_format($calculations['total_order'], 2) }} <span style="font-size: 0.875rem; opacity: 0.8;">ج.م</span>
+                    {{ number_format($calculations['total_amount'], 2) }} <span style="font-size: 0.875rem; opacity: 0.8;">ج.م</span>
                 </dd>
             </div>
 

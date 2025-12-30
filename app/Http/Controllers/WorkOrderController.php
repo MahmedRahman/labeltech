@@ -939,8 +939,13 @@ class WorkOrderController extends Controller
             $calculations['waste'] = 0;
         }
         
-        // 5. Waste Percentage (الهاللك): (المتر الطولي + الهاللك) - المتر الطولي = الهاللك
-        $calculations['waste_percentage'] = ($calculations['linear_meter'] + $calculations['waste']) - $calculations['linear_meter'];
+        // 5. Waste Percentage: from wastes table based on number_of_colors
+        if ($workOrder->number_of_colors !== null) {
+            $waste = \App\Models\Waste::where('number_of_colors', $workOrder->number_of_colors)->first();
+            $calculations['waste_percentage'] = $waste ? $waste->waste_percentage : 0;
+        } else {
+            $calculations['waste_percentage'] = 0;
+        }
         
         // 6. Linear Meter with Waste: المتر الطولي + الهالك + نسبة الهالك
         $calculations['linear_meter_with_waste'] = $calculations['linear_meter'] + $calculations['waste'] + $calculations['waste_percentage'];
