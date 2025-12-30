@@ -146,7 +146,29 @@ Route::middleware(['auth:employee', 'employee.sales'])->prefix('employee')->name
             ->latest()
             ->take(5)
             ->get();
-        $clientsCount = \App\Models\Client::count();
+        
+        // حساب عدد العملاء التابعين لموظف المبيعات (نفس المنطق في القائمة الجانبية)
+        $employee = auth('employee')->user();
+        $isAdmin = auth('web')->check();
+        $employeeAccountType = $employee ? $employee->account_type : null;
+        $isSalesEmployee = $employee && $employeeAccountType === 'مبيعات';
+        
+        $clientsCount = 0;
+        if ($isSalesEmployee && !$isAdmin) {
+            $employee->load('salesTeams');
+            $teamIds = $employee->salesTeams->pluck('id')->toArray();
+            
+            if (!empty($teamIds)) {
+                $clientsCount = \App\Models\Client::whereHas('salesTeams', function($q) use ($teamIds) {
+                    $q->whereIn('sales_teams.id', $teamIds);
+                })->count();
+            }
+        } elseif ($isAdmin) {
+            $clientsCount = \App\Models\Client::count();
+        } else {
+            $clientsCount = \App\Models\Client::count();
+        }
+        
         $recentClients = \App\Models\Client::latest()->take(5)->get();
         
         // Counts for cards
