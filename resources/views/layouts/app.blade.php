@@ -356,11 +356,6 @@
                     </a>
 
                     @if($isSalesEmployee || $isAdmin)
-                        <!-- إدخال بيانات - للمبيعات والادمن فقط -->
-                        <div class="nav-section-title " style="margin-top: 1rem; font-size: 1.25rem; font-weight: 700; color: #111827; border-top: 1px solid #e5e7eb; padding-top: 1rem;">   
-                        إدخال بيانات
-                    </div>
-
                     <a href="{{ route('clients.index') }}" class="nav-link {{ request()->routeIs('clients.*') ? 'active' : '' }}" style="display: flex; align-items: center; justify-content: space-between;">
                         <span style="display: flex; align-items: center;">
                             <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -407,11 +402,6 @@
                     @endif
 
                     @if($isSalesEmployee || $isAdmin)
-                        <!-- أمر التصنيع -->
-                        <div class="nav-section-title " style="margin-top: 1rem; font-size: 1.25rem; font-weight: 700; color: #111827; border-top: 1px solid #e5e7eb; padding-top: 1rem;">   
-                            امر التصنيع
-                        </div>
-
                         @if($isSalesEmployee)
                             @php
                                 $currentRoute = request()->route()?->getName() ?? '';

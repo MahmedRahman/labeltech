@@ -171,14 +171,44 @@ Route::middleware(['auth:employee', 'employee.sales'])->prefix('employee')->name
         
         $recentClients = \App\Models\Client::latest()->take(5)->get();
         
-        // Counts for cards
-        $quotesCount = \App\Models\WorkOrder::where('production_status', '!=', 'أرشيف')->count();
-        $profileCount = \App\Models\WorkOrder::where('status', 'work_order')->count();
-        $preparationsCount = \App\Models\WorkOrder::where('production_status', '!=', 'أرشيف')
-            ->whereNotNull('designer_paper_width')
-            ->count();
-        $productionCount = \App\Models\WorkOrder::whereIn('production_status', ['طباعة', 'قص', 'تقفيل'])->count();
-        $archiveCount = \App\Models\WorkOrder::where('production_status', 'أرشيف')->count();
+        // Counts for cards - نفس المنطق المستخدم في AppLayout.php
+        $isAdmin = auth('web')->check();
+        
+        // عرض الأسعار (priceQuotesCount): status != 'work_order' and != 'cancelled'
+        $quotesQuery = \App\Models\WorkOrder::where('status', '!=', 'work_order')
+            ->where('status', '!=', 'cancelled');
+        if ($isSalesEmployee && !$isAdmin) {
+            $quotesQuery->where('created_by', $employee->name);
+        }
+        $quotesCount = $quotesQuery->count();
+        
+        // البروفا (proofsCount): status = 'work_order'
+        $profileQuery = \App\Models\WorkOrder::where('status', 'work_order');
+        if ($isSalesEmployee && !$isAdmin) {
+            $profileQuery->where('created_by', $employee->name);
+        }
+        $profileCount = $profileQuery->count();
+        
+        // التجهيزات (preparationsCount): status = 'in_progress'
+        $preparationsQuery = \App\Models\WorkOrder::where('status', 'in_progress');
+        if ($isSalesEmployee && !$isAdmin) {
+            $preparationsQuery->where('created_by', $employee->name);
+        }
+        $preparationsCount = $preparationsQuery->count();
+        
+        // التشغيل (productionCount): status = 'completed'
+        $productionQuery = \App\Models\WorkOrder::where('status', 'completed');
+        if ($isSalesEmployee && !$isAdmin) {
+            $productionQuery->where('created_by', $employee->name);
+        }
+        $productionCount = $productionQuery->count();
+        
+        // الأرشيف (archiveCount): status = 'cancelled'
+        $archiveQuery = \App\Models\WorkOrder::where('status', 'cancelled');
+        if ($isSalesEmployee && !$isAdmin) {
+            $archiveQuery->where('created_by', $employee->name);
+        }
+        $archiveCount = $archiveQuery->count();
         
         return view('employee.dashboard', compact('workOrdersCount', 'recentWorkOrders', 'clientsCount', 'recentClients', 'quotesCount', 'profileCount', 'preparationsCount', 'productionCount', 'archiveCount'));
     })->name('dashboard');

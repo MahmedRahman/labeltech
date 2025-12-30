@@ -123,8 +123,8 @@
                 <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">{{ $workOrder->width ? number_format($workOrder->width, 1) : '-' }}</span>
             </div>
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
-                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">أتجاه الجر:</span>
-                <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">{{ $workOrder->winding_direction == 'yes' ? 'نعم' : ($workOrder->winding_direction == 'no' ? 'لا' : 'لا يوجد') }}</span>
+                <span style="font-size: 0.875rem; font-weight: 500; color: #6b7280;">الطول:</span>
+                <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">{{ $workOrder->length ? number_format($workOrder->length, 1) : '-' }}</span>
             </div>
             
             <!-- Row 4 -->
@@ -159,94 +159,12 @@
         </div>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
             <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">الخامة</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0; font-weight: 500;">{{ $workOrder->material }}</dd>
-            </div>
-
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">الكمية</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0; font-weight: 600;">{{ number_format($workOrder->quantity) }}</dd>
-            </div>
-
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">عدد الألوان</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0;">{{ $workOrder->number_of_colors }}</dd>
-            </div>
-
-            @if($workOrder->rows_count)
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">عدد الصفوف</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0;">{{ $workOrder->rows_count }}</dd>
-            </div>
-            @endif
-
-            @if($workOrder->width)
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">العرض</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0;">{{ number_format($workOrder->width, 2) }} سم</dd>
-            </div>
-            @endif
-
-            @if($workOrder->length)
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">الطول</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0;">{{ number_format($workOrder->length, 2) }} سم</dd>
-            </div>
-            @endif
-
-            @if($workOrder->width && $workOrder->length)
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">الأبعاد</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0;">
-                    {{ number_format($workOrder->width, 2) }} × {{ number_format($workOrder->length, 2) }} سم
-                </dd>
-            </div>
-            @endif
-
-            <div>
                 <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">البصمة</dt>
                 <dd style="font-size: 0.875rem; color: #111827; margin: 0;">
                     @if(($workOrder->fingerprint ?? 'no') == 'yes')
                         <span style="color: #10b981; font-weight: 600;">✓ موجود</span>
                         @if($workOrder->fingerprint_price)
                             <span style="color: #111827; margin-right: 0.5rem;">- {{ number_format($workOrder->fingerprint_price, 2) }} ج.م</span>
-                        @endif
-                    @else
-                        <span style="color: #6b7280;">✗ لا يوجد</span>
-                    @endif
-                </dd>
-            </div>
-
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">اتجاه اللف</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0;">
-                    @php
-                        $windingDirection = $workOrder->winding_direction ?? 'no';
-                        if ($windingDirection == 'clockwise') {
-                            $windingLabel = 'في اتجاه عقارب الساعة';
-                            $windingColor = '#10b981';
-                        } elseif ($windingDirection == 'counterclockwise') {
-                            $windingLabel = 'عكس عقارب الساعة';
-                            $windingColor = '#f59e0b';
-                        } elseif ($windingDirection == 'yes') {
-                            $windingLabel = 'يوجد';
-                            $windingColor = '#2563eb';
-                        } else {
-                            $windingLabel = 'لا يوجد';
-                            $windingColor = '#6b7280';
-                        }
-                    @endphp
-                    <span style="color: {{ $windingColor }}; font-weight: 500;">{{ $windingLabel }}</span>
-                </dd>
-            </div>
-
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">السكينة</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0;">
-                    @if(($workOrder->knife_exists ?? 'no') == 'yes')
-                        <span style="color: #10b981; font-weight: 600;">✓ موجود</span>
-                        @if($workOrder->knife_price)
-                            <span style="color: #111827; margin-right: 0.5rem;">- {{ number_format($workOrder->knife_price, 2) }} ج.م</span>
                         @endif
                     @else
                         <span style="color: #6b7280;">✗ لا يوجد</span>
@@ -275,13 +193,6 @@
             </div>
             @endif
 
-            @if($workOrder->addition_price)
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">سعر الإضافة</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0; font-weight: 600;">{{ number_format($workOrder->addition_price, 2) }} ج.م</dd>
-            </div>
-            @endif
-
             @if($workOrder->final_product_shape)
             <div>
                 <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">شكل المنتج النهائي</dt>
@@ -292,7 +203,7 @@
     </div>
 
     <!-- التجهيزات -->
-    @if($workOrder->film_price || $workOrder->film_count || $workOrder->sales_percentage || $workOrder->material_price_per_meter || $workOrder->manufacturing_price_per_meter || $workOrder->waste_per_roll)
+    @if($workOrder->film_price || $workOrder->film_count || $workOrder->waste_per_roll || $workOrder->knife_exists)
     <div class="card" style="margin-bottom: 1.5rem;">
         <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid #e5e7eb;">
             <svg style="width: 24px; height: 24px; color: #f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -315,33 +226,19 @@
             </div>
             @endif
 
-            @if($workOrder->sales_percentage)
             <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">نسبة المبيعات</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0; font-weight: 600;">{{ number_format($workOrder->sales_percentage, 2) }}%</dd>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">السكينة</dt>
+                <dd style="font-size: 0.875rem; color: #111827; margin: 0;">
+                    @if(($workOrder->knife_exists ?? 'no') == 'yes')
+                        <span style="color: #10b981; font-weight: 600;">✓ موجود</span>
+                        @if($workOrder->knife_price)
+                            <span style="color: #111827; margin-right: 0.5rem;">- {{ number_format($workOrder->knife_price, 2) }} ج.م</span>
+                        @endif
+                    @else
+                        <span style="color: #6b7280;">✗ لا يوجد</span>
+                    @endif
+                </dd>
             </div>
-            @endif
-
-            @if($workOrder->material_price_per_meter)
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">سعر المتر الخامة</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0; font-weight: 600;">{{ number_format($workOrder->material_price_per_meter, 2) }} ج.م</dd>
-            </div>
-            @endif
-
-            @if($workOrder->manufacturing_price_per_meter)
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">سعر متر التصنيع</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0; font-weight: 600;">{{ number_format($workOrder->manufacturing_price_per_meter, 2) }} ج.م</dd>
-            </div>
-            @endif
-
-            @if($workOrder->waste_per_roll)
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">عدد الهالك للبكره</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0; font-weight: 600;">{{ number_format($workOrder->waste_per_roll, 0) }}</dd>
-            </div>
-            @endif
         </div>
     </div>
     @endif
@@ -566,11 +463,11 @@
                 </dd>
             </div>
 
-            @if($workOrder->waste_per_roll)
+            @if($calculations['waste'] ?? $workOrder->waste || $calculations['waste_percentage'] ?? $workOrder->waste_percentage)
             <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 0.5rem; backdrop-filter: blur(10px);">
-                <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">عدد الهالك للبكره</dt>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">الهالك + نسبة الهالك</dt>
                 <dd style="font-size: 1.25rem; color: white; margin: 0; font-weight: 700;">
-                    {{ number_format($workOrder->waste_per_roll, 0) }}
+                    {{ number_format(($calculations['waste'] ?? $workOrder->waste ?? 0) + ($calculations['waste_percentage'] ?? $workOrder->waste_percentage ?? 0), 2) }}
                 </dd>
             </div>
             @endif
@@ -589,12 +486,6 @@
                 </dd>
             </div>
 
-            <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 0.5rem; backdrop-filter: blur(10px);">
-                <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">إجمالي المبلغ (الأسعار)</dt>
-                <dd style="font-size: 1.25rem; color: white; margin: 0; font-weight: 700;">
-                    {{ number_format($calculations['total_prices_sum'], 2) }} <span style="font-size: 0.875rem; opacity: 0.8;">ج.م</span>
-                </dd>
-            </div>
 
             <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 0.5rem; backdrop-filter: blur(10px);">
                 <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">إجمالي المبلغ</dt>
@@ -630,14 +521,14 @@
             </div>
 
             <div style="background: rgba(255, 255, 255, 0.2); padding: 1.25rem; border-radius: 0.5rem; backdrop-filter: blur(10px); border: 2px solid rgba(255, 255, 255, 0.3);">
-                <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">إجمالي الطلب</dt>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">إجمالي المبلغ شامل التجهيزات و نسبة المبيعات</dt>
                 <dd style="font-size: 1.5rem; color: white; margin: 0; font-weight: 700;">
                     {{ number_format($calculations['total_order'], 2) }} <span style="font-size: 0.875rem; opacity: 0.8;">ج.م</span>
                 </dd>
             </div>
 
             <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 0.5rem; backdrop-filter: blur(10px);">
-                <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">سعر الف</dt>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: rgba(255, 255, 255, 0.9); margin-bottom: 0.5rem;">سعر الألف شامل التجهيزات و نسبة المبيعات</dt>
                 <dd style="font-size: 1.25rem; color: white; margin: 0; font-weight: 700;">
                     {{ number_format($calculations['price_per_thousand'], 2) }} <span style="font-size: 0.875rem; opacity: 0.8;">ج.م</span>
                 </dd>
