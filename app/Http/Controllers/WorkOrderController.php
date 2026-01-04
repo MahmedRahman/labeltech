@@ -499,6 +499,136 @@ class WorkOrderController extends Controller
     }
 
     /**
+     * Display workflow page with all work order stages (for admin only).
+     */
+    public function workflow(Request $request)
+    {
+        // Only allow admin users
+        if (!auth('web')->check()) {
+            abort(403);
+        }
+
+        // Get all clients for filter dropdown
+        $clients = Client::orderBy('name')->get();
+
+        // Filter by client
+        $clientFilter = $request->filled('client_id') ? $request->client_id : null;
+        // Filter by order number
+        $orderNumberFilter = $request->filled('order_number') ? $request->order_number : null;
+
+        // 0. عروض الأسعار (Price Quotes) - status != 'work_order' and != 'cancelled' and != 'in_progress' and != 'completed'
+        $priceQuotesQuery = WorkOrder::with('client')
+            ->where('status', '!=', 'work_order')
+            ->where('status', '!=', 'cancelled')
+            ->where('status', '!=', 'in_progress')
+            ->where('status', '!=', 'completed');
+        if ($clientFilter) {
+            $priceQuotesQuery->where('client_id', $clientFilter);
+        }
+        if ($orderNumberFilter) {
+            $priceQuotesQuery->where('order_number', 'like', '%' . $orderNumberFilter . '%');
+        }
+        $priceQuotes = $priceQuotesQuery->latest()->get();
+        $priceQuotesCount = $priceQuotes->count();
+        $sentQuotesCount = $priceQuotes->filter(function($order) {
+            return ($order->sent_to_client ?? 'no') === 'yes';
+        })->count();
+        $notSentQuotesCount = $priceQuotes->filter(function($order) {
+            return ($order->sent_to_client ?? 'no') !== 'yes';
+        })->count();
+
+        // 1. البروفا (Proofs) - status = 'work_order'
+        $proofsQuery = WorkOrder::with('client')
+            ->where('status', 'work_order');
+        if ($clientFilter) {
+            $proofsQuery->where('client_id', $clientFilter);
+        }
+        if ($orderNumberFilter) {
+            $proofsQuery->where('order_number', 'like', '%' . $orderNumberFilter . '%');
+        }
+        $proofs = $proofsQuery->latest()->get();
+        $proofsCount = $proofs->count();
+        $approvedProofsCount = $proofs->filter(function($order) {
+            return ($order->client_design_approval ?? '') === 'موافق';
+        })->count();
+        $notApprovedProofsCount = $proofs->filter(function($order) {
+            return ($order->client_design_approval ?? '') !== 'موافق';
+        })->count();
+
+        // 2. أوامر الشغل المرسلة إلى المصمم - sent_to_designer = 'yes' and status = 'work_order'
+        $sentToDesignerQuery = WorkOrder::with('client')
+            ->where('sent_to_designer', 'yes')
+            ->where('status', 'work_order');
+        if ($clientFilter) {
+            $sentToDesignerQuery->where('client_id', $clientFilter);
+        }
+        if ($orderNumberFilter) {
+            $sentToDesignerQuery->where('order_number', 'like', '%' . $orderNumberFilter . '%');
+        }
+        $sentToDesigner = $sentToDesignerQuery->latest()->get();
+        $sentToDesignerCount = $sentToDesigner->count();
+
+        // 3. التجهيزات (Preparations) - status = 'in_progress'
+        $preparationsQuery = WorkOrder::with('client')
+            ->where('status', 'in_progress');
+        if ($clientFilter) {
+            $preparationsQuery->where('client_id', $clientFilter);
+        }
+        if ($orderNumberFilter) {
+            $preparationsQuery->where('order_number', 'like', '%' . $orderNumberFilter . '%');
+        }
+        $preparations = $preparationsQuery->latest()->get();
+        $preparationsCount = $preparations->count();
+
+        // 4. التشغيل (Production) - status = 'completed'
+        $productionQuery = WorkOrder::with('client')
+            ->where('status', 'completed');
+        if ($clientFilter) {
+            $productionQuery->where('client_id', $clientFilter);
+        }
+        if ($orderNumberFilter) {
+            $productionQuery->where('order_number', 'like', '%' . $orderNumberFilter . '%');
+        }
+        $production = $productionQuery->latest()->get();
+        $productionCount = $production->count();
+
+        // 5. الأرشيف (Archive) - status = 'cancelled'
+        $archiveQuery = WorkOrder::with('client')
+            ->where('status', 'cancelled');
+        if ($clientFilter) {
+            $archiveQuery->where('client_id', $clientFilter);
+        }
+        if ($orderNumberFilter) {
+            $archiveQuery->where('order_number', 'like', '%' . $orderNumberFilter . '%');
+        }
+        $archive = $archiveQuery->latest()->get();
+        $archiveCount = $archive->count();
+
+        // 6. جميع أوامر الشغل - جميع الحالات
+        $allWorkOrdersQuery = WorkOrder::with('client');
+        if ($clientFilter) {
+            $allWorkOrdersQuery->where('client_id', $clientFilter);
+        }
+        if ($orderNumberFilter) {
+            $allWorkOrdersQuery->where('order_number', 'like', '%' . $orderNumberFilter . '%');
+        }
+        $allWorkOrders = $allWorkOrdersQuery->latest()->get();
+        $allWorkOrdersCount = $allWorkOrders->count();
+
+        return view('work-orders.workflow', compact(
+            'clients',
+            'priceQuotes', 'priceQuotesCount', 'sentQuotesCount', 'notSentQuotesCount',
+            'proofs', 'proofsCount', 'approvedProofsCount', 'notApprovedProofsCount',
+            'sentToDesigner', 'sentToDesignerCount',
+            'preparations', 'preparationsCount',
+            'production', 'productionCount',
+            'archive', 'archiveCount',
+            'allWorkOrders', 'allWorkOrdersCount',
+            'clientFilter', 'orderNumberFilter'
+        ));
+    }
+
+    /**
      * Show the form for creating a new resource.
      */
     public function create()

@@ -431,23 +431,10 @@
                                                 str_starts_with($currentRoute, 'work-orders.design.');
                             $isWorkOrderListRoute = $currentRoute === 'work-orders.list';
                         @endphp
-                        @if($isAdmin)
-                            <a href="{{ route('work-orders.index') }}" class="nav-link {{ $isWorkOrderRoute ? 'active' : '' }}" style="display: flex; align-items: center; justify-content: space-between;">
-                                <span style="display: flex; align-items: center;">
-                                    <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                    </svg>
-                                    البروفا
-                                </span>
-                                @if(isset($priceQuotesCount) && $priceQuotesCount > 0)
-                                    <span style="background-color: #2563eb; color: white; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; min-width: 1.5rem; text-align: center;">{{ $priceQuotesCount }}</span>
-                                @endif
-                            </a>
-                        @endif
                     @endif
                     
-                    @if(!$isDesignEmployee && !$isProductionEmployee)
-                    <!-- البروفا - لا يظهر للمصمم والتشغيل -->
+                    @if(!$isDesignEmployee && !$isProductionEmployee && !$isAdmin)
+                    <!-- البروفا - لا يظهر للمصمم والتشغيل والادمن -->
                     @php
                         $currentRoute = request()->route()?->getName() ?? '';
                         $isWorkOrderListRoute = $currentRoute === 'work-orders.list';
@@ -459,33 +446,14 @@
                             </svg>
                             البروفا
                         </span>
-                        @if(($isSalesEmployee || $isAdmin) && isset($proofsCount) && $proofsCount > 0)
+                        @if($isSalesEmployee && isset($proofsCount) && $proofsCount > 0)
                             <span style="background-color: #2563eb; color: white; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; min-width: 1.5rem; text-align: center;">{{ $proofsCount }}</span>
                         @endif
                     </a>
                     @endif
                     
-                    <!-- أوامر الشغل المرسلة إلى المصمم - للادمن فقط -->
-                    @if($isAdmin)
-                    @php
-                        $currentRoute = request()->route()?->getName() ?? '';
-                        $isSentToDesignerRoute = $currentRoute === 'work-orders.sent-to-designer';
-                    @endphp
-                    <a href="{{ route('work-orders.sent-to-designer') }}" class="nav-link {{ $isSentToDesignerRoute ? 'active' : '' }}" style="display: flex; align-items: center; justify-content: space-between;">
-                        <span style="display: flex; align-items: center;">
-                            <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                            </svg>
-                            أوامر الشغل المرسلة إلى المصمم
-                        </span>
-                        @if(isset($sentToDesignerCount) && $sentToDesignerCount > 0)
-                            <span style="background-color: #2563eb; color: white; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; min-width: 1.5rem; text-align: center;">{{ $sentToDesignerCount }}</span>
-                        @endif
-                    </a>
-                    @endif
-                    
-                    @if(!$isDesignEmployee && !$isProductionEmployee)
-                    <!-- التجهيزات - لا يظهر للمصمم والتشغيل -->
+                    @if(!$isDesignEmployee && !$isProductionEmployee && !$isAdmin)
+                    <!-- التجهيزات - لا يظهر للمصمم والتشغيل والادمن -->
                     @php
                         $currentRoute = request()->route()?->getName() ?? '';
                         $isPreparationsRoute = $currentRoute === 'work-orders.preparations';
@@ -497,14 +465,14 @@
                             </svg>
                             التجهيزات
                         </span>
-                        @if(($isSalesEmployee || $isAdmin) && isset($preparationsCount) && $preparationsCount > 0)
+                        @if($isSalesEmployee && isset($preparationsCount) && $preparationsCount > 0)
                             <span style="background-color: #f59e0b; color: white; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; min-width: 1.5rem; text-align: center;">{{ $preparationsCount }}</span>
                         @endif
                     </a>
                     @endif
                     
-                    @if(!$isDesignEmployee)
-                    <!-- التشغيل - لا يظهر للمصمم -->
+                    @if(!$isDesignEmployee && !$isAdmin)
+                    <!-- التشغيل - لا يظهر للمصمم والادمن -->
                     @php
                         $currentRoute = request()->route()?->getName() ?? '';
                         $isProductionRoute = $currentRoute === 'work-orders.production' || $currentRoute === 'employee.production.work-orders';
@@ -517,14 +485,14 @@
                             </svg>
                             التشغيل
                         </span>
-                        @if(($isSalesEmployee || $isAdmin || $isProductionEmployee) && isset($productionCount) && $productionCount > 0)
+                        @if(($isSalesEmployee || $isProductionEmployee) && isset($productionCount) && $productionCount > 0)
                             <span style="background-color: #10b981; color: white; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; min-width: 1.5rem; text-align: center;">{{ $productionCount }}</span>
                         @endif
                     </a>
                     @endif
                     
-                    @if(!$isDesignEmployee && !$isProductionEmployee)
-                    <!-- الأرشيف - لا يظهر للمصمم والتشغيل -->
+                    @if(!$isDesignEmployee && !$isProductionEmployee && !$isAdmin)
+                    <!-- الأرشيف - لا يظهر للمصمم والتشغيل والادمن -->
                     @php
                         $isArchiveRoute = $currentRoute === 'work-orders.archive';
                     @endphp
@@ -535,9 +503,23 @@
                             </svg>
                             الأرشيف
                         </span>
-                        @if(($isSalesEmployee || $isAdmin) && isset($archiveCount) && $archiveCount > 0)
+                        @if($isSalesEmployee && isset($archiveCount) && $archiveCount > 0)
                             <span style="background-color: #2563eb; color: white; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; min-width: 1.5rem; text-align: center;">{{ $archiveCount }}</span>
                         @endif
+                    </a>
+                    @endif
+                    
+                    @if($isAdmin)
+                    <!-- سير العمل - للادمن فقط -->
+                    @php
+                        $currentRoute = request()->route()?->getName() ?? '';
+                        $isWorkflowRoute = $currentRoute === 'work-orders.workflow';
+                    @endphp
+                    <a href="{{ route('work-orders.workflow') }}" class="nav-link {{ $isWorkflowRoute ? 'active' : '' }}">
+                        <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                        </svg>
+                        سير العمل
                     </a>
                     @endif
 
@@ -584,28 +566,21 @@
                     @endif
 
                     @if($isAdmin)
-                        <a href="{{ route('work-orders.archive') }}" class="nav-link {{ request()->routeIs('work-orders.archive') ? 'active' : '' }}">
-                            <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
-                        </svg>
-                            الأرشيف
-                        </a>
-
                         <div class="nav-section-title " style="margin-top: 1rem; font-size: 1.25rem; font-weight: 700; color: #111827; border-top: 1px solid #e5e7eb; padding-top: 1rem;">   
                             المصروفات
-                    </div>
+                        </div>
                         <a href="{{ route('expenses.index') }}" class="nav-link {{ request()->routeIs('expenses.*') ? 'active' : '' }}">
                             <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
                             </svg>
                             المصروفات
                         </a>
-                    <a href="{{ route('expense-types.index') }}" class="nav-link {{ request()->routeIs('expense-types.*') ? 'active' : '' }}">
-                        <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
-                        أنواع المصروفات
-                    </a>
+                        <a href="{{ route('expense-types.index') }}" class="nav-link {{ request()->routeIs('expense-types.*') ? 'active' : '' }}">
+                            <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            أنواع المصروفات
+                        </a>
 
                         <!-- الإعدادات -->
                         <div class="nav-section-title " style="margin-top: 1rem; font-size: 1.25rem; font-weight: 700; color: #111827; border-top: 1px solid #e5e7eb; padding-top: 1rem;">   
@@ -619,12 +594,12 @@
                             أقسام الشركة
                         </a>
 
-                    <a href="{{ route('payment-methods.index') }}" class="nav-link {{ request()->routeIs('payment-methods.*') ? 'active' : '' }}">
-                        <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-                        </svg>
-                        طرق السداد
-                    </a>
+                        <a href="{{ route('payment-methods.index') }}" class="nav-link {{ request()->routeIs('payment-methods.*') ? 'active' : '' }}">
+                            <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                            </svg>
+                            طرق السداد
+                        </a>
 
                         <a href="{{ route('materials.index') }}" class="nav-link {{ request()->routeIs('materials.*') ? 'active' : '' }}">
                             <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
