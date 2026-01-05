@@ -508,8 +508,15 @@ class WorkOrderController extends Controller
             abort(403);
         }
 
-        // Get all clients for filter dropdown
-        $clients = Client::orderBy('name')->get();
+        // Get only clients that have work orders
+        $clients = Client::whereHas('workOrders')->orderBy('name')->get();
+
+        // Get all order numbers from work orders for dropdown
+        $orderNumbers = WorkOrder::whereNotNull('order_number')
+            ->distinct()
+            ->orderBy('order_number')
+            ->pluck('order_number')
+            ->toArray();
 
         // Filter by client
         $clientFilter = $request->filled('client_id') ? $request->client_id : null;
@@ -617,6 +624,7 @@ class WorkOrderController extends Controller
 
         return view('work-orders.workflow', compact(
             'clients',
+            'orderNumbers',
             'priceQuotes', 'priceQuotesCount', 'sentQuotesCount', 'notSentQuotesCount',
             'proofs', 'proofsCount', 'approvedProofsCount', 'notApprovedProofsCount',
             'sentToDesigner', 'sentToDesignerCount',

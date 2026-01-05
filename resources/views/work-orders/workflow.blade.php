@@ -3,69 +3,191 @@
         $title = 'سير العمل';
     @endphp
 
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+
+    <!-- jQuery (required for Select2) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     <style>
-        .tabs-container {
+        /* Select2 styling for filter dropdowns */
+        #clientFilter + .select2-container,
+        #orderNumberFilter + .select2-container {
+            width: 100% !important;
+            direction: rtl;
+        }
+        
+        #clientFilter + .select2-container .select2-selection--single,
+        #orderNumberFilter + .select2-container .select2-selection--single {
+            height: 56px !important;
+            border: 2px solid #d1d5db !important;
+            border-radius: 0.5rem !important;
+            padding: 0 !important;
+            font-size: 1rem !important;
+            line-height: 1.5 !important;
+            direction: rtl !important;
+            background-color: white !important;
+            transition: all 0.2s ease !important;
+        }
+        
+        #clientFilter + .select2-container .select2-selection--single:hover,
+        #orderNumberFilter + .select2-container .select2-selection--single:hover {
+            border-color: #9ca3af !important;
+        }
+        
+        #clientFilter + .select2-container.select2-container--focus .select2-selection--single,
+        #orderNumberFilter + .select2-container.select2-container--focus .select2-selection--single {
+            border-color: #2563eb !important;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+            outline: none !important;
+        }
+        
+        #clientFilter + .select2-container .select2-selection--single:hover,
+        #orderNumberFilter + .select2-container .select2-selection--single:hover {
+            border-color: #9ca3af !important;
+        }
+        
+        #clientFilter + .select2-container .select2-selection--single .select2-selection__rendered,
+        #orderNumberFilter + .select2-container .select2-selection--single .select2-selection__rendered {
+            padding: 0.875rem 3rem 0.875rem 1rem !important;
+            line-height: 1.5 !important;
+            color: #111827 !important;
+            direction: rtl !important;
+            text-align: right !important;
+            font-weight: 500 !important;
+        }
+        
+        #clientFilter + .select2-container .select2-selection--single .select2-selection__placeholder,
+        #orderNumberFilter + .select2-container .select2-selection--single .select2-selection__placeholder {
+            color: #9ca3af !important;
+        }
+        
+        #clientFilter + .select2-container .select2-selection--single .select2-selection__arrow,
+        #orderNumberFilter + .select2-container .select2-selection--single .select2-selection__arrow {
+            height: 54px !important;
+            right: auto !important;
+            left: 12px !important;
+            width: 20px !important;
+        }
+        
+        #clientFilter + .select2-container .select2-selection--single .select2-selection__arrow b,
+        #orderNumberFilter + .select2-container .select2-selection--single .select2-selection__arrow b {
+            border-color: #6b7280 transparent transparent transparent !important;
+            border-width: 5px 4px 0 4px !important;
+            margin-top: -2.5px !important;
+        }
+        
+        #clientFilter + .select2-container.select2-container--open .select2-selection--single .select2-selection__arrow b,
+        #orderNumberFilter + .select2-container.select2-container--open .select2-selection--single .select2-selection__arrow b {
+            border-color: transparent transparent #6b7280 transparent !important;
+            border-width: 0 4px 5px 4px !important;
+            margin-top: -2.5px !important;
+        }
+        
+        .select2-dropdown {
+            direction: rtl !important;
+            border: 1px solid #d1d5db !important;
+            border-radius: 0.375rem !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+            margin-top: 0.25rem !important;
+        }
+        
+        .select2-search--dropdown {
+            padding: 0.75rem !important;
+            border-bottom: 1px solid #e5e7eb !important;
+        }
+        
+        .select2-search--dropdown .select2-search__field {
+            direction: rtl !important;
+            padding: 0.625rem 0.875rem !important;
+            font-size: 1rem !important;
+            border: 2px solid #d1d5db !important;
+            border-radius: 0.375rem !important;
+            width: 100% !important;
+            outline: none !important;
+        }
+        
+        .select2-search--dropdown .select2-search__field:focus {
+            border-color: #2563eb !important;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+        }
+        
+        .select2-results__options {
+            max-height: 300px !important;
+            overflow-y: auto !important;
+        }
+        
+        .select2-results__option {
+            padding: 0.875rem 1rem !important;
+            font-size: 1rem !important;
+            direction: rtl !important;
+            text-align: right !important;
+        }
+        
+        .select2-results__option--highlighted {
+            background-color: #eff6ff !important;
+            color: #2563eb !important;
+        }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .status-card {
             background: white;
-            border-radius: 0.5rem;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-            margin-bottom: 1.5rem;
-        }
-
-        .tabs-header {
-            display: flex;
-            border-bottom: 2px solid #e5e7eb;
-            overflow-x: auto;
-        }
-
-        .tab-button {
-            padding: 1rem 1.5rem;
-            background: none;
-            border: none;
-            border-bottom: 3px solid transparent;
+            border-radius: 0.75rem;
+            border: 2px solid #e5e7eb;
+            padding: 1.5rem;
             cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            color: #6b7280;
-            transition: all 0.2s;
-            white-space: nowrap;
+            transition: all 0.3s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .status-card.active {
+            border-color: #2563eb;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+
+        .status-card-header {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            justify-content: space-between;
+            margin-bottom: 1rem;
         }
 
-        .tab-button:hover {
-            color: #2563eb;
-            background-color: #f9fafb;
-        }
-
-        .tab-button.active {
-            color: #2563eb;
-            border-bottom-color: #2563eb;
-            background-color: #eff6ff;
-        }
-
-        .tab-badge {
-            background-color: #e5e7eb;
-            color: #374151;
-            padding: 0.125rem 0.5rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
+        .status-card-title {
+            font-size: 1rem;
             font-weight: 600;
+            color: #111827;
+            margin: 0;
         }
 
-        .tab-button.active .tab-badge {
-            background-color: #2563eb;
-            color: white;
+        .status-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .tab-content {
-            display: none;
-            padding: 1.5rem;
-        }
-
-        .tab-content.active {
-            display: block;
+        .status-card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #111827;
+            margin: 0;
         }
 
         .data-table {
@@ -100,6 +222,14 @@
             font-size: 0.875rem;
             color: #111827;
             border-bottom: 1px solid #e5e7eb;
+        }
+
+        .data-table tbody tr {
+            display: none;
+        }
+
+        .data-table tbody tr.show {
+            display: table-row;
         }
 
         .data-table tbody tr:hover {
@@ -163,14 +293,12 @@
 
         .filter-form {
             display: flex;
+            flex-direction: column;
             gap: 1rem;
-            flex-wrap: wrap;
-            align-items: flex-end;
         }
 
         .filter-group {
-            flex: 1;
-            min-width: 200px;
+            width: 100%;
         }
 
         .filter-label {
@@ -197,6 +325,38 @@
             border-radius: 0.5rem;
             border: 1px solid #e5e7eb;
         }
+
+        .active-filter-info {
+            background: #eff6ff;
+            border: 1px solid #2563eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .active-filter-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #2563eb;
+            margin: 0;
+        }
+
+        .clear-filter-btn {
+            padding: 0.5rem 1rem;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .clear-filter-btn:hover {
+            background-color: #1d4ed8;
+        }
     </style>
 
     <!-- Header -->
@@ -207,10 +367,10 @@
 
     <!-- Filter Section -->
     <div class="filter-section">
-        <form method="GET" action="{{ route('work-orders.workflow') }}" class="filter-form">
+        <form method="GET" action="{{ route('work-orders.workflow') }}" class="filter-form" id="filterForm">
             <div class="filter-group">
                 <label class="filter-label">العميل</label>
-                <select name="client_id" class="filter-select">
+                <select name="client_id" class="filter-select" id="clientFilter">
                     <option value="">جميع العملاء</option>
                     @foreach($clients as $client)
                         <option value="{{ $client->id }}" {{ $clientFilter == $client->id ? 'selected' : '' }}>
@@ -221,478 +381,402 @@
             </div>
             <div class="filter-group">
                 <label class="filter-label">رقم عرض السعر</label>
-                <input type="text" name="order_number" class="filter-input" value="{{ $orderNumberFilter ?? '' }}" placeholder="ابحث برقم عرض السعر">
+                <select name="order_number" class="filter-select" id="orderNumberFilter">
+                    <option value="">جميع أرقام عروض الأسعار</option>
+                    @foreach($orderNumbers as $orderNumber)
+                        <option value="{{ $orderNumber }}" {{ $orderNumberFilter == $orderNumber ? 'selected' : '' }}>
+                            {{ $orderNumber }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
             <div class="filter-group">
-                <button type="submit" style="padding: 0.5rem 1.5rem; background-color: #2563eb; color: white; border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer;">
+                <button type="submit" style="padding: 0.75rem 1.5rem; background-color: #2563eb; color: white; border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer; font-size: 1rem;">
                     بحث
                 </button>
-                <a href="{{ route('work-orders.workflow') }}" style="padding: 0.5rem 1.5rem; background-color: #6b7280; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; display: inline-block; margin-right: 0.5rem;">
+                <a href="{{ route('work-orders.workflow') }}" style="padding: 0.75rem 1.5rem; background-color: #6b7280; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; display: inline-block; margin-right: 0.5rem; font-size: 1rem;">
                     إعادة تعيين
                 </a>
             </div>
         </form>
     </div>
 
-    <!-- Tabs Container -->
-    <div class="tabs-container">
-        <div class="tabs-header">
-            <button class="tab-button active" onclick="switchTab('price-quotes')">
-                عروض الأسعار
-                <span class="tab-badge">{{ $priceQuotesCount }}</span>
-            </button>
-            <button class="tab-button" onclick="switchTab('proofs')">
-                البروفا
-                <span class="tab-badge">{{ $proofsCount }}</span>
-            </button>
-            <button class="tab-button" onclick="switchTab('sent-to-designer')">
-                المرسلة إلى المصمم
-                <span class="tab-badge">{{ $sentToDesignerCount }}</span>
-            </button>
-            <button class="tab-button" onclick="switchTab('preparations')">
-                التجهيزات
-                <span class="tab-badge">{{ $preparationsCount }}</span>
-            </button>
-            <button class="tab-button" onclick="switchTab('production')">
-                التشغيل
-                <span class="tab-badge">{{ $productionCount }}</span>
-            </button>
-            <button class="tab-button" onclick="switchTab('archive')">
-                الأرشيف
-                <span class="tab-badge">{{ $archiveCount }}</span>
-            </button>
-            <button class="tab-button" onclick="switchTab('all')">
-                جميع أوامر الشغل
-                <span class="tab-badge">{{ $allWorkOrdersCount }}</span>
-            </button>
+    <!-- Status Cards -->
+    <div class="cards-container">
+        <div class="status-card" data-filter="price-quotes" onclick="filterByStatus('price-quotes')">
+            <div class="status-card-header">
+                <h3 class="status-card-title">عروض الأسعار</h3>
+                <div class="status-card-icon" style="background-color: #fef3c7;">
+                    <svg style="width: 24px; height: 24px; color: #f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+            </div>
+            <p class="status-card-value" style="color: #f59e0b;">{{ $priceQuotesCount }}</p>
         </div>
 
-        <!-- Price Quotes Tab -->
-        <div id="tab-price-quotes" class="tab-content active">
-            <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin-bottom: 1rem;">
-                عروض الأسعار ({{ $priceQuotesCount }})
-            </h3>
-            @if($priceQuotes->count() > 0)
-                <div class="data-table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>تاريخ الإنشاء</th>
-                                <th>رقم عرض السعر</th>
-                                <th>العميل</th>
-                                <th>موظف المبيعات</th>
-                                <th>الخامة</th>
-                                <th>الكمية</th>
-                                <th>تم الإرسال</th>
-                                <th>رد العميل</th>
-                                <th>الحالة</th>
-                                <th>الإجراءات</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($priceQuotes as $workOrder)
-                                @php
-                                    $statusLabels = [
-                                        'draft' => 'مسودة',
-                                        'pending' => 'قيد الانتظار',
-                                        'client_approved' => 'موافق عليه من العميل',
-                                        'client_rejected' => 'مرفوض من العميل',
-                                        'client_no_response' => 'لم يرد العميل'
-                                    ];
-                                    $statusColors = [
-                                        'draft' => '#6b7280',
-                                        'pending' => '#f59e0b',
-                                        'client_approved' => '#10b981',
-                                        'client_rejected' => '#dc2626',
-                                        'client_no_response' => '#6b7280'
-                                    ];
-                                    $status = $workOrder->status ?? 'draft';
-                                    $statusLabel = $statusLabels[$status] ?? $status;
-                                    $statusColor = $statusColors[$status] ?? '#6b7280';
-                                @endphp
-                                <tr>
-                                    <td>{{ $workOrder->created_at ? $workOrder->created_at->format('Y-m-d') : '-' }}</td>
-                                    <td><strong>{{ $workOrder->order_number ?? 'بدون رقم' }}</strong></td>
-                                    <td>{{ $workOrder->client->name ?? 'غير محدد' }}</td>
-                                    <td>{{ $workOrder->created_by ?? '-' }}</td>
-                                    <td>{{ $workOrder->material ?? '-' }}</td>
-                                    <td>{{ number_format($workOrder->quantity ?? 0) }}</td>
-                                    <td>
-                                        @if(($workOrder->sent_to_client ?? 'no') === 'yes')
-                                            <span class="status-badge" style="background-color: #10b98120; color: #10b981;">نعم</span>
-                                        @else
-                                            <span class="status-badge" style="background-color: #6b728020; color: #6b7280;">لا</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if($workOrder->client_response)
-                                            @php
-                                                $responseColors = [
-                                                    'موافق' => '#10b981',
-                                                    'رفض' => '#dc2626',
-                                                    'لم يرد' => '#6b7280'
-                                                ];
-                                                $responseColor = $responseColors[$workOrder->client_response] ?? '#6b7280';
-                                            @endphp
-                                            <span class="status-badge" style="background-color: {{ $responseColor }}20; color: {{ $responseColor }};">
-                                                {{ $workOrder->client_response }}
-                                            </span>
-                                        @else
-                                            <span class="status-badge" style="background-color: #6b728020; color: #6b7280;">-</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <span class="status-badge" style="background-color: {{ $statusColor }}20; color: {{ $statusColor }};">
-                                            {{ $statusLabel }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div class="table-actions">
-                                            <a href="{{ route('work-orders.show', $workOrder->id) }}" class="btn-view">عرض</a>
-                                            <a href="{{ route('work-orders.edit', $workOrder->id) }}" class="btn-edit">تعديل</a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+        <div class="status-card" data-filter="proofs" onclick="filterByStatus('proofs')">
+            <div class="status-card-header">
+                <h3 class="status-card-title">البروفا</h3>
+                <div class="status-card-icon" style="background-color: #dbeafe;">
+                    <svg style="width: 24px; height: 24px; color: #2563eb;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
                 </div>
-            @else
-                <div class="empty-state">
-                    <p style="color: #6b7280;">لا توجد عروض أسعار</p>
-                </div>
-            @endif
+            </div>
+            <p class="status-card-value" style="color: #2563eb;">{{ $proofsCount }}</p>
         </div>
 
-        <!-- Proofs Tab -->
-        <div id="tab-proofs" class="tab-content">
-            <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin-bottom: 1rem;">
-                البروفا ({{ $proofsCount }})
-            </h3>
-            @if($proofs->count() > 0)
-                <div class="data-table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>تاريخ الإنشاء</th>
-                                <th>رقم عرض السعر</th>
-                                <th>العميل</th>
-                                <th>الخامة</th>
-                                <th>الكمية</th>
-                                <th>موافقة العميل</th>
-                                <th>الإجراءات</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($proofs as $workOrder)
-                                <tr>
-                                    <td>{{ $workOrder->created_at ? $workOrder->created_at->format('Y-m-d') : '-' }}</td>
-                                    <td><strong>{{ $workOrder->order_number ?? 'بدون رقم' }}</strong></td>
-                                    <td>{{ $workOrder->client->name ?? 'غير محدد' }}</td>
-                                    <td>{{ $workOrder->material ?? '-' }}</td>
-                                    <td>{{ number_format($workOrder->quantity ?? 0) }}</td>
-                                    <td>
-                                        @if($workOrder->client_design_approval)
-                                            @php
-                                                $colors = [
-                                                    'موافق' => '#10b981',
-                                                    'رفض' => '#dc2626',
-                                                    'لم يرد' => '#6b7280'
-                                                ];
-                                                $color = $colors[$workOrder->client_design_approval] ?? '#6b7280';
-                                            @endphp
-                                            <span class="status-badge" style="background-color: {{ $color }}20; color: {{ $color }};">
-                                                {{ $workOrder->client_design_approval }}
-                                            </span>
-                                        @else
-                                            <span class="status-badge" style="background-color: #6b728020; color: #6b7280;">لم يرد</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <a href="{{ route('work-orders-list.show', $workOrder->id) }}" class="btn-view">عرض</a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+        <div class="status-card" data-filter="sent-to-designer" onclick="filterByStatus('sent-to-designer')">
+            <div class="status-card-header">
+                <h3 class="status-card-title">المرسلة إلى المصمم</h3>
+                <div class="status-card-icon" style="background-color: #e0e7ff;">
+                    <svg style="width: 24px; height: 24px; color: #6366f1;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
                 </div>
-            @else
-                <div class="empty-state">
-                    <p style="color: #6b7280;">لا توجد بروفات</p>
-                </div>
-            @endif
+            </div>
+            <p class="status-card-value" style="color: #6366f1;">{{ $sentToDesignerCount }}</p>
         </div>
 
-        <!-- Sent to Designer Tab -->
-        <div id="tab-sent-to-designer" class="tab-content">
-            <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin-bottom: 1rem;">
-                أوامر الشغل المرسلة إلى المصمم ({{ $sentToDesignerCount }})
-            </h3>
-            @if($sentToDesigner->count() > 0)
-                <div class="data-table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>تاريخ الإنشاء</th>
-                                <th>رقم البروفا</th>
-                                <th>العميل</th>
-                                <th>الخامة</th>
-                                <th>الكمية</th>
-                                <th>الإجراءات</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($sentToDesigner as $workOrder)
-                                <tr>
-                                    <td>{{ $workOrder->created_at ? $workOrder->created_at->format('Y-m-d') : '-' }}</td>
-                                    <td><strong>{{ $workOrder->order_number ?? 'بدون رقم' }}</strong></td>
-                                    <td>{{ $workOrder->client->name ?? 'غير محدد' }}</td>
-                                    <td>{{ $workOrder->material ?? '-' }}</td>
-                                    <td>{{ number_format($workOrder->quantity ?? 0) }}</td>
-                                    <td>
-                                        <a href="{{ route('work-orders.sent-to-designer.show', $workOrder->id) }}" class="btn-view">عرض</a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+        <div class="status-card" data-filter="preparations" onclick="filterByStatus('preparations')">
+            <div class="status-card-header">
+                <h3 class="status-card-title">التجهيزات</h3>
+                <div class="status-card-icon" style="background-color: #fef3c7;">
+                    <svg style="width: 24px; height: 24px; color: #f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                    </svg>
                 </div>
-            @else
-                <div class="empty-state">
-                    <p style="color: #6b7280;">لا توجد أوامر شغل مرسلة إلى المصمم</p>
-                </div>
-            @endif
+            </div>
+            <p class="status-card-value" style="color: #f59e0b;">{{ $preparationsCount }}</p>
         </div>
 
-        <!-- Preparations Tab -->
-        <div id="tab-preparations" class="tab-content">
-            <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin-bottom: 1rem;">
-                التجهيزات ({{ $preparationsCount }})
-            </h3>
-            @if($preparations->count() > 0)
-                <div class="data-table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>تاريخ الإنشاء</th>
-                                <th>رقم البروفا</th>
-                                <th>العميل</th>
-                                <th>الخامة</th>
-                                <th>الكمية</th>
-                                <th>الإجراءات</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($preparations as $workOrder)
-                                <tr>
-                                    <td>{{ $workOrder->created_at ? $workOrder->created_at->format('Y-m-d') : '-' }}</td>
-                                    <td><strong>{{ $workOrder->order_number ?? 'بدون رقم' }}</strong></td>
-                                    <td>{{ $workOrder->client->name ?? 'غير محدد' }}</td>
-                                    <td>{{ $workOrder->material ?? '-' }}</td>
-                                    <td>{{ number_format($workOrder->quantity ?? 0) }}</td>
-                                    <td>
-                                        <a href="{{ route('work-orders.preparations.show', $workOrder->id) }}" class="btn-view">عرض</a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+        <div class="status-card" data-filter="production" onclick="filterByStatus('production')">
+            <div class="status-card-header">
+                <h3 class="status-card-title">التشغيل</h3>
+                <div class="status-card-icon" style="background-color: #d1fae5;">
+                    <svg style="width: 24px; height: 24px; color: #10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                    </svg>
                 </div>
-            @else
-                <div class="empty-state">
-                    <p style="color: #6b7280;">لا توجد تجهيزات</p>
-                </div>
-            @endif
+            </div>
+            <p class="status-card-value" style="color: #10b981;">{{ $productionCount }}</p>
         </div>
 
-        <!-- Production Tab -->
-        <div id="tab-production" class="tab-content">
-            <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin-bottom: 1rem;">
-                التشغيل ({{ $productionCount }})
-            </h3>
-            @if($production->count() > 0)
-                <div class="data-table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>تاريخ الإنشاء</th>
-                                <th>رقم البروفا</th>
-                                <th>العميل</th>
-                                <th>الخامة</th>
-                                <th>الكمية</th>
-                                <th>الإجراءات</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($production as $workOrder)
-                                <tr>
-                                    <td>{{ $workOrder->created_at ? $workOrder->created_at->format('Y-m-d') : '-' }}</td>
-                                    <td><strong>{{ $workOrder->order_number ?? 'بدون رقم' }}</strong></td>
-                                    <td>{{ $workOrder->client->name ?? 'غير محدد' }}</td>
-                                    <td>{{ $workOrder->material ?? '-' }}</td>
-                                    <td>{{ number_format($workOrder->quantity ?? 0) }}</td>
-                                    <td>
-                                        <a href="{{ route('work-orders.show', $workOrder->id) }}" class="btn-view">عرض</a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+        <div class="status-card" data-filter="archive" onclick="filterByStatus('archive')">
+            <div class="status-card-header">
+                <h3 class="status-card-title">الأرشيف</h3>
+                <div class="status-card-icon" style="background-color: #fee2e2;">
+                    <svg style="width: 24px; height: 24px; color: #dc2626;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+                    </svg>
                 </div>
-            @else
-                <div class="empty-state">
-                    <p style="color: #6b7280;">لا توجد أوامر شغل في التشغيل</p>
-                </div>
-            @endif
+            </div>
+            <p class="status-card-value" style="color: #dc2626;">{{ $archiveCount }}</p>
         </div>
 
-        <!-- Archive Tab -->
-        <div id="tab-archive" class="tab-content">
-            <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin-bottom: 1rem;">
-                الأرشيف ({{ $archiveCount }})
-            </h3>
-            @if($archive->count() > 0)
-                <div class="data-table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>تاريخ الإنشاء</th>
-                                <th>رقم عرض السعر</th>
-                                <th>العميل</th>
-                                <th>الخامة</th>
-                                <th>الكمية</th>
-                                <th>الإجراءات</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($archive as $workOrder)
-                                <tr>
-                                    <td>{{ $workOrder->created_at ? $workOrder->created_at->format('Y-m-d') : '-' }}</td>
-                                    <td><strong>{{ $workOrder->order_number ?? 'بدون رقم' }}</strong></td>
-                                    <td>{{ $workOrder->client->name ?? 'غير محدد' }}</td>
-                                    <td>{{ $workOrder->material ?? '-' }}</td>
-                                    <td>{{ number_format($workOrder->quantity ?? 0) }}</td>
-                                    <td>
-                                        <a href="{{ route('work-orders.archive.show', $workOrder->id) }}" class="btn-view">عرض</a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+        <div class="status-card" data-filter="all" onclick="filterByStatus('all')">
+            <div class="status-card-header">
+                <h3 class="status-card-title">جميع أوامر الشغل</h3>
+                <div class="status-card-icon" style="background-color: #f3f4f6;">
+                    <svg style="width: 24px; height: 24px; color: #6b7280;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                    </svg>
                 </div>
-            @else
-                <div class="empty-state">
-                    <p style="color: #6b7280;">لا توجد أوامر شغل في الأرشيف</p>
-                </div>
-            @endif
-        </div>
-
-        <!-- All Work Orders Tab -->
-        <div id="tab-all" class="tab-content">
-            <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin-bottom: 1rem;">
-                جميع أوامر الشغل ({{ $allWorkOrdersCount }})
-            </h3>
-            @if($allWorkOrders->count() > 0)
-                <div class="data-table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>تاريخ الإنشاء</th>
-                                <th>رقم عرض السعر</th>
-                                <th>العميل</th>
-                                <th>موظف المبيعات</th>
-                                <th>الخامة</th>
-                                <th>الكمية</th>
-                                <th>الحالة</th>
-                                <th>الإجراءات</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($allWorkOrders as $workOrder)
-                                @php
-                                    $statusLabels = [
-                                        'draft' => 'مسودة',
-                                        'pending' => 'قيد الانتظار',
-                                        'client_approved' => 'موافق عليه من العميل',
-                                        'client_rejected' => 'مرفوض من العميل',
-                                        'client_no_response' => 'لم يرد العميل',
-                                        'work_order' => 'بروفا',
-                                        'in_progress' => 'قيد التجهيز',
-                                        'completed' => 'مكتمل',
-                                        'cancelled' => 'ملغي'
-                                    ];
-                                    $statusColors = [
-                                        'draft' => '#6b7280',
-                                        'pending' => '#f59e0b',
-                                        'client_approved' => '#10b981',
-                                        'client_rejected' => '#dc2626',
-                                        'client_no_response' => '#6b7280',
-                                        'work_order' => '#2563eb',
-                                        'in_progress' => '#f59e0b',
-                                        'completed' => '#10b981',
-                                        'cancelled' => '#dc2626'
-                                    ];
-                                    $status = $workOrder->status ?? 'draft';
-                                    $statusLabel = $statusLabels[$status] ?? $status;
-                                    $statusColor = $statusColors[$status] ?? '#6b7280';
-                                @endphp
-                                <tr>
-                                    <td>{{ $workOrder->created_at ? $workOrder->created_at->format('Y-m-d') : '-' }}</td>
-                                    <td><strong>{{ $workOrder->order_number ?? 'بدون رقم' }}</strong></td>
-                                    <td>{{ $workOrder->client->name ?? 'غير محدد' }}</td>
-                                    <td>{{ $workOrder->created_by ?? '-' }}</td>
-                                    <td>{{ $workOrder->material ?? '-' }}</td>
-                                    <td>{{ number_format($workOrder->quantity ?? 0) }}</td>
-                                    <td>
-                                        <span class="status-badge" style="background-color: {{ $statusColor }}20; color: {{ $statusColor }};">
-                                            {{ $statusLabel }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div class="table-actions">
-                                            @if($status === 'cancelled')
-                                                <a href="{{ route('work-orders.archive.show', $workOrder->id) }}" class="btn-view">عرض</a>
-                                            @elseif($status === 'work_order')
-                                                <a href="{{ route('work-orders-list.show', $workOrder->id) }}" class="btn-view">عرض</a>
-                                            @elseif($status === 'in_progress')
-                                                <a href="{{ route('work-orders.preparations.show', $workOrder->id) }}" class="btn-view">عرض</a>
-                                            @else
-                                                <a href="{{ route('work-orders.show', $workOrder->id) }}" class="btn-view">عرض</a>
-                                            @endif
-                                            <a href="{{ route('work-orders.edit', $workOrder->id) }}" class="btn-edit">تعديل</a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @else
-                <div class="empty-state">
-                    <p style="color: #6b7280;">لا توجد أوامر شغل</p>
-                </div>
-            @endif
+            </div>
+            <p class="status-card-value" style="color: #6b7280;">{{ $allWorkOrdersCount }}</p>
         </div>
     </div>
 
+    <!-- Active Filter Info -->
+    <div id="activeFilterInfo" class="active-filter-info" style="display: none;">
+        <h3 class="active-filter-title" id="activeFilterTitle"></h3>
+        <button class="clear-filter-btn" onclick="clearFilter()">إلغاء الفلتر</button>
+    </div>
+
+    <!-- Data Table -->
+    <div class="data-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>تاريخ الإنشاء</th>
+                    <th>رقم عرض السعر</th>
+                    <th>العميل</th>
+                    <th>موظف المبيعات</th>
+                    <th>الخامة</th>
+                    <th>الكمية</th>
+                    <th>الحالة</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php
+                    $allOrders = collect()
+                        ->merge($priceQuotes->map(fn($o) => (object)['order' => $o, 'type' => 'price-quotes']))
+                        ->merge($proofs->map(fn($o) => (object)['order' => $o, 'type' => 'proofs']))
+                        ->merge($sentToDesigner->map(fn($o) => (object)['order' => $o, 'type' => 'sent-to-designer']))
+                        ->merge($preparations->map(fn($o) => (object)['order' => $o, 'type' => 'preparations']))
+                        ->merge($production->map(fn($o) => (object)['order' => $o, 'type' => 'production']))
+                        ->merge($archive->map(fn($o) => (object)['order' => $o, 'type' => 'archive']));
+                @endphp
+                @foreach($allOrders as $item)
+                    @php
+                        $workOrder = $item->order;
+                        $orderType = $item->type;
+                        
+                        $statusLabels = [
+                            'draft' => 'مسودة',
+                            'pending' => 'قيد الانتظار',
+                            'client_approved' => 'موافق عليه من العميل',
+                            'client_rejected' => 'مرفوض من العميل',
+                            'client_no_response' => 'لم يرد العميل',
+                            'work_order' => 'بروفا',
+                            'in_progress' => 'قيد التجهيز',
+                            'completed' => 'مكتمل',
+                            'cancelled' => 'ملغي'
+                        ];
+                        $statusColors = [
+                            'draft' => '#6b7280',
+                            'pending' => '#f59e0b',
+                            'client_approved' => '#10b981',
+                            'client_rejected' => '#dc2626',
+                            'client_no_response' => '#6b7280',
+                            'work_order' => '#2563eb',
+                            'in_progress' => '#f59e0b',
+                            'completed' => '#10b981',
+                            'cancelled' => '#dc2626'
+                        ];
+                        $status = $workOrder->status ?? 'draft';
+                        $statusLabel = $statusLabels[$status] ?? $status;
+                        $statusColor = $statusColors[$status] ?? '#6b7280';
+                    @endphp
+                    <tr data-order-type="{{ $orderType }}" data-status="{{ $status }}" data-client-id="{{ $workOrder->client_id ?? '' }}">
+                        <td>{{ $workOrder->created_at ? $workOrder->created_at->format('Y-m-d') : '-' }}</td>
+                        <td><strong>{{ $workOrder->order_number ?? 'بدون رقم' }}</strong></td>
+                        <td>{{ $workOrder->client->name ?? 'غير محدد' }}</td>
+                        <td>{{ $workOrder->created_by ?? '-' }}</td>
+                        <td>{{ $workOrder->material ?? '-' }}</td>
+                        <td>{{ number_format($workOrder->quantity ?? 0) }}</td>
+                        <td>
+                            <span class="status-badge" style="background-color: {{ $statusColor }}20; color: {{ $statusColor }};">
+                                {{ $statusLabel }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="table-actions">
+                                @if($status === 'cancelled')
+                                    <a href="{{ route('work-orders.archive.show', $workOrder->id) }}" class="btn-view">عرض</a>
+                                @elseif($status === 'work_order')
+                                    <a href="{{ route('work-orders-list.show', $workOrder->id) }}" class="btn-view">عرض</a>
+                                @elseif($status === 'in_progress')
+                                    <a href="{{ route('work-orders.preparations.show', $workOrder->id) }}" class="btn-view">عرض</a>
+                                @else
+                                    <a href="{{ route('work-orders.show', $workOrder->id) }}" class="btn-view">عرض</a>
+                                @endif
+                                <a href="{{ route('work-orders.edit', $workOrder->id) }}" class="btn-edit">تعديل</a>
+                            </div>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+
+    @if($allOrders->isEmpty())
+        <div class="empty-state">
+            <p style="color: #6b7280;">لا توجد أوامر شغل</p>
+        </div>
+    @endif
+
     <script>
-        function switchTab(tabName) {
-            // Hide all tab contents
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
+        let currentFilter = null;
+        const filterTitles = {
+            'price-quotes': 'عروض الأسعار',
+            'proofs': 'البروفا',
+            'sent-to-designer': 'المرسلة إلى المصمم',
+            'preparations': 'التجهيزات',
+            'production': 'التشغيل',
+            'archive': 'الأرشيف',
+            'all': 'جميع أوامر الشغل'
+        };
+
+        function filterByStatus(filterType) {
+            // Remove active class from all cards
+            document.querySelectorAll('.status-card').forEach(card => {
+                card.classList.remove('active');
             });
 
-            // Remove active class from all buttons
-            document.querySelectorAll('.tab-button').forEach(button => {
-                button.classList.remove('active');
-            });
-
-            // Show selected tab content
-            document.getElementById('tab-' + tabName).classList.add('active');
-
-            // Add active class to clicked button
+            // Add active class to clicked card
             event.currentTarget.classList.add('active');
+
+            // Show/hide rows based on filter
+            const rows = document.querySelectorAll('tbody tr');
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const orderType = row.getAttribute('data-order-type');
+                const status = row.getAttribute('data-status');
+
+                if (filterType === 'all') {
+                    row.classList.add('show');
+                    visibleCount++;
+                } else if (filterType === 'price-quotes') {
+                    if (orderType === 'price-quotes') {
+                        row.classList.add('show');
+                        visibleCount++;
+                    } else {
+                        row.classList.remove('show');
+                    }
+                } else if (filterType === 'proofs') {
+                    if (orderType === 'proofs') {
+                        row.classList.add('show');
+                        visibleCount++;
+                    } else {
+                        row.classList.remove('show');
+                    }
+                } else if (filterType === 'sent-to-designer') {
+                    if (orderType === 'sent-to-designer') {
+                        row.classList.add('show');
+                        visibleCount++;
+                    } else {
+                        row.classList.remove('show');
+                    }
+                } else if (filterType === 'preparations') {
+                    if (orderType === 'preparations') {
+                        row.classList.add('show');
+                        visibleCount++;
+                    } else {
+                        row.classList.remove('show');
+                    }
+                } else if (filterType === 'production') {
+                    if (orderType === 'production') {
+                        row.classList.add('show');
+                        visibleCount++;
+                    } else {
+                        row.classList.remove('show');
+                    }
+                } else if (filterType === 'archive') {
+                    if (orderType === 'archive') {
+                        row.classList.add('show');
+                        visibleCount++;
+                    } else {
+                        row.classList.remove('show');
+                    }
+                }
+            });
+
+            // Show active filter info
+            currentFilter = filterType;
+            if (filterType !== 'all') {
+                document.getElementById('activeFilterInfo').style.display = 'flex';
+                document.getElementById('activeFilterTitle').textContent = `عرض: ${filterTitles[filterType]} (${visibleCount})`;
+            } else {
+                document.getElementById('activeFilterInfo').style.display = 'none';
+            }
         }
+
+        function clearFilter() {
+            // Remove active class from all cards
+            document.querySelectorAll('.status-card').forEach(card => {
+                card.classList.remove('active');
+            });
+
+            // Show all rows
+            document.querySelectorAll('tbody tr').forEach(row => {
+                row.classList.add('show');
+            });
+
+            // Hide active filter info
+            document.getElementById('activeFilterInfo').style.display = 'none';
+            currentFilter = null;
+        }
+
+        // Apply client and order number filters
+        document.getElementById('clientFilter')?.addEventListener('change', function() {
+            applyFilters();
+        });
+
+        document.getElementById('orderNumberFilter')?.addEventListener('change', function() {
+            applyFilters();
+        });
+
+        function applyFilters() {
+            const clientId = document.getElementById('clientFilter')?.value || '';
+            const orderNumber = document.getElementById('orderNumberFilter')?.value.toLowerCase() || '';
+
+            document.querySelectorAll('tbody tr').forEach(row => {
+                const rowClientId = row.getAttribute('data-client-id') || '';
+                const rowOrderNumber = (row.querySelector('td:nth-child(2) strong')?.textContent || '').toLowerCase();
+
+                let matchesClient = !clientId || rowClientId === clientId;
+                let matchesOrderNumber = !orderNumber || rowOrderNumber.includes(orderNumber);
+
+                if (matchesClient && matchesOrderNumber) {
+                    // Apply current status filter if exists
+                    if (currentFilter) {
+                        const orderType = row.getAttribute('data-order-type');
+                        if (currentFilter === 'all' || orderType === currentFilter) {
+                            row.classList.add('show');
+                        } else {
+                            row.classList.remove('show');
+                        }
+                    } else {
+                        row.classList.add('show');
+                    }
+                } else {
+                    row.classList.remove('show');
+                }
+            });
+        }
+
+        // Initialize: show all rows by default
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('tbody tr').forEach(row => {
+                row.classList.add('show');
+            });
+
+            // Initialize Select2 on client filter
+            $('#clientFilter').select2({
+                dir: 'rtl',
+                placeholder: 'ابحث عن العميل أو اختر من القائمة',
+                allowClear: true,
+                width: '100%',
+                language: {
+                    noResults: function() {
+                        return "لا توجد نتائج";
+                    },
+                    searching: function() {
+                        return "جاري البحث...";
+                    }
+                },
+                minimumResultsForSearch: 0
+            });
+
+            // Initialize Select2 on order number filter
+            $('#orderNumberFilter').select2({
+                dir: 'rtl',
+                placeholder: 'ابحث عن رقم عرض السعر أو اختر من القائمة',
+                allowClear: true,
+                width: '100%',
+                language: {
+                    noResults: function() {
+                        return "لا توجد نتائج";
+                    },
+                    searching: function() {
+                        return "جاري البحث...";
+                    }
+                },
+                minimumResultsForSearch: 0
+            });
+
+            // Handle change events for Select2
+            $('#clientFilter').on('select2:select select2:clear', function() {
+                applyFilters();
+            });
+
+            $('#orderNumberFilter').on('select2:select select2:clear', function() {
+                applyFilters();
+            });
+        });
     </script>
 </x-app-layout>
-
