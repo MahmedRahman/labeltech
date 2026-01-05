@@ -1,6 +1,32 @@
 <x-app-layout>
     @php
         $title = 'سير العمل';
+        
+        // Define status labels used throughout the page
+        $statusLabels = [
+            'draft' => 'مسودة',
+            'pending' => 'قيد الانتظار',
+            'client_approved' => 'موافق عليه من العميل',
+            'client_rejected' => 'مرفوض من العميل',
+            'client_no_response' => 'لم يرد العميل',
+            'work_order' => 'بروفا',
+            'in_progress' => 'قيد التجهيز',
+            'completed' => 'مكتمل',
+            'cancelled' => 'ملغي'
+        ];
+        
+        // Define which section each status belongs to
+        $statusSections = [
+            'draft' => 'عروض الأسعار',
+            'pending' => 'عروض الأسعار',
+            'client_approved' => 'عروض الأسعار',
+            'client_rejected' => 'عروض الأسعار',
+            'client_no_response' => 'عروض الأسعار',
+            'work_order' => 'البروفا',
+            'in_progress' => 'التجهيزات',
+            'completed' => 'التشغيل',
+            'cancelled' => 'الأرشيف'
+        ];
     @endphp
 
     <!-- Select2 CSS -->
@@ -433,7 +459,7 @@
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: space-between;
         }
 
@@ -450,6 +476,19 @@
             font-size: 1rem;
             font-weight: 500;
             color: #111827;
+            flex: 1;
+        }
+        
+        .status-option-section {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+            font-weight: 400;
+        }
+        
+        .status-option-content {
+            display: flex;
+            flex-direction: column;
             flex: 1;
         }
 
@@ -674,18 +713,6 @@
                     @php
                         $workOrder = $item->order;
                         $orderType = $item->type;
-                        
-                        $statusLabels = [
-                            'draft' => 'مسودة',
-                            'pending' => 'قيد الانتظار',
-                            'client_approved' => 'موافق عليه من العميل',
-                            'client_rejected' => 'مرفوض من العميل',
-                            'client_no_response' => 'لم يرد العميل',
-                            'work_order' => 'بروفا',
-                            'in_progress' => 'قيد التجهيز',
-                            'completed' => 'مكتمل',
-                            'cancelled' => 'ملغي'
-                        ];
                         $statusColors = [
                             'draft' => '#6b7280',
                             'pending' => '#f59e0b',
@@ -1005,42 +1032,15 @@
                     رقم أمر الشغل: <strong id="statusModalOrderNumber"></strong>
                 </p>
                 <div class="status-options">
-                    <label class="status-option">
-                        <span class="status-option-label">مسودة</span>
-                        <input type="radio" name="new_status" value="draft">
-                    </label>
-                    <label class="status-option">
-                        <span class="status-option-label">قيد الانتظار</span>
-                        <input type="radio" name="new_status" value="pending">
-                    </label>
-                    <label class="status-option">
-                        <span class="status-option-label">موافق عليه من العميل</span>
-                        <input type="radio" name="new_status" value="client_approved">
-                    </label>
-                    <label class="status-option">
-                        <span class="status-option-label">مرفوض من العميل</span>
-                        <input type="radio" name="new_status" value="client_rejected">
-                    </label>
-                    <label class="status-option">
-                        <span class="status-option-label">لم يرد العميل</span>
-                        <input type="radio" name="new_status" value="client_no_response">
-                    </label>
-                    <label class="status-option">
-                        <span class="status-option-label">بروفا</span>
-                        <input type="radio" name="new_status" value="work_order">
-                    </label>
-                    <label class="status-option">
-                        <span class="status-option-label">قيد التجهيز</span>
-                        <input type="radio" name="new_status" value="in_progress">
-                    </label>
-                    <label class="status-option">
-                        <span class="status-option-label">مكتمل</span>
-                        <input type="radio" name="new_status" value="completed">
-                    </label>
-                    <label class="status-option">
-                        <span class="status-option-label">ملغي</span>
-                        <input type="radio" name="new_status" value="cancelled">
-                    </label>
+                    @foreach($statusLabels as $statusValue => $statusLabel)
+                        <label class="status-option">
+                            <div class="status-option-content">
+                                <span class="status-option-label">{{ $statusLabel }}</span>
+                                <span class="status-option-section">ستظهر في: {{ $statusSections[$statusValue] ?? 'غير محدد' }}</span>
+                            </div>
+                            <input type="radio" name="new_status" value="{{ $statusValue }}">
+                        </label>
+                    @endforeach
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn-cancel" onclick="closeStatusModal()">إلغاء</button>
