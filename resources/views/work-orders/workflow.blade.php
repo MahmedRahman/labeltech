@@ -357,6 +357,157 @@
         .clear-filter-btn:hover {
             background-color: #1d4ed8;
         }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #111827;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.375rem;
+        }
+
+        .modal-close:hover {
+            background-color: #f3f4f6;
+            color: #111827;
+        }
+
+        .status-options {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .status-option {
+            padding: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .status-option:hover {
+            border-color: #2563eb;
+            background-color: #eff6ff;
+        }
+
+        .status-option input[type="radio"] {
+            margin-left: 0.75rem;
+        }
+
+        .status-option-label {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #111827;
+            flex: 1;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+            justify-content: flex-end;
+        }
+
+        .btn-cancel {
+            padding: 0.75rem 1.5rem;
+            background-color: #6b7280;
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-cancel:hover {
+            background-color: #4b5563;
+        }
+
+        .btn-save {
+            padding: 0.75rem 1.5rem;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-save:hover {
+            background-color: #1d4ed8;
+        }
+
+        .btn-change-status {
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.375rem;
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: inline-block;
+            background-color: #f59e0b;
+            color: white;
+            margin-right: 0.5rem;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-change-status:hover {
+            background-color: #d97706;
+        }
     </style>
 
     <!-- Header -->
@@ -573,7 +724,9 @@
                                 @else
                                     <a href="{{ route('work-orders.show', $workOrder->id) }}" class="btn-view">عرض</a>
                                 @endif
-                                <a href="{{ route('work-orders.edit', $workOrder->id) }}" class="btn-edit">تعديل</a>
+                                <button type="button" class="btn-change-status" onclick="openStatusModal({{ $workOrder->id }}, '{{ $status }}', '{{ $workOrder->order_number ?? 'بدون رقم' }}')">
+                                    تغيير الحالة
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -778,5 +931,122 @@
                 applyFilters();
             });
         });
+
+        // Status Modal Functions
+        let currentWorkOrderId = null;
+
+        function openStatusModal(workOrderId, currentStatus, orderNumber) {
+            currentWorkOrderId = workOrderId;
+            document.getElementById('statusModalOrderNumber').textContent = orderNumber;
+            
+            // Set current status as checked
+            document.querySelectorAll('input[name="new_status"]').forEach(radio => {
+                radio.checked = radio.value === currentStatus;
+            });
+            
+            document.getElementById('statusModal').classList.add('active');
+        }
+
+        function closeStatusModal() {
+            document.getElementById('statusModal').classList.remove('active');
+            currentWorkOrderId = null;
+        }
+
+        function saveStatusChange() {
+            const selectedStatus = document.querySelector('input[name="new_status"]:checked');
+            if (!selectedStatus) {
+                alert('يرجى اختيار حالة');
+                return;
+            }
+
+            if (!currentWorkOrderId) {
+                alert('خطأ: لم يتم تحديد أمر الشغل');
+                return;
+            }
+
+            // Create form and submit
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/work-orders/${currentWorkOrderId}/update-status`;
+            
+            const csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = '_token';
+            csrfToken.value = '{{ csrf_token() }}';
+            form.appendChild(csrfToken);
+
+            const statusInput = document.createElement('input');
+            statusInput.type = 'hidden';
+            statusInput.name = 'status';
+            statusInput.value = selectedStatus.value;
+            form.appendChild(statusInput);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('statusModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeStatusModal();
+            }
+        });
     </script>
+
+    <!-- Status Change Modal -->
+    <div id="statusModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">تغيير حالة أمر الشغل</h3>
+                <button type="button" class="modal-close" onclick="closeStatusModal()">×</button>
+            </div>
+            <div>
+                <p style="margin-bottom: 1rem; color: #6b7280;">
+                    رقم أمر الشغل: <strong id="statusModalOrderNumber"></strong>
+                </p>
+                <div class="status-options">
+                    <label class="status-option">
+                        <span class="status-option-label">مسودة</span>
+                        <input type="radio" name="new_status" value="draft">
+                    </label>
+                    <label class="status-option">
+                        <span class="status-option-label">قيد الانتظار</span>
+                        <input type="radio" name="new_status" value="pending">
+                    </label>
+                    <label class="status-option">
+                        <span class="status-option-label">موافق عليه من العميل</span>
+                        <input type="radio" name="new_status" value="client_approved">
+                    </label>
+                    <label class="status-option">
+                        <span class="status-option-label">مرفوض من العميل</span>
+                        <input type="radio" name="new_status" value="client_rejected">
+                    </label>
+                    <label class="status-option">
+                        <span class="status-option-label">لم يرد العميل</span>
+                        <input type="radio" name="new_status" value="client_no_response">
+                    </label>
+                    <label class="status-option">
+                        <span class="status-option-label">بروفا</span>
+                        <input type="radio" name="new_status" value="work_order">
+                    </label>
+                    <label class="status-option">
+                        <span class="status-option-label">قيد التجهيز</span>
+                        <input type="radio" name="new_status" value="in_progress">
+                    </label>
+                    <label class="status-option">
+                        <span class="status-option-label">مكتمل</span>
+                        <input type="radio" name="new_status" value="completed">
+                    </label>
+                    <label class="status-option">
+                        <span class="status-option-label">ملغي</span>
+                        <input type="radio" name="new_status" value="cancelled">
+                    </label>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeStatusModal()">إلغاء</button>
+                    <button type="button" class="btn-save" onclick="saveStatusChange()">حفظ</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </x-app-layout>

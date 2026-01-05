@@ -74,6 +74,7 @@ Route::middleware('auth.any')->group(function () {
     Route::get('work-orders/archive/{workOrder}', [\App\Http\Controllers\WorkOrderController::class, 'showArchive'])->name('work-orders.archive.show');
     Route::post('work-orders/archive/{workOrder}/restore', [\App\Http\Controllers\WorkOrderController::class, 'restoreQuote'])->name('work-orders.archive.restore');
     Route::get('work-orders/workflow', [\App\Http\Controllers\WorkOrderController::class, 'workflow'])->name('work-orders.workflow');
+    Route::post('work-orders/{workOrder}/update-status', [\App\Http\Controllers\WorkOrderController::class, 'updateStatus'])->name('work-orders.update-status');
     Route::resource('work-orders', \App\Http\Controllers\WorkOrderController::class);
     
     // السكاكين - متاح للمصمم والادمن

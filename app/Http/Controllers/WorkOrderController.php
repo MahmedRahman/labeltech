@@ -1751,6 +1751,28 @@ class WorkOrderController extends Controller
     }
 
     /**
+     * Update work order status (for workflow page).
+     */
+    public function updateStatus(Request $request, WorkOrder $workOrder)
+    {
+        // Only allow admin users
+        if (!auth('web')->check()) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'status' => 'required|in:draft,pending,client_approved,client_rejected,client_no_response,work_order,in_progress,completed,cancelled',
+        ]);
+
+        $workOrder->update([
+            'status' => $validated['status']
+        ]);
+
+        return redirect()->route('work-orders.workflow')
+            ->with('success', 'تم تحديث حالة أمر الشغل بنجاح');
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(WorkOrder $workOrder)
