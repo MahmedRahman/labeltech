@@ -533,48 +533,24 @@
                     @enderror
                 </div>
 
-                <!-- Gap Count, Waste Per Roll and Increase -->
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="gap_count" class="form-label">الجاب</label>
-                        <input type="number" 
-                               name="gap_count" 
-                               id="gap_count" 
-                               value="{{ old('gap_count', 0.4) }}" 
-                               min="0"
-                               step="0.01"
-                               class="form-input"
-                               placeholder="أدخل الجاب"
-                               oninput="calculateLinearMeter()">
-                        @error('gap_count')
-                            <p class="error-message">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div class="form-group">
-                        <label for="waste_per_roll" class="form-label">عدد الهالك للبكره</label>
-                        <input type="number" 
-                               name="waste_per_roll" 
-                               id="waste_per_roll" 
-                               value="{{ old('waste_per_roll', 20) }}" 
-                               min="0"
-                               step="1"
-                               class="form-input"
-                               placeholder="أدخل عدد الهالك للبكره">
-                        @error('waste_per_roll')
-                            <p class="error-message">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Increase field (hidden) -->
-                    <input type="hidden" 
-                           name="increase" 
-                           id="increase" 
-                           value="{{ old('increase', 0) }}">
-                    @error('increase')
-                        <p class="error-message">{{ $message }}</p>
-                    @enderror
-                </div>
+                <!-- Increase field (hidden) -->
+                <input type="hidden" 
+                       name="increase" 
+                       id="increase" 
+                       value="{{ old('increase', 0) }}">
+                @error('increase')
+                    <p class="error-message">{{ $message }}</p>
+                @enderror
+                
+                <!-- Hidden fields for gap_count and waste_per_roll (with default values) -->
+                <input type="hidden" 
+                       name="gap_count" 
+                       id="gap_count" 
+                       value="{{ old('gap_count', 0.4) }}">
+                <input type="hidden" 
+                       name="waste_per_roll" 
+                       id="waste_per_roll" 
+                       value="{{ old('waste_per_roll', 20) }}">
 
                 <!-- Linear Meter (calculated automatically, hidden, shown in sidebar) -->
                 <input type="hidden" 
@@ -866,59 +842,6 @@
                         @enderror
                     </div>
 
-                    <!-- Winding Direction -->
-                    <div class="form-group">
-                        <label class="form-label">اتجاه اللف</label>
-                        <div style="display: flex; gap: 2rem; margin-top: 0.5rem; flex-wrap: wrap;">
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ !in_array(old('winding_direction'), ['clockwise', 'counterclockwise']) ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
-                                <input type="radio" 
-                                       name="winding_direction" 
-                                       value="no" 
-                                       id="winding_direction_no"
-                                       {{ !in_array(old('winding_direction'), ['clockwise', 'counterclockwise']) ? 'checked' : '' }}
-                                       onchange="toggleWindingDirectionOptions()"
-                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
-                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">لا يوجد</span>
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ in_array(old('winding_direction'), ['clockwise', 'counterclockwise']) ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
-                                <input type="radio" 
-                                       name="winding_direction" 
-                                       value="yes" 
-                                       id="winding_direction_yes"
-                                       {{ in_array(old('winding_direction'), ['clockwise', 'counterclockwise']) ? 'checked' : '' }}
-                                       onchange="toggleWindingDirectionOptions()"
-                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
-                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">يوجد</span>
-                            </label>
-                        </div>
-                        
-                        <!-- Winding Direction Options (shown when "يوجد" is selected) -->
-                        <div id="winding_direction_options" style="display: {{ in_array(old('winding_direction'), ['clockwise', 'counterclockwise']) ? 'flex' : 'none' }}; gap: 2rem; margin-top: 1rem; padding-right: 1.5rem;">
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('winding_direction') == 'clockwise' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
-                                <input type="radio" 
-                                       name="winding_direction" 
-                                       value="clockwise" 
-                                       id="winding_direction_clockwise"
-                                       {{ old('winding_direction') == 'clockwise' ? 'checked' : '' }}
-                                       onchange="handleWindingDirectionChange()"
-                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
-                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">في اتجاه عقارب الساعة</span>
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.75rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; {{ old('winding_direction') == 'counterclockwise' ? 'border-color: #2563eb; background-color: #eff6ff;' : '' }}">
-                                <input type="radio" 
-                                       name="winding_direction" 
-                                       value="counterclockwise" 
-                                       id="winding_direction_counterclockwise"
-                                       {{ old('winding_direction') == 'counterclockwise' ? 'checked' : '' }}
-                                       onchange="handleWindingDirectionChange()"
-                                       style="width: 18px; height: 18px; cursor: pointer; accent-color: #2563eb;">
-                                <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">عكس عقارب الساعة</span>
-                            </label>
-                        </div>
-                        @error('winding_direction')
-                            <p class="error-message">{{ $message }}</p>
-                        @enderror
-                    </div>
 
                     <!-- Knife Exists -->
                     <div class="form-group">
@@ -1207,7 +1130,7 @@
             @endforeach
         };
 
-        // Handle radio button styling for additions, fingerprint, winding_direction and final_product_shape
+        // Handle radio button styling for additions, fingerprint and final_product_shape
         document.addEventListener('DOMContentLoaded', function() {
             // Handle additions radio buttons
             const additionsRadios = document.querySelectorAll('input[name="additions"]');
@@ -1452,7 +1375,6 @@
             // Initialize fingerprint styling
             updateFingerprintStyle();
 
-            // Handle winding_direction radio buttons (handled by updateWindingDirectionStyle function below)
 
             // Handle final_product_shape radio buttons
             const shapeRadios = document.querySelectorAll('input[name="final_product_shape"]');
@@ -1580,31 +1502,6 @@
             // Initialize external breaking price on page load
             toggleExternalBreakingPrice();
 
-            // Handle winding_direction radio buttons
-            const windingDirectionRadios = document.querySelectorAll('input[name="winding_direction"]');
-            windingDirectionRadios.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    updateWindingDirectionStyle();
-                    toggleWindingDirectionOptions();
-                });
-                
-                // Also listen to click on the label
-                const label = radio.closest('label');
-                if (label) {
-                    label.addEventListener('click', function(e) {
-                        // Prevent double triggering
-                        if (e.target !== radio) {
-                            radio.checked = true;
-                            updateWindingDirectionStyle();
-                            toggleWindingDirectionOptions();
-                        }
-                    });
-                }
-            });
-
-            // Initialize on page load
-            toggleWindingDirectionOptions();
-            updateWindingDirectionStyle();
 
             // Initialize production fields on page load
             toggleProductionFields();
@@ -2022,60 +1919,6 @@
             }
         }
 
-        // Toggle winding direction options based on selection
-        function toggleWindingDirectionOptions() {
-            const noRadio = document.getElementById('winding_direction_no');
-            const yesRadio = document.getElementById('winding_direction_yes');
-            const optionsDiv = document.getElementById('winding_direction_options');
-            const clockwiseRadio = document.getElementById('winding_direction_clockwise');
-            const counterclockwiseRadio = document.getElementById('winding_direction_counterclockwise');
-
-            if (yesRadio && yesRadio.checked) {
-                if (optionsDiv) optionsDiv.style.display = 'flex';
-                // If no detailed option is selected, select clockwise by default
-                if (clockwiseRadio && counterclockwiseRadio && !clockwiseRadio.checked && !counterclockwiseRadio.checked) {
-                    clockwiseRadio.checked = true;
-                    handleWindingDirectionChange();
-                }
-            } else if (noRadio && noRadio.checked) {
-                if (optionsDiv) optionsDiv.style.display = 'none';
-                // Uncheck the detailed options if "no" is selected
-                if (clockwiseRadio) clockwiseRadio.checked = false;
-                if (counterclockwiseRadio) counterclockwiseRadio.checked = false;
-                updateWindingDirectionStyle();
-            }
-        }
-
-        // Handle winding direction change (when detailed option is selected)
-        function handleWindingDirectionChange() {
-            const clockwiseRadio = document.getElementById('winding_direction_clockwise');
-            const counterclockwiseRadio = document.getElementById('winding_direction_counterclockwise');
-            const yesRadio = document.getElementById('winding_direction_yes');
-            
-            // Uncheck "yes" radio when a detailed option is selected
-            if (yesRadio && (clockwiseRadio?.checked || counterclockwiseRadio?.checked)) {
-                yesRadio.checked = false;
-            }
-            
-            updateWindingDirectionStyle();
-        }
-
-        // Update winding direction style
-        function updateWindingDirectionStyle() {
-            const allRadios = document.querySelectorAll('input[name="winding_direction"]');
-            allRadios.forEach(radio => {
-                const label = radio.closest('label');
-                if (label) {
-                    if (radio.checked) {
-                        label.style.borderColor = '#2563eb';
-                        label.style.backgroundColor = '#eff6ff';
-                    } else {
-                        label.style.borderColor = '#d1d5db';
-                        label.style.backgroundColor = 'transparent';
-                    }
-                }
-            });
-        }
 
         // Update addition price field based on selected addition
         function updateAdditionPrice() {
@@ -2707,18 +2550,7 @@
                 }
             });
             
-            // Add event listener for waste_per_roll to calculate waste
-            const wastePerRollInput = document.getElementById('waste_per_roll');
-            if (wastePerRollInput) {
-                wastePerRollInput.addEventListener('input', function() {
-                    const rollsCount = parseFloat(document.getElementById('rolls_count')?.value) || 0;
-                    calculateWaste(rollsCount);
-                });
-                wastePerRollInput.addEventListener('change', function() {
-                    const rollsCount = parseFloat(document.getElementById('rolls_count')?.value) || 0;
-                    calculateWaste(rollsCount);
-                });
-            }
+            // Note: waste_per_roll is now a hidden field with default value, no event listener needed
             
         });
 

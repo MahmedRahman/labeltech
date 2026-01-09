@@ -58,14 +58,6 @@ class ClientController extends Controller
      */
     public function create()
     {
-        // Check if logged in as sales employee (not admin)
-        $employee = Auth::guard('employee')->user();
-        $isAdmin = Auth::guard('web')->check();
-        
-        if ($employee && $employee->account_type === 'مبيعات' && !$isAdmin) {
-            abort(403, 'ليس لديك صلاحية لإضافة عملاء');
-        }
-        
         return view('clients.create');
     }
 
@@ -74,14 +66,6 @@ class ClientController extends Controller
      */
     public function store(Request $request)
     {
-        // Check if logged in as sales employee (not admin)
-        $employee = Auth::guard('employee')->user();
-        $isAdmin = Auth::guard('web')->check();
-        
-        if ($employee && $employee->account_type === 'مبيعات' && !$isAdmin) {
-            abort(403, 'ليس لديك صلاحية لإضافة عملاء');
-        }
-        
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
@@ -92,7 +76,23 @@ class ClientController extends Controller
             'opening_balance' => 'nullable|numeric|min:0',
         ]);
 
-        Client::create($validated);
+        // Create the client
+        $client = Client::create($validated);
+
+        // If logged in as sales employee, attach client to employee's sales teams
+        $employee = Auth::guard('employee')->user();
+        $isAdmin = Auth::guard('web')->check();
+        
+        if ($employee && $employee->account_type === 'مبيعات' && !$isAdmin) {
+            // Get employee's sales teams
+            $employee->load('salesTeams');
+            $teamIds = $employee->salesTeams->pluck('id')->toArray();
+            
+            if (!empty($teamIds)) {
+                // Attach client to employee's sales teams
+                $client->salesTeams()->sync($teamIds);
+            }
+        }
 
         return redirect()->route('clients.index')
             ->with('success', 'تم إضافة العميل بنجاح');
