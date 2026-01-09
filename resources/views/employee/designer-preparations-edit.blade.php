@@ -148,85 +148,6 @@
         }
     </style>
 
-    <script>
-        function calculateGap() {
-            // D = الدرايفيل (designer_drills) - يجب أن يكون رقم
-            const drillsInput = document.getElementById('designer_drills');
-            const drillsValueStr = drillsInput.value.trim();
-            
-            // استخراج الرقم من النص (في حالة وجود نص)
-            const drillsMatch = drillsValueStr.match(/[\d.]+/);
-            if (!drillsMatch) {
-                alert('يرجى إدخال الدرايفيل بشكل صحيح (يجب أن يحتوي على رقم)');
-                drillsInput.focus();
-                return;
-            }
-            
-            const drillsValue = parseFloat(drillsMatch[0]);
-            
-            // L = الطول (length)
-            const lengthValue = parseFloat({{ $workOrder->length ?? 0 }});
-            
-            // التحقق من وجود القيم
-            if (!drillsValue || isNaN(drillsValue) || drillsValue <= 0) {
-                alert('يرجى إدخال الدرايفيل أولاً');
-                drillsInput.focus();
-                return;
-            }
-            
-            if (!lengthValue || isNaN(lengthValue) || lengthValue <= 0) {
-                alert('الطول غير محدد في الطلب');
-                return;
-            }
-            
-            // الصيغة: Gap = [ (3.175 × D / 10) ÷ INT( 3.175 × D ÷ ( (L + 0.2) × 10 ) ) − L ] × 10
-            const D = drillsValue;
-            const L = lengthValue;
-            
-            // حساب: (L + 0.2) × 10
-            const denominator = (L + 0.2) * 10;
-            
-            // حساب: 3.175 × D ÷ ( (L + 0.2) × 10 )
-            const divisionResult = (3.175 * D) / denominator;
-            
-            // INT(3.175 × D ÷ ( (L + 0.2) × 10 ))
-            const intPart = Math.floor(divisionResult);
-            
-            if (intPart === 0) {
-                alert('لا يمكن حساب الجاب: القيمة المحسوبة صفر');
-                return;
-            }
-            
-            // حساب: 3.175 × D / 10
-            const numerator = (3.175 * D) / 10;
-            
-            // حساب: (3.175 × D / 10) ÷ INT(...)
-            const division = numerator / intPart;
-            
-            // حساب: [ ... ] − L
-            const subtraction = division - L;
-            
-            // حساب: [ ... ] × 10
-            const gap = subtraction * 10;
-            
-            // تحديث قيمة الحقل
-            const gapInput = document.getElementById('designer_gap');
-            gapInput.value = gap.toFixed(2);
-        }
-        
-        // حساب تلقائي عند تغيير الدرايفيل
-        document.addEventListener('DOMContentLoaded', function() {
-            const drillsInput = document.getElementById('designer_drills');
-            if (drillsInput) {
-                drillsInput.addEventListener('blur', function() {
-                    const gapInput = document.getElementById('designer_gap');
-                    if (!gapInput.value || gapInput.value === '') {
-                        calculateGap();
-                    }
-                });
-            }
-        });
-    </script>
 
     <!-- Header -->
     <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
@@ -343,12 +264,14 @@
             <div class="form-group">
                 <label for="designer_drills" class="form-label">الدرايفيل (تجهيزات المصمم)</label>
                 <input 
-                    type="text" 
+                    type="number" 
                     id="designer_drills" 
                     name="designer_drills" 
                     class="form-input" 
                     value="{{ old('designer_drills', $workOrder->designer_drills) }}"
                     placeholder="الدرايفيل الأصلي: {{ $workOrder->design_drills ?? '-' }}"
+                    step="0.01"
+                    min="0"
                 >
                 <span class="info-badge">الدرايفيل الأصلي: {{ $workOrder->design_drills ?? '-' }}</span>
                 @error('designer_drills')
@@ -360,12 +283,14 @@
             <div class="form-group">
                 <label for="designer_breaking_gear" class="form-label">ترس التكسير (تجهيزات المصمم)</label>
                 <input 
-                    type="text" 
+                    type="number" 
                     id="designer_breaking_gear" 
                     name="designer_breaking_gear" 
                     class="form-input" 
                     value="{{ old('designer_breaking_gear', $workOrder->designer_breaking_gear) }}"
                     placeholder="ترس التكسير الأصلي: {{ $workOrder->design_breaking_gear ?? '-' }}"
+                    step="0.01"
+                    min="0"
                 >
                 <span class="info-badge">ترس التكسير الأصلي: {{ $workOrder->design_breaking_gear ?? '-' }}</span>
                 @error('designer_breaking_gear')
@@ -393,37 +318,20 @@
                 @enderror
             </div>
 
-            <!-- Designer Gap (الجاب الدرافيل) -->
+            <!-- Designer Gap (الجاب الدرافيل) - للعرض فقط -->
             <div class="form-group">
-                <label for="designer_gap" class="form-label">الجاب الدرافيل (تجهيزات المصمم)</label>
-                <div style="display: flex; gap: 0.5rem; align-items: center;">
-                    <input 
-                        type="number" 
-                        id="designer_gap" 
-                        name="designer_gap" 
-                        class="form-input" 
-                        value="{{ old('designer_gap', $workOrder->designer_gap) }}"
-                        min="0"
-                        step="0.01"
-                        placeholder="سيتم الحساب تلقائياً"
-                        style="flex: 1;"
-                    >
-                    <button 
-                        type="button" 
-                        id="calculateGapBtn" 
-                        class="calculate-btn"
-                        onclick="calculateGap()"
-                    >
-                        <svg style="width: 18px; height: 18px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-                        </svg>
-                        حساب تلقائي
-                    </button>
-                </div>
-                <div class="formula-info">
-                    <strong>الصيغة:</strong> [ (3.175 × D / 10) ÷ INT( 3.175 × D ÷ ( (L + 0.2) × 10 ) ) − L ] × 10
-                    <br>
-                    <strong>حيث:</strong> D = الدرايفيل، L = الطول
+                <label class="form-label">الجاب الدرافيل (تجهيزات المصمم)</label>
+                <input 
+                    type="hidden" 
+                    id="designer_gap" 
+                    name="designer_gap" 
+                    value="{{ old('designer_gap', $workOrder->designer_gap) }}"
+                >
+                <div 
+                    id="designer_gap_display" 
+                    style="padding: 0.75rem; background-color: #f3f4f6; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 1rem; color: #111827; font-weight: 600; min-height: 2.5rem; display: flex; align-items: center;"
+                >
+                    {{ old('designer_gap', $workOrder->designer_gap) ? number_format(old('designer_gap', $workOrder->designer_gap), 2) : '-' }}
                 </div>
                 @error('designer_gap')
                     <p style="color: #dc2626; font-size: 0.875rem; margin-top: 0.25rem;">{{ $message }}</p>
@@ -447,4 +355,172 @@
             </div>
         </form>
     </div>
+
+    <script>
+        // دالة حساب الجاب
+        function calculateGap() {
+            try {
+                const drillsInput = document.getElementById('designer_drills');
+                const gapInput = document.getElementById('designer_gap');
+                const gapDisplay = document.getElementById('designer_gap_display');
+                
+                if (!drillsInput || !gapInput || !gapDisplay) {
+                    console.log('Inputs not found');
+                    return;
+                }
+                
+                const drillsValue = parseFloat(drillsInput.value);
+                const lengthValue = parseFloat({{ $workOrder->length ?? 0 }});
+                
+                console.log('Calculating gap - Drills:', drillsValue, 'Length:', lengthValue);
+                
+                if (!drillsValue || isNaN(drillsValue) || drillsValue <= 0) {
+                    console.log('Invalid drills value:', drillsValue);
+                    return;
+                }
+                
+                if (!lengthValue || isNaN(lengthValue) || lengthValue <= 0) {
+                    console.log('Length value is invalid:', lengthValue);
+                    return;
+                }
+                
+                // الصيغة: Gap = [ (3.175 × D / 10) ÷ INT( 3.175 × D ÷ ( (L + 0.2) × 10 ) ) − L ] × 10
+                const D = drillsValue;
+                const L = lengthValue;
+                
+                console.log('Starting calculation - D:', D, 'L:', L);
+                
+                // حساب: (L + 0.2) × 10
+                const denominator = (L + 0.2) * 10;
+                console.log('Denominator:', denominator);
+                
+                // حساب: 3.175 × D ÷ ( (L + 0.2) × 10 )
+                const divisionResult = (3.175 * D) / denominator;
+                console.log('Division result:', divisionResult);
+                
+                // INT(3.175 × D ÷ ( (L + 0.2) × 10 ))
+                const intPart = Math.floor(divisionResult);
+                console.log('Int part:', intPart);
+                
+                // إذا كان intPart = 0، استخدم 1 كقيمة افتراضية
+                const finalIntPart = intPart === 0 ? 1 : intPart;
+                console.log('Final int part (after check):', finalIntPart);
+                
+                // حساب: 3.175 × D / 10
+                const numerator = (3.175 * D) / 10;
+                console.log('Numerator:', numerator);
+                
+                // حساب: (3.175 × D / 10) ÷ INT(...)
+                const division = numerator / finalIntPart;
+                console.log('Division:', division);
+                
+                // حساب: [ ... ] − L
+                const subtraction = division - L;
+                console.log('Subtraction:', subtraction);
+                
+                // حساب: [ ... ] × 10
+                const gap = subtraction * 10;
+                console.log('Final gap:', gap);
+                
+                // تحديث قيمة الحقل والـ display
+                if (!isNaN(gap) && isFinite(gap)) {
+                    const gapValue = gap.toFixed(2);
+                    console.log('Setting gap value to:', gapValue);
+                    
+                    // تحديث الحقل المخفي
+                    gapInput.value = gapValue;
+                    gapInput.setAttribute('value', gapValue);
+                    
+                    // تحديث العرض في الـ label
+                    gapDisplay.textContent = gapValue;
+                    
+                    console.log('Gap input value after update:', gapInput.value);
+                    console.log('Gap display text:', gapDisplay.textContent);
+                    console.log('Gap display element:', gapDisplay);
+                } else {
+                    console.log('Invalid gap result:', gap, 'isNaN:', isNaN(gap), 'isFinite:', isFinite(gap));
+                    gapDisplay.textContent = '-';
+                }
+            } catch (e) {
+                console.error('Error calculating gap:', e);
+            }
+        }
+        
+        // تهيئة عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing gap calculation');
+            
+            const drillsInput = document.getElementById('designer_drills');
+            const breakingGearInput = document.getElementById('designer_breaking_gear');
+            
+            if (!drillsInput) {
+                console.error('drillsInput not found');
+                return;
+            }
+            
+            // دالة للحساب التلقائي
+            function triggerCalculation() {
+                console.log('Trigger calculation called');
+                setTimeout(function() {
+                    console.log('Executing calculateGap...');
+                    calculateGap();
+                }, 100);
+            }
+            
+            // ربط الأحداث للدرايفيل
+            console.log('Setting up event listeners for drillsInput');
+            drillsInput.addEventListener('input', function() {
+                console.log('Drills input event fired');
+                triggerCalculation();
+            });
+            drillsInput.addEventListener('keyup', function() {
+                console.log('Drills keyup event fired');
+                triggerCalculation();
+            });
+            drillsInput.addEventListener('change', function() {
+                console.log('Drills change event fired');
+                triggerCalculation();
+            });
+            drillsInput.addEventListener('blur', function() {
+                console.log('Drills blur event fired');
+                setTimeout(function() {
+                    calculateGap();
+                }, 50);
+            });
+            
+            // ربط الأحداث لترس التكسير
+            if (breakingGearInput) {
+                console.log('Setting up event listeners for breakingGearInput');
+                breakingGearInput.addEventListener('input', function() {
+                    console.log('Breaking gear input event fired');
+                    triggerCalculation();
+                });
+                breakingGearInput.addEventListener('keyup', function() {
+                    console.log('Breaking gear keyup event fired');
+                    triggerCalculation();
+                });
+                breakingGearInput.addEventListener('change', function() {
+                    console.log('Breaking gear change event fired');
+                    triggerCalculation();
+                });
+                breakingGearInput.addEventListener('blur', function() {
+                    console.log('Breaking gear blur event fired');
+                    setTimeout(function() {
+                        calculateGap();
+                    }, 50);
+                });
+            } else {
+                console.log('breakingGearInput not found');
+            }
+            
+            // حساب تلقائي عند تحميل الصفحة إذا كانت القيم موجودة
+            setTimeout(function() {
+                console.log('Initial calculation check - drillsInput value:', drillsInput.value);
+                if (drillsInput && drillsInput.value) {
+                    console.log('Running initial calculation...');
+                    calculateGap();
+                }
+            }, 500);
+        });
+    </script>
 </x-app-layout>

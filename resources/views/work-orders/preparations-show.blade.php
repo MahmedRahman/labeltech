@@ -70,9 +70,9 @@
                 <h3 style="font-size: 1.125rem; font-weight: 600; color: #92400e; margin: 0;">نقل إلى التشغيل</h3>
             </div>
             <p style="font-size: 0.875rem; color: #b45309; margin-bottom: 1.5rem;">بعد اكتمال التجهيزات، يمكنك نقل الطلب إلى التشغيل.</p>
-            <form action="{{ route('work-orders.move-to-production', $workOrder) }}" method="POST">
+            <form action="{{ route('work-orders.move-to-production', $workOrder) }}" method="POST" id="move-to-production-form">
                 @csrf
-                <button type="submit" onclick="return confirm('هل أنت متأكد من نقل الطلب إلى التشغيل؟')" style="display: inline-flex; align-items: center; padding: 0.875rem 1.5rem; background-color: #10b981; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);">
+                <button type="submit" onclick="return validateBeforeMoveToProduction(event)" style="display: inline-flex; align-items: center; padding: 0.875rem 1.5rem; background-color: #10b981; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);">
                     <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
                     </svg>
@@ -429,12 +429,7 @@
             </div>
             @endif
 
-            @if($workOrder->designer_gap)
-            <div>
-                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">الجاب الدرافيل</dt>
-                <dd style="font-size: 0.875rem; color: #111827; margin: 0; font-weight: 600;">{{ number_format($workOrder->designer_gap, 2) }}</dd>
-            </div>
-            @endif
+            {{-- الجاب الدرافيل مخفي --}}
         </div>
     </div>
     @endif
@@ -551,6 +546,34 @@
     @endif
 
     <script>
+        // دالة للتحقق من القيم قبل النقل إلى التشغيل
+        function validateBeforeMoveToProduction(event) {
+            @php
+                $designerDrills = $workOrder->designer_drills ?? '';
+                $designerBreakingGear = $workOrder->designer_breaking_gear ?? '';
+            @endphp
+            
+            const designerDrills = @json($designerDrills);
+            const designerBreakingGear = @json($designerBreakingGear);
+            
+            let errorMessage = '';
+            
+            if (!designerDrills || designerDrills.toString().trim() === '') {
+                errorMessage = 'يرجى إدخال قيمة في حقل الدرايفيل (تجهيزات المصمم) قبل النقل إلى التشغيل';
+            } else if (!designerBreakingGear || designerBreakingGear.toString().trim() === '') {
+                errorMessage = 'يرجى إدخال قيمة في حقل ترس التكسير (تجهيزات المصمم) قبل النقل إلى التشغيل';
+            }
+            
+            if (errorMessage) {
+                event.preventDefault();
+                alert(errorMessage);
+                return false;
+            }
+            
+            // إذا كانت القيم موجودة، تأكيد النقل
+            return confirm('هل أنت متأكد من نقل الطلب إلى التشغيل؟');
+        }
+        
         document.addEventListener('DOMContentLoaded', function() {
             // Update client design approval card styles
             function updateClientDesignApprovalStyle() {

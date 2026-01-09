@@ -1639,6 +1639,17 @@ class WorkOrderController extends Controller
                 ->with('error', 'يمكن نقل الطلبات جاري التجهيز فقط إلى التشغيل');
         }
 
+        // التحقق من وجود قيم في الدرايفيل وترس التكسير
+        if (empty($workOrder->designer_drills) || trim($workOrder->designer_drills) === '') {
+            return redirect()->back()
+                ->with('error', 'يرجى إدخال قيمة في حقل الدرايفيل (تجهيزات المصمم) قبل النقل إلى التشغيل');
+        }
+
+        if (empty($workOrder->designer_breaking_gear) || trim($workOrder->designer_breaking_gear) === '') {
+            return redirect()->back()
+                ->with('error', 'يرجى إدخال قيمة في حقل ترس التكسير (تجهيزات المصمم) قبل النقل إلى التشغيل');
+        }
+
         // Update status to completed
         $workOrder->update([
             'status' => 'completed'
