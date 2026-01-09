@@ -58,6 +58,14 @@ class ClientController extends Controller
      */
     public function create()
     {
+        // Check if logged in as sales employee (not admin)
+        $employee = Auth::guard('employee')->user();
+        $isAdmin = Auth::guard('web')->check();
+        
+        if ($employee && $employee->account_type === 'مبيعات' && !$isAdmin) {
+            abort(403, 'ليس لديك صلاحية لإضافة عملاء');
+        }
+        
         return view('clients.create');
     }
 
@@ -66,6 +74,14 @@ class ClientController extends Controller
      */
     public function store(Request $request)
     {
+        // Check if logged in as sales employee (not admin)
+        $employee = Auth::guard('employee')->user();
+        $isAdmin = Auth::guard('web')->check();
+        
+        if ($employee && $employee->account_type === 'مبيعات' && !$isAdmin) {
+            abort(403, 'ليس لديك صلاحية لإضافة عملاء');
+        }
+        
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
@@ -87,7 +103,11 @@ class ClientController extends Controller
      */
     public function show(Client $client)
     {
-        return view('clients.show', compact('client'));
+        // Get employee info for display
+        $employee = Auth::guard('employee')->user();
+        $isAdmin = Auth::guard('web')->check();
+        
+        return view('clients.show', compact('client', 'employee', 'isAdmin'));
     }
 
     /**
@@ -95,6 +115,14 @@ class ClientController extends Controller
      */
     public function edit(Client $client)
     {
+        // Check if logged in as sales employee (not admin)
+        $employee = Auth::guard('employee')->user();
+        $isAdmin = Auth::guard('web')->check();
+        
+        if ($employee && $employee->account_type === 'مبيعات' && !$isAdmin) {
+            abort(403, 'ليس لديك صلاحية لتعديل العملاء');
+        }
+        
         return view('clients.edit', compact('client'));
     }
 
@@ -103,6 +131,14 @@ class ClientController extends Controller
      */
     public function update(Request $request, Client $client)
     {
+        // Check if logged in as sales employee (not admin)
+        $employee = Auth::guard('employee')->user();
+        $isAdmin = Auth::guard('web')->check();
+        
+        if ($employee && $employee->account_type === 'مبيعات' && !$isAdmin) {
+            abort(403, 'ليس لديك صلاحية لتعديل العملاء');
+        }
+        
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'nullable|email|max:255',
@@ -124,6 +160,14 @@ class ClientController extends Controller
      */
     public function destroy(Client $client)
     {
+        // Check if logged in as sales employee (not admin)
+        $employee = Auth::guard('employee')->user();
+        $isAdmin = Auth::guard('web')->check();
+        
+        if ($employee && $employee->account_type === 'مبيعات' && !$isAdmin) {
+            abort(403, 'ليس لديك صلاحية لحذف العملاء');
+        }
+        
         $client->delete();
 
         return redirect()->route('clients.index')

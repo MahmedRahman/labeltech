@@ -10,9 +10,11 @@
             <p style="font-size: 1rem; color: #6b7280; margin: 0;">{{ $client->name }}</p>
         </div>
         <div style="display: flex; gap: 0.75rem;">
-            <a href="{{ route('clients.edit', $client) }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #10b981; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500;">
-                تعديل
-            </a>
+            @if(!isset($employee) || !$employee || $employee->account_type !== 'مبيعات' || (isset($isAdmin) && $isAdmin))
+                <a href="{{ route('clients.edit', $client) }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #10b981; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500;">
+                    تعديل
+                </a>
+            @endif
             <a href="{{ route('clients.index') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #6b7280; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500;">
                 العودة للقائمة
             </a>
