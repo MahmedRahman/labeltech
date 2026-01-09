@@ -965,6 +965,98 @@ class WorkOrderController extends Controller
     }
 
     /**
+     * Show work order for production employee.
+     */
+    public function showForProduction(WorkOrder $workOrder)
+    {
+        $employee = auth('employee')->user();
+        if ($employee->account_type !== 'تشغيل') {
+            abort(403);
+        }
+        
+        // Verify that this work order is in production (status = completed)
+        if ($workOrder->status !== 'completed') {
+            abort(403, 'هذا أمر الشغل غير موجود في التشغيل');
+        }
+        
+        $workOrder->load('client', 'designKnife');
+        
+        // Calculate all values dynamically
+        $calculations = $this->calculateAllValues($workOrder);
+        
+        // Get available knives based on length, width, and drills
+        $knivesQuery = \App\Models\Knife::query();
+        
+        if ($workOrder->length) {
+            $knivesQuery->where('length', $workOrder->length);
+        }
+        
+        if ($workOrder->width) {
+            $knivesQuery->where('width', $workOrder->width);
+        }
+        
+        if ($workOrder->design_drills) {
+            $knivesQuery->where('dragile_drive', $workOrder->design_drills);
+        }
+        
+        $availableKnives = $knivesQuery->orderBy('knife_code')->get();
+        
+        return view('employee.production-work-order-show', compact('workOrder', 'calculations', 'availableKnives'));
+    }
+
+    /**
+     * Update production design fields (rows count, drills, breaking gear).
+     */
+    public function updateProductionDesignFields(Request $request, WorkOrder $workOrder)
+    {
+        $employee = auth('employee')->user();
+        if ($employee->account_type !== 'تشغيل') {
+            abort(403);
+        }
+        
+        // Verify that this work order is in production (status = completed)
+        if ($workOrder->status !== 'completed') {
+            abort(403, 'هذا أمر الشغل غير موجود في التشغيل');
+        }
+        
+        $validated = $request->validate([
+            'design_rows_count' => 'nullable|integer|min:1',
+            'design_drills' => 'nullable|string|max:255',
+            'design_breaking_gear' => 'nullable|string|max:255',
+        ]);
+        
+        $workOrder->update($validated);
+        
+        return redirect()->back()
+            ->with('success', 'تم تحديث البيانات بنجاح');
+    }
+
+    /**
+     * Update selected knife for production.
+     */
+    public function updateProductionKnife(Request $request, WorkOrder $workOrder)
+    {
+        $employee = auth('employee')->user();
+        if ($employee->account_type !== 'تشغيل') {
+            abort(403);
+        }
+        
+        // Verify that this work order is in production (status = completed)
+        if ($workOrder->status !== 'completed') {
+            abort(403, 'هذا أمر الشغل غير موجود في التشغيل');
+        }
+        
+        $validated = $request->validate([
+            'design_knife_id' => 'nullable|exists:knives,id',
+        ]);
+        
+        $workOrder->update($validated);
+        
+        return redirect()->back()
+            ->with('success', 'تم تحديث السكينة المختارة بنجاح');
+    }
+
+    /**
      * Show profile (work order) from work-orders-list page
      */
     public function showProfile(WorkOrder $workOrder)

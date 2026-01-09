@@ -305,4 +305,13 @@ Route::middleware(['auth:employee'])->prefix('employee')->name('employee.')->gro
     
     // Production Work Orders List
     Route::get('/production/work-orders', [\App\Http\Controllers\WorkOrderController::class, 'productionEmployeeList'])->name('production.work-orders');
+    
+    // Production Work Order Show
+    Route::get('/production/work-orders/{workOrder}', [\App\Http\Controllers\WorkOrderController::class, 'showForProduction'])->name('production.work-orders.show');
+    
+    // Production Work Order Update Design Fields
+    Route::post('/production/work-orders/{workOrder}/update-design-fields', [\App\Http\Controllers\WorkOrderController::class, 'updateProductionDesignFields'])->name('production.work-orders.update-design-fields');
+    
+    // Production Work Order Update Knife
+    Route::post('/production/work-orders/{workOrder}/update-knife', [\App\Http\Controllers\WorkOrderController::class, 'updateProductionKnife'])->name('production.work-orders.update-knife');
 });
