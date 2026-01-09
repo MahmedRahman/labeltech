@@ -471,7 +471,38 @@
                     </a>
                     @endif
                     
-                    @if(!$isDesignEmployee && !$isAdmin)
+                    @if($isProductionEmployee)
+                        <!-- قسم خاص بحساب التشغيل -->
+                        <div class="nav-section-title" style="margin-top: 1rem; font-size: 1.25rem; font-weight: 700; color: #111827; border-top: 1px solid #e5e7eb; padding-top: 1rem;">
+                            أوامر الشغل
+                        </div>
+                        
+                        @php
+                            $currentRoute = request()->route()?->getName() ?? '';
+                            $isProductionRoute = $currentRoute === 'work-orders.production' || $currentRoute === 'employee.production.work-orders';
+                            $productionRoute = route('employee.production.work-orders');
+                            
+                            // حساب عدد أوامر الشغل قيد التشغيل
+                            $productionWorkOrdersCount = \App\Models\WorkOrder::where('production_status', '!=', 'أرشيف')
+                                ->where(function($q) {
+                                    $q->whereNull('production_status')
+                                      ->orWhere('production_status', 'بدون حالة')
+                                      ->orWhereIn('production_status', ['طباعة', 'قص', 'تقفيل']);
+                                })
+                                ->count();
+                        @endphp
+                        <a href="{{ $productionRoute }}" class="nav-link {{ $isProductionRoute ? 'active' : '' }}" style="display: flex; align-items: center; justify-content: space-between;">
+                            <span style="display: flex; align-items: center;">
+                                <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                </svg>
+                                التشغيل
+                            </span>
+                            @if($productionWorkOrdersCount > 0)
+                                <span style="background-color: #10b981; color: white; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; min-width: 1.5rem; text-align: center;">{{ $productionWorkOrdersCount }}</span>
+                            @endif
+                        </a>
+                    @elseif(!$isDesignEmployee && !$isAdmin)
                     <!-- التشغيل - لا يظهر للمصمم والادمن -->
                     @php
                         $currentRoute = request()->route()?->getName() ?? '';
@@ -555,8 +586,19 @@
                         </a>
                     @endif
 
-                    @if($isDesignEmployee || $isProductionEmployee || $isAdmin)
-                        <!-- السكاكين - للمصمم والتشغيل والادمن -->
+                    @if($isProductionEmployee)
+                        <!-- قسم السكاكين - لحساب التشغيل -->
+                        <div class="nav-section-title" style="margin-top: 1rem; font-size: 1.25rem; font-weight: 700; color: #111827; border-top: 1px solid #e5e7eb; padding-top: 1rem;">
+                            السكاكين
+                        </div>
+                        <a href="{{ route('knives.index') }}" class="nav-link {{ request()->routeIs('knives.*') ? 'active' : '' }}">
+                            <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            السكاكين
+                        </a>
+                    @elseif($isDesignEmployee || $isAdmin)
+                        <!-- السكاكين - للمصمم والادمن -->
                         <a href="{{ route('knives.index') }}" class="nav-link {{ request()->routeIs('knives.*') ? 'active' : '' }}">
                             <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
