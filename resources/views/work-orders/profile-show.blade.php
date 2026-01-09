@@ -234,7 +234,204 @@
             </div>
             @elseif($isApproved && $workOrder->final_product_shape)
             <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 2px solid #10b981;">
-                <p style="font-size: 0.875rem; color: #065f46; margin-bottom: 1rem;">تم موافقة العميل على التصميم وتم استكمال البيانات. يمكنك الآن نقل البروفا إلى التجهيزات.</p>
+                <p style="font-size: 0.875rem; color: #065f46; margin-bottom: 1rem; font-weight: 600;">تم موافقة العميل على التصميم وتم استكمال البيانات. يمكنك الآن نقل البروفا إلى التجهيزات.</p>
+                
+                <!-- عرض البيانات المستكملة -->
+                <div style="background-color: #f0fdf4; border: 1px solid #10b981; border-radius: 0.5rem; padding: 1.5rem; margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h4 style="font-size: 1rem; font-weight: 600; color: #065f46; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                            <svg style="width: 20px; height: 20px; color: #10b981;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            البيانات المستكملة
+                        </h4>
+                        <button type="button" onclick="toggleEditCompletedData()" id="edit-completed-data-btn" style="display: inline-flex; align-items: center; padding: 0.5rem 1rem; background-color: #10b981; color: white; border: none; border-radius: 0.375rem; font-weight: 500; font-size: 0.875rem; cursor: pointer; transition: all 0.2s;">
+                            <svg style="width: 16px; height: 16px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                            </svg>
+                            تعديل
+                        </button>
+                    </div>
+                    
+                    <!-- عرض البيانات -->
+                    <div id="completed-data-display">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                            <div>
+                                <span style="font-size: 0.875rem; font-weight: 500; color: #065f46; display: block; margin-bottom: 0.25rem;">شكل المنتج النهائي:</span>
+                                <span style="font-size: 0.875rem; color: #111827; font-weight: 600;">{{ $workOrder->final_product_shape }}</span>
+                            </div>
+                            
+                            @if($workOrder->final_product_shape == 'بكر')
+                                @if($workOrder->number_of_rolls)
+                                <div>
+                                    <span style="font-size: 0.875rem; font-weight: 500; color: #065f46; display: block; margin-bottom: 0.25rem;">عدد التكت في البكره:</span>
+                                    <span style="font-size: 0.875rem; color: #111827; font-weight: 600;">{{ number_format($workOrder->number_of_rolls) }}</span>
+                                </div>
+                                @endif
+                                
+                                @if($workOrder->core_size)
+                                <div>
+                                    <span style="font-size: 0.875rem; font-weight: 500; color: #065f46; display: block; margin-bottom: 0.25rem;">مقاس الكور:</span>
+                                    <span style="font-size: 0.875rem; color: #111827; font-weight: 600;">{{ number_format($workOrder->core_size, 0) }} مم</span>
+                                </div>
+                                @endif
+                            @elseif($workOrder->final_product_shape == 'شيت')
+                                @if($workOrder->pieces_per_sheet)
+                                <div>
+                                    <span style="font-size: 0.875rem; font-weight: 500; color: #065f46; display: block; margin-bottom: 0.25rem;">عدد التكت في الشيت:</span>
+                                    <span style="font-size: 0.875rem; color: #111827; font-weight: 600;">{{ number_format($workOrder->pieces_per_sheet) }}</span>
+                                </div>
+                                @endif
+                                
+                                @if($workOrder->sheets_per_stack)
+                                <div>
+                                    <span style="font-size: 0.875rem; font-weight: 500; color: #065f46; display: block; margin-bottom: 0.25rem;">عدد الشيت في الراكوة:</span>
+                                    <span style="font-size: 0.875rem; color: #111827; font-weight: 600;">{{ number_format($workOrder->sheets_per_stack) }}</span>
+                                </div>
+                                @endif
+                                
+                                @if($workOrder->pieces_per_stack)
+                                <div>
+                                    <span style="font-size: 0.875rem; font-weight: 500; color: #065f46; display: block; margin-bottom: 0.25rem;">عدد التكت في الراكوة:</span>
+                                    <span style="font-size: 0.875rem; color: #111827; font-weight: 600;">{{ number_format($workOrder->pieces_per_stack) }}</span>
+                                </div>
+                                @endif
+                            @endif
+                        </div>
+                    </div>
+                    
+                    <!-- نموذج تعديل البيانات المستكملة -->
+                    <div id="completed-data-edit" style="display: none;">
+                        <form action="{{ route('work-orders.complete-production-data', $workOrder) }}" method="POST" id="edit-completed-data-form">
+                            @csrf
+                            
+                            <!-- Final Product Shape -->
+                            <div style="margin-bottom: 1.5rem;">
+                                <label style="display: block; font-size: 0.875rem; font-weight: 600; color: #065f46; margin-bottom: 0.75rem;">شكل المنتج النهائي</label>
+                                <div style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
+                                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.875rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; background-color: white;" id="edit_final_product_shape_roll_label">
+                                        <input type="radio" 
+                                               name="final_product_shape" 
+                                               value="بكر" 
+                                               id="edit_final_product_shape_roll"
+                                               {{ old('final_product_shape', $workOrder->final_product_shape) == 'بكر' ? 'checked' : '' }}
+                                               onchange="toggleEditProductionFields()"
+                                               style="width: 18px; height: 18px; cursor: pointer; accent-color: #10b981;">
+                                        <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">بكر</span>
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; padding: 0.875rem 1.5rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; background-color: white;" id="edit_final_product_shape_sheet_label">
+                                        <input type="radio" 
+                                               name="final_product_shape" 
+                                               value="شيت" 
+                                               id="edit_final_product_shape_sheet"
+                                               {{ old('final_product_shape', $workOrder->final_product_shape) == 'شيت' ? 'checked' : '' }}
+                                               onchange="toggleEditProductionFields()"
+                                               style="width: 18px; height: 18px; cursor: pointer; accent-color: #10b981;">
+                                        <span style="font-size: 0.875rem; font-weight: 500; color: #111827;">شيت</span>
+                                    </label>
+                                </div>
+                                @error('final_product_shape')
+                                    <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.5rem;">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Production Method Data -->
+                            <div style="margin-bottom: 1.5rem;">
+                                <h4 style="font-size: 0.875rem; font-weight: 600; color: #065f46; margin-bottom: 1rem;">بيانات طريقة التشغيل</h4>
+                                
+                                <!-- Roll Fields (بكر) -->
+                                <div id="edit_roll-production-fields" style="display: {{ old('final_product_shape', $workOrder->final_product_shape) == 'بكر' ? 'block' : 'none' }};">
+                                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+                                        <div>
+                                            <label for="edit_number_of_rolls" style="display: block; font-size: 0.875rem; font-weight: 500; color: #065f46; margin-bottom: 0.5rem;">عدد التكت في البكره</label>
+                                            <input type="number"
+                                                   name="number_of_rolls"
+                                                   id="edit_number_of_rolls"
+                                                   value="{{ old('number_of_rolls', $workOrder->number_of_rolls) }}"
+                                                   min="1"
+                                                   style="width: 100%; padding: 0.625rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem;"
+                                                   placeholder="أدخل عدد التكت في البكره">
+                                            @error('number_of_rolls')
+                                                <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.5rem;">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+
+                                        <div>
+                                            <label style="display: block; font-size: 0.875rem; font-weight: 500; color: #065f46; margin-bottom: 0.5rem;">مقاس الكور</label>
+                                            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                                                @php
+                                                    $coreSizes = [76, 40, 25];
+                                                    $selectedCoreSize = old('core_size', $workOrder->core_size ?? 76);
+                                                @endphp
+                                                @foreach($coreSizes as $size)
+                                                    <label style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; cursor: pointer; padding: 0.875rem 1.25rem; border: 2px solid #d1d5db; border-radius: 0.5rem; transition: all 0.2s; min-width: 60px; text-align: center; background-color: white;" id="edit_core_size_{{ $size }}_label">
+                                                        <input type="radio" 
+                                                               name="core_size" 
+                                                               value="{{ $size }}" 
+                                                               id="edit_core_size_{{ $size }}"
+                                                               {{ $selectedCoreSize == $size ? 'checked' : '' }}
+                                                               onchange="updateEditCoreSizeStyles()"
+                                                               style="width: 18px; height: 18px; cursor: pointer; accent-color: #10b981;">
+                                                        <span style="font-size: 0.875rem; font-weight: 600; color: #111827;">{{ $size }}</span>
+                                                    </label>
+                                                @endforeach
+                                            </div>
+                                            @error('core_size')
+                                                <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.5rem;">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Sheet Fields (شيت) -->
+                                <div id="edit_sheet-production-fields" style="display: {{ old('final_product_shape', $workOrder->final_product_shape) == 'شيت' ? 'block' : 'none' }};">
+                                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+                                        <div>
+                                            <label for="edit_pieces_per_sheet" style="display: block; font-size: 0.875rem; font-weight: 500; color: #065f46; margin-bottom: 0.5rem;">عدد التكت في الشيت</label>
+                                            <input type="number"
+                                                   name="pieces_per_sheet"
+                                                   id="edit_pieces_per_sheet"
+                                                   value="{{ old('pieces_per_sheet', $workOrder->pieces_per_sheet) }}"
+                                                   min="1"
+                                                   style="width: 100%; padding: 0.625rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem;"
+                                                   placeholder="أدخل عدد التكت في الشيت">
+                                            @error('pieces_per_sheet')
+                                                <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.5rem;">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+
+                                        <div>
+                                            <label for="edit_sheets_per_stack" style="display: block; font-size: 0.875rem; font-weight: 500; color: #065f46; margin-bottom: 0.5rem;">عدد الشيت في الراكوة</label>
+                                            <input type="number"
+                                                   name="sheets_per_stack"
+                                                   id="edit_sheets_per_stack"
+                                                   value="{{ old('sheets_per_stack', $workOrder->sheets_per_stack) }}"
+                                                   min="1"
+                                                   style="width: 100%; padding: 0.625rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem;"
+                                                   placeholder="أدخل عدد الشيت في الراكوة">
+                                            @error('sheets_per_stack')
+                                                <p style="color: #dc2626; font-size: 0.75rem; margin-top: 0.5rem;">{{ $message }}</p>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
+                                <button type="submit" style="display: inline-flex; align-items: center; padding: 0.875rem 1.5rem; background-color: #10b981; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);">
+                                    <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    حفظ التعديلات
+                                </button>
+                                <button type="button" onclick="cancelEditCompletedData()" style="display: inline-flex; align-items: center; padding: 0.875rem 1.5rem; background-color: #6b7280; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                                    إلغاء
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
                 <form action="{{ route('work-orders.move-to-preparations', $workOrder) }}" method="POST">
                     @csrf
                     <button type="submit" onclick="return confirm('هل أنت متأكد من نقل البروفا إلى التجهيزات؟')" style="display: inline-flex; align-items: center; padding: 0.875rem 1.5rem; background-color: #f59e0b; color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3);">
@@ -774,7 +971,110 @@
             document.querySelectorAll('input[name="core_size"]').forEach(radio => {
                 radio.addEventListener('change', updateCoreSizeStyles);
             });
+            
+            // Initialize edit form
+            toggleEditProductionFields();
+            updateEditCoreSizeStyles();
+            
+            // Listen for edit core size changes
+            document.querySelectorAll('#completed-data-edit input[name="core_size"]').forEach(radio => {
+                radio.addEventListener('change', updateEditCoreSizeStyles);
+            });
         });
+        
+        // Toggle edit completed data form
+        function toggleEditCompletedData() {
+            const display = document.getElementById('completed-data-display');
+            const edit = document.getElementById('completed-data-edit');
+            const btn = document.getElementById('edit-completed-data-btn');
+            
+            if (display.style.display === 'none') {
+                // Cancel edit mode
+                display.style.display = 'block';
+                edit.style.display = 'none';
+                btn.innerHTML = `
+                    <svg style="width: 16px; height: 16px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                    تعديل
+                `;
+            } else {
+                // Enter edit mode
+                display.style.display = 'none';
+                edit.style.display = 'block';
+                btn.innerHTML = `
+                    <svg style="width: 16px; height: 16px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                    إلغاء التعديل
+                `;
+            }
+        }
+        
+        function cancelEditCompletedData() {
+            const display = document.getElementById('completed-data-display');
+            const edit = document.getElementById('completed-data-edit');
+            const btn = document.getElementById('edit-completed-data-btn');
+            
+            display.style.display = 'block';
+            edit.style.display = 'none';
+            btn.innerHTML = `
+                <svg style="width: 16px; height: 16px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+                تعديل
+            `;
+        }
+        
+        // Toggle production fields for edit form
+        function toggleEditProductionFields() {
+            const rollRadio = document.getElementById('edit_final_product_shape_roll');
+            const sheetRadio = document.getElementById('edit_final_product_shape_sheet');
+            const rollFields = document.getElementById('edit_roll-production-fields');
+            const sheetFields = document.getElementById('edit_sheet-production-fields');
+            const rollLabel = document.getElementById('edit_final_product_shape_roll_label');
+            const sheetLabel = document.getElementById('edit_final_product_shape_sheet_label');
+            
+            if (rollRadio && rollRadio.checked) {
+                if (rollFields) rollFields.style.display = 'block';
+                if (sheetFields) sheetFields.style.display = 'none';
+                if (rollLabel) {
+                    rollLabel.style.borderColor = '#10b981';
+                    rollLabel.style.backgroundColor = '#10b98120';
+                }
+                if (sheetLabel) {
+                    sheetLabel.style.borderColor = '#d1d5db';
+                    sheetLabel.style.backgroundColor = 'white';
+                }
+            } else if (sheetRadio && sheetRadio.checked) {
+                if (rollFields) rollFields.style.display = 'none';
+                if (sheetFields) sheetFields.style.display = 'block';
+                if (rollLabel) {
+                    rollLabel.style.borderColor = '#d1d5db';
+                    rollLabel.style.backgroundColor = 'white';
+                }
+                if (sheetLabel) {
+                    sheetLabel.style.borderColor = '#10b981';
+                    sheetLabel.style.backgroundColor = '#10b98120';
+                }
+            }
+        }
+        
+        // Update core size label styles for edit form
+        function updateEditCoreSizeStyles() {
+            document.querySelectorAll('#completed-data-edit input[name="core_size"]').forEach(radio => {
+                const label = document.getElementById('edit_core_size_' + radio.value + '_label');
+                if (label) {
+                    if (radio.checked) {
+                        label.style.borderColor = '#10b981';
+                        label.style.backgroundColor = '#10b98120';
+                    } else {
+                        label.style.borderColor = '#d1d5db';
+                        label.style.backgroundColor = 'white';
+                    }
+                }
+            });
+        }
         
         function toggleNotesEdit() {
             const display = document.getElementById('notes-display');
