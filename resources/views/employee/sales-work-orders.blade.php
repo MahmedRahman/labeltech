@@ -281,11 +281,6 @@
                                 <div class="table-actions">
                                     <a href="{{ route('work-orders.show', $workOrder->id) }}" class="btn-view">عرض</a>
                                     <a href="{{ route('work-orders.edit', $workOrder->id) }}" class="btn-edit">تعديل</a>
-                                    <form action="{{ route('work-orders.destroy', $workOrder->id) }}" method="POST" style="display: inline;" onsubmit="return confirmDelete(event)">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn-delete" style="padding: 0.375rem 0.75rem; border-radius: 0.375rem; text-decoration: none; font-size: 0.75rem; font-weight: 500; transition: all 0.2s; background-color: #fee2e2; color: #dc2626; border: none; cursor: pointer;">حذف</button>
-                                    </form>
                                 </div>
                             </td>
                         </tr>

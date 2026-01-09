@@ -1,6 +1,6 @@
 <x-app-layout>
     @php
-        $title = 'إضافة أمر شغل جديد';
+        $title = 'إضافة عرض سعر';
     @endphp
 
     <!-- Select2 CSS -->
@@ -324,8 +324,8 @@
         <div class="form-container">
         <div class="form-card">
             <div class="form-header">
-                <h2>إضافة أمر شغل جديد</h2>
-                <p>املأ البيانات التالية لإضافة أمر شغل جديد</p>
+                <h2>إضافة عرض سعر</h2>
+                <p>املأ البيانات التالية لإضافة عرض سعر</p>
             </div>
 
             <form action="{{ route('work-orders.store') }}" method="POST">
@@ -351,7 +351,7 @@
                             <option value="">اختر العميل</option>
                             @foreach($clients as $client)
                                 <option value="{{ $client->id }}" {{ old('client_id') == $client->id ? 'selected' : '' }}>
-                                    {{ $client->name }} @if($client->company) - {{ $client->company }} @endif
+                                    {{ $client->name }}
                                 </option>
                             @endforeach
                         </select>
