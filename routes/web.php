@@ -314,4 +314,7 @@ Route::middleware(['auth:employee'])->prefix('employee')->name('employee.')->gro
     
     // Production Work Order Update Knife
     Route::post('/production/work-orders/{workOrder}/update-knife', [\App\Http\Controllers\WorkOrderController::class, 'updateProductionKnife'])->name('production.work-orders.update-knife');
+    
+    // Production Preparations List
+    Route::get('/production/preparations', [\App\Http\Controllers\WorkOrderController::class, 'productionPreparationsList'])->name('production.preparations');
 });

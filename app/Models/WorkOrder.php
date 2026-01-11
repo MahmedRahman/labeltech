@@ -68,6 +68,7 @@ class WorkOrder extends Model
         'designer_breaking_gear',
         'designer_paper_width',
         'designer_gap',
+        'preparation_blocker',
     ];
 
     protected $casts = [

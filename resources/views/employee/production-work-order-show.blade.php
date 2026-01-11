@@ -388,10 +388,12 @@
         
         <form action="{{ route('employee.production.work-orders.update-knife', $workOrder) }}" method="POST" id="select-knife-form">
             @csrf
+            <input type="hidden" name="design_knife_id" id="selected_knife_id" value="">
+            <input type="hidden" name="preparation_blocker" id="selected_preparation_blocker" value="">
             <div id="knives-cards-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem;">
                 @foreach($availableKnives as $knife)
-                <label class="knife-card" style="display: flex; flex-direction: column; padding: 1.25rem; border: 2px solid {{ $workOrder->design_knife_id == $knife->id ? '#10b981' : '#e5e7eb' }}; border-radius: 0.75rem; background-color: {{ $workOrder->design_knife_id == $knife->id ? '#ecfdf5' : '#ffffff' }}; cursor: pointer; transition: all 0.2s; box-shadow: {{ $workOrder->design_knife_id == $knife->id ? '0 4px 6px rgba(16, 185, 129, 0.2)' : '0 1px 3px rgba(0, 0, 0, 0.05)' }};">
-                    <input type="radio" name="design_knife_id" value="{{ $knife->id }}" {{ $workOrder->design_knife_id == $knife->id ? 'checked' : '' }} style="display: none;" onchange="document.getElementById('select-knife-form').submit();">
+                <label class="knife-card" data-knife-id="{{ $knife->id }}" style="display: flex; flex-direction: column; padding: 1.25rem; border: 2px solid {{ $workOrder->design_knife_id == $knife->id ? '#10b981' : '#e5e7eb' }}; border-radius: 0.75rem; background-color: {{ $workOrder->design_knife_id == $knife->id ? '#ecfdf5' : '#ffffff' }}; cursor: pointer; transition: all 0.2s; box-shadow: {{ $workOrder->design_knife_id == $knife->id ? '0 4px 6px rgba(16, 185, 129, 0.2)' : '0 1px 3px rgba(0, 0, 0, 0.05)' }};">
+                    <input type="radio" name="knife_radio" value="{{ $knife->id }}" {{ $workOrder->design_knife_id == $knife->id ? 'checked' : '' }} style="display: none;">
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
                         <span style="font-size: 1rem; font-weight: 700; color: #111827;">{{ $knife->knife_code }}</span>
                         @if($workOrder->design_knife_id == $knife->id)
@@ -447,6 +449,49 @@
     </div>
     @endif
 
+    <!-- Modal لاختيار مانع التجهيزات -->
+    <div id="preparation-blocker-modal" onclick="if(event.target === this) closePreparationBlockerModal();" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div onclick="event.stopPropagation();" style="background: white; border-radius: 0.75rem; padding: 2rem; max-width: 500px; width: 90%; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem;">
+                <svg style="width: 24px; height: 24px; color: #f59e0b;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+                <h3 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0;">اختيار مانع التجهيزات</h3>
+            </div>
+            <p style="font-size: 0.875rem; color: #6b7280; margin-bottom: 1.5rem;">يرجى تحديد مانع التجهيزات (إن وجد):</p>
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem;">
+                <label style="display: flex; align-items: center; padding: 1rem; border: 2px solid #e5e7eb; border-radius: 0.5rem; cursor: pointer; transition: all 0.2s;" class="blocker-option" data-value="خامه">
+                    <input type="radio" name="preparation_blocker_radio" value="خامه" style="margin-left: 0.75rem; width: 18px; height: 18px; cursor: pointer;">
+                    <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">خامه</span>
+                </label>
+                <label style="display: flex; align-items: center; padding: 1rem; border: 2px solid #e5e7eb; border-radius: 0.5rem; cursor: pointer; transition: all 0.2s;" class="blocker-option" data-value="اكلاشيهات">
+                    <input type="radio" name="preparation_blocker_radio" value="اكلاشيهات" style="margin-left: 0.75rem; width: 18px; height: 18px; cursor: pointer;">
+                    <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">اكلاشيهات</span>
+                </label>
+                <label style="display: flex; align-items: center; padding: 1rem; border: 2px solid #e5e7eb; border-radius: 0.5rem; cursor: pointer; transition: all 0.2s;" class="blocker-option" data-value="سكينه">
+                    <input type="radio" name="preparation_blocker_radio" value="سكينه" style="margin-left: 0.75rem; width: 18px; height: 18px; cursor: pointer;">
+                    <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">سكينه</span>
+                </label>
+                <label style="display: flex; align-items: center; padding: 1rem; border: 2px solid #e5e7eb; border-radius: 0.5rem; cursor: pointer; transition: all 0.2s;" class="blocker-option" data-value="افلام">
+                    <input type="radio" name="preparation_blocker_radio" value="افلام" style="margin-left: 0.75rem; width: 18px; height: 18px; cursor: pointer;">
+                    <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">افلام</span>
+                </label>
+                <label style="display: flex; align-items: center; padding: 1rem; border: 2px solid #e5e7eb; border-radius: 0.5rem; cursor: pointer; transition: all 0.2s;" class="blocker-option" data-value="لايوجد مانع">
+                    <input type="radio" name="preparation_blocker_radio" value="لايوجد مانع" style="margin-left: 0.75rem; width: 18px; height: 18px; cursor: pointer;">
+                    <span style="font-size: 0.875rem; color: #111827; font-weight: 500;">لايوجد مانع</span>
+                </label>
+            </div>
+            <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+                <button type="button" onclick="closePreparationBlockerModal()" style="padding: 0.625rem 1.25rem; background-color: #6b7280; color: white; border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer; font-size: 0.875rem;">
+                    إلغاء
+                </button>
+                <button type="button" onclick="submitKnifeSelection()" style="padding: 0.625rem 1.25rem; background-color: #10b981; color: white; border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer; font-size: 0.875rem;">
+                    تأكيد
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- الملاحظات -->
     @if($workOrder->notes)
     <div class="card" style="margin-bottom: 1.5rem;">
@@ -492,7 +537,9 @@
                     if (e.target.tagName !== 'INPUT') {
                         radio.checked = true;
                         updateKnifeCardsStyle();
-                        document.getElementById('select-knife-form').submit();
+                        // إظهار modal لاختيار مانع التجهيزات
+                        const knifeId = this.getAttribute('data-knife-id');
+                        showPreparationBlockerModal(knifeId);
                     }
                 });
             });
@@ -513,6 +560,91 @@
                 }
             });
         }
+        
+        // Modal لاختيار مانع التجهيزات
+        let selectedKnifeIdForModal = null;
+        
+        function showPreparationBlockerModal(knifeId) {
+            selectedKnifeIdForModal = knifeId;
+            const modal = document.getElementById('preparation-blocker-modal');
+            modal.style.display = 'flex';
+            
+            // إعادة تعيين الاختيارات
+            document.querySelectorAll('input[name="preparation_blocker_radio"]').forEach(radio => {
+                radio.checked = false;
+            });
+            updateBlockerOptionsStyle();
+        }
+        
+        function closePreparationBlockerModal() {
+            const modal = document.getElementById('preparation-blocker-modal');
+            modal.style.display = 'none';
+            selectedKnifeIdForModal = null;
+        }
+        
+        function submitKnifeSelection() {
+            const selectedBlocker = document.querySelector('input[name="preparation_blocker_radio"]:checked');
+            
+            if (!selectedBlocker) {
+                alert('يرجى اختيار مانع التجهيزات');
+                return;
+            }
+            
+            if (!selectedKnifeIdForModal) {
+                alert('لم يتم اختيار سكينة');
+                return;
+            }
+            
+            // تعيين القيم في النموذج
+            document.getElementById('selected_knife_id').value = selectedKnifeIdForModal;
+            document.getElementById('selected_preparation_blocker').value = selectedBlocker.value;
+            
+            // إرسال النموذج
+            document.getElementById('select-knife-form').submit();
+        }
+        
+        function updateBlockerOptionsStyle() {
+            const options = document.querySelectorAll('.blocker-option');
+            options.forEach(option => {
+                const radio = option.querySelector('input[type="radio"]');
+                if (radio.checked) {
+                    option.style.borderColor = '#10b981';
+                    option.style.backgroundColor = '#ecfdf5';
+                } else {
+                    option.style.borderColor = '#e5e7eb';
+                    option.style.backgroundColor = '#ffffff';
+                }
+            });
+        }
+        
+        // تحديث أسلوب الخيارات عند الاختيار
+        document.addEventListener('change', function(e) {
+            if (e.target && e.target.name === 'preparation_blocker_radio') {
+                updateBlockerOptionsStyle();
+            }
+        });
+        
+        // تحديث أسلوب الخيارات عند hover
+        document.addEventListener('DOMContentLoaded', function() {
+            const blockerOptions = document.querySelectorAll('.blocker-option');
+            blockerOptions.forEach(option => {
+                option.addEventListener('mouseenter', function() {
+                    const radio = this.querySelector('input[type="radio"]');
+                    if (!radio.checked) {
+                        this.style.borderColor = '#10b981';
+                        this.style.backgroundColor = '#f0fdf4';
+                    }
+                });
+                
+                option.addEventListener('mouseleave', function() {
+                    const radio = this.querySelector('input[type="radio"]');
+                    if (!radio.checked) {
+                        this.style.borderColor = '#e5e7eb';
+                        this.style.backgroundColor = '#ffffff';
+                    }
+                });
+            });
+        });
         
         function toggleEditDesignFields() {
             const displayDiv = document.getElementById('design-fields-display');

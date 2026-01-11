@@ -502,6 +502,27 @@
                                 <span style="background-color: #10b981; color: white; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; min-width: 1.5rem; text-align: center;">{{ $productionWorkOrdersCount }}</span>
                             @endif
                         </a>
+                        
+                        @php
+                            $isPreparationsRoute = $currentRoute === 'employee.production.preparations';
+                            $preparationsRoute = route('employee.production.preparations');
+                            
+                            // حساب عدد أوامر الشغل التي تم التجهيز (production_status = 'تم التجهيز')
+                            $preparationsCount = \App\Models\WorkOrder::where('production_status', 'تم التجهيز')
+                                ->whereNotNull('design_knife_id')
+                                ->count();
+                        @endphp
+                        <a href="{{ $preparationsRoute }}" class="nav-link {{ $isPreparationsRoute ? 'active' : '' }}" style="display: flex; align-items: center; justify-content: space-between;">
+                            <span style="display: flex; align-items: center;">
+                                <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                                </svg>
+                                التجهيزات
+                            </span>
+                            @if($preparationsCount > 0)
+                                <span style="background-color: #f59e0b; color: white; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; min-width: 1.5rem; text-align: center;">{{ $preparationsCount }}</span>
+                            @endif
+                        </a>
                     @elseif(!$isDesignEmployee && !$isAdmin)
                     <!-- التشغيل - لا يظهر للمصمم والادمن -->
                     @php

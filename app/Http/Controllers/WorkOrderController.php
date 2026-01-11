@@ -344,6 +344,44 @@ class WorkOrderController extends Controller
     }
 
     /**
+     * Display preparations list for production employees (production_status = 'تم التجهيز' and has design_knife_id).
+     */
+    public function productionPreparationsList(Request $request)
+    {
+        $employee = auth('employee')->user();
+        if ($employee->account_type !== 'تشغيل') {
+            abort(403);
+        }
+
+        $query = WorkOrder::with('client', 'designKnife')
+            ->where('production_status', 'تم التجهيز')
+            ->whereNotNull('design_knife_id');
+
+        // Filter by client
+        if ($request->filled('client_id')) {
+            $query->where('client_id', $request->client_id);
+        }
+
+        // Filter by order number
+        if ($request->filled('order_number')) {
+            $query->where('order_number', 'like', '%' . $request->order_number . '%');
+        }
+
+        $workOrders = $query->latest()->get();
+
+        // Get all clients for filter dropdown (only those with work orders in preparations)
+        $clients = Client::whereHas('workOrders', function($q) {
+            $q->where('production_status', 'تم التجهيز')
+              ->whereNotNull('design_knife_id');
+        })->orderBy('name')->get();
+
+        // Calculate total count
+        $totalCount = $workOrders->count();
+
+        return view('employee.production-preparations', compact('workOrders', 'clients', 'totalCount'));
+    }
+
+    /**
      * Display work orders list for sales employees.
      */
     public function salesEmployeeList(Request $request)
@@ -1047,13 +1085,27 @@ class WorkOrderController extends Controller
         }
         
         $validated = $request->validate([
-            'design_knife_id' => 'nullable|exists:knives,id',
+            'design_knife_id' => 'required|exists:knives,id',
+            'preparation_blocker' => 'required|in:خامه,اكلاشيهات,سكينه,افلام,لايوجد مانع',
         ]);
         
-        $workOrder->update($validated);
+        $updateData = [
+            'design_knife_id' => $validated['design_knife_id'],
+            'preparation_blocker' => $validated['preparation_blocker'],
+        ];
+        
+        // إذا كان "لايوجد مانع"، نقل إلى "تم التجهيز" (production_status = 'تم التجهيز')
+        if ($validated['preparation_blocker'] === 'لايوجد مانع') {
+            $updateData['production_status'] = 'تم التجهيز';
+            $message = 'تم تحديث السكينة المختارة ونقل أمر الشغل إلى التجهيزات بنجاح';
+        } else {
+            $message = 'تم تحديث السكينة المختارة ومانع التجهيزات بنجاح';
+        }
+        
+        $workOrder->update($updateData);
         
         return redirect()->back()
-            ->with('success', 'تم تحديث السكينة المختارة بنجاح');
+            ->with('success', $message);
     }
 
     /**
