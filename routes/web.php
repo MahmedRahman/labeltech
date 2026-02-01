@@ -12,6 +12,8 @@ Route::get('/', function () {
             return redirect()->route('employee.designer.dashboard');
         } elseif ($employee->account_type === 'تشغيل') {
             return redirect()->route('employee.production.dashboard');
+        } elseif ($employee->account_type === 'حسابات') {
+            return redirect()->route('employee.accounting.dashboard');
         } else {
             return redirect()->route('employee.dashboard');
         }
@@ -317,4 +319,55 @@ Route::middleware(['auth:employee'])->prefix('employee')->name('employee.')->gro
     
     // Production Preparations List
     Route::get('/production/preparations', [\App\Http\Controllers\WorkOrderController::class, 'productionPreparationsList'])->name('production.preparations');
+    
+    // Employee Routes (Accounting Employees) - Dashboard, Employees, and Departments
+    Route::get('/accounting/dashboard', function () {
+        $employee = auth('employee')->user();
+        if ($employee->account_type !== 'حسابات') {
+            abort(403);
+        }
+        
+        $employeesCount = \App\Models\Employee::count();
+        $departmentsCount = \App\Models\Department::count();
+        $recentEmployees = \App\Models\Employee::with('department')->latest()->take(5)->get();
+        $departments = \App\Models\Department::with('employees')->get();
+        
+        return view('employee.accounting-dashboard', compact('employeesCount', 'departmentsCount', 'recentEmployees', 'departments'));
+    })->name('accounting.dashboard');
+    
+    // Accounting Employees Routes
+    Route::get('/accounting/employees', [\App\Http\Controllers\EmployeeController::class, 'index'])->name('accounting.employees');
+    Route::get('/accounting/employees/{employee}', [\App\Http\Controllers\EmployeeController::class, 'show'])->name('accounting.employees.show');
+    
+    // Accounting Departments Routes
+    Route::get('/accounting/departments', [\App\Http\Controllers\DepartmentController::class, 'index'])->name('accounting.departments');
+    Route::get('/accounting/departments/{department}', [\App\Http\Controllers\DepartmentController::class, 'show'])->name('accounting.departments.show');
+    
+    // Accounting Materials Routes
+    Route::get('/accounting/materials', [\App\Http\Controllers\MaterialController::class, 'index'])->name('accounting.materials');
+    Route::get('/accounting/materials/{material}', [\App\Http\Controllers\MaterialController::class, 'show'])->name('accounting.materials.show');
+    
+    // Accounting Payment Methods Routes
+    Route::get('/accounting/payment-methods', [\App\Http\Controllers\PaymentMethodController::class, 'index'])->name('accounting.payment-methods');
+    Route::get('/accounting/payment-methods/{paymentMethod}', [\App\Http\Controllers\PaymentMethodController::class, 'show'])->name('accounting.payment-methods.show');
+    
+    // Accounting Additions Routes
+    Route::get('/accounting/additions', [\App\Http\Controllers\AdditionController::class, 'index'])->name('accounting.additions');
+    Route::get('/accounting/additions/{addition}', [\App\Http\Controllers\AdditionController::class, 'show'])->name('accounting.additions.show');
+    
+    // Accounting Expenses Routes
+    Route::get('/accounting/expenses', [\App\Http\Controllers\ExpenseController::class, 'index'])->name('accounting.expenses');
+    Route::get('/accounting/expenses/{expense}', [\App\Http\Controllers\ExpenseController::class, 'show'])->name('accounting.expenses.show');
+    
+    // Accounting Expense Types Routes
+    Route::get('/accounting/expense-types', [\App\Http\Controllers\ExpenseTypeController::class, 'index'])->name('accounting.expense-types');
+    Route::get('/accounting/expense-types/{expenseType}', [\App\Http\Controllers\ExpenseTypeController::class, 'show'])->name('accounting.expense-types.show');
+    
+    // Accounting Suppliers Routes
+    Route::get('/accounting/suppliers', [\App\Http\Controllers\SupplierController::class, 'index'])->name('accounting.suppliers');
+    Route::get('/accounting/suppliers/{supplier}', [\App\Http\Controllers\SupplierController::class, 'show'])->name('accounting.suppliers.show');
+    
+    // Accounting Wastes Routes
+    Route::get('/accounting/wastes', [\App\Http\Controllers\WasteController::class, 'index'])->name('accounting.wastes');
+    Route::get('/accounting/wastes/{waste}', [\App\Http\Controllers\WasteController::class, 'show'])->name('accounting.wastes.show');
 });

@@ -64,8 +64,8 @@ class LoginRequest extends FormRequest
                 ]);
             }
 
-            // Check if account type is allowed (مبيعات, تصميم, تشغيل)
-            if (!in_array($employee->account_type, ['مبيعات', 'تصميم', 'تشغيل'])) {
+            // Check if account type is allowed (مبيعات, تصميم, تشغيل, حسابات)
+            if (!in_array($employee->account_type, ['مبيعات', 'تصميم', 'تشغيل', 'حسابات'])) {
                 Auth::guard('employee')->logout();
                 RateLimiter::hit($this->throttleKey());
                 throw ValidationException::withMessages([

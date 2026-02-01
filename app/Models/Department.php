@@ -19,4 +19,12 @@ class Department extends Model
     {
         return $this->hasMany(Position::class);
     }
+
+    /**
+     * Get the employees for the department.
+     */
+    public function employees(): HasMany
+    {
+        return $this->hasMany(Employee::class);
+    }
 }

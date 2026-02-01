@@ -39,6 +39,8 @@ class AuthenticatedSessionController extends Controller
                 return redirect()->intended(route('employee.designer.dashboard', absolute: false));
             } elseif ($employee->account_type === 'تشغيل') {
                 return redirect()->intended(route('employee.production.dashboard', absolute: false));
+            } elseif ($employee->account_type === 'حسابات') {
+                return redirect()->intended(route('employee.accounting.dashboard', absolute: false));
             }
             
             return redirect()->intended(route('employee.dashboard', absolute: false));

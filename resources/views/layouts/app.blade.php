@@ -313,6 +313,7 @@
                         $isSalesEmployee = $isEmployee && $employeeAccountType === 'مبيعات';
                         $isDesignEmployee = $isEmployee && $employeeAccountType === 'تصميم';
                         $isProductionEmployee = $isEmployee && $employeeAccountType === 'تشغيل';
+                        $isAccountingEmployee = $isEmployee && $employeeAccountType === 'حسابات';
                         
                         // حساب عدد العملاء التابعين لموظف المبيعات
                         $employeeClientsCount = 0;
@@ -339,6 +340,8 @@
                                 $dashboardRoute = route('employee.designer.dashboard');
                             } elseif ($isProductionEmployee) {
                                 $dashboardRoute = route('employee.production.dashboard');
+                            } elseif ($isAccountingEmployee) {
+                                $dashboardRoute = route('employee.accounting.dashboard');
                             } else {
                                 $dashboardRoute = route('employee.dashboard');
                             }
@@ -346,7 +349,8 @@
                         $isDashboardActive = request()->routeIs('dashboard') || 
                                             request()->routeIs('employee.dashboard') || 
                                             request()->routeIs('employee.designer.dashboard') || 
-                                            request()->routeIs('employee.production.dashboard');
+                                            request()->routeIs('employee.production.dashboard') ||
+                                            request()->routeIs('employee.accounting.dashboard');
                     @endphp
                     <a href="{{ $dashboardRoute }}" class="nav-link {{ $isDashboardActive ? 'active' : '' }}">
                         <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -625,6 +629,79 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                             </svg>
                             السكاكين
+                        </a>
+                    @endif
+
+                    @if($isAccountingEmployee)
+                        <!-- قسم خاص بالحسابات -->
+                        <div class="nav-section-title" style="margin-top: 1rem; font-size: 1.25rem; font-weight: 700; color: #111827; border-top: 1px solid #e5e7eb; padding-top: 1rem;">
+                            الحسابات
+                        </div>
+
+                        <a href="{{ route('employee.accounting.employees') }}" class="nav-link {{ request()->routeIs('employee.accounting.employees.*') ? 'active' : '' }}">
+                            <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                            الموظفين
+                        </a>
+
+                        <a href="{{ route('employee.accounting.departments') }}" class="nav-link {{ request()->routeIs('employee.accounting.departments.*') ? 'active' : '' }}">
+                            <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                            </svg>
+                            أقسام الشركة
+                        </a>
+
+                        <!-- المصروفات -->
+                        <div class="nav-section-title" style="margin-top: 1rem; font-size: 1.25rem; font-weight: 700; color: #111827; border-top: 1px solid #e5e7eb; padding-top: 1rem;">
+                            المصروفات
+                        </div>
+                        <a href="{{ route('employee.accounting.expenses') }}" class="nav-link {{ request()->routeIs('employee.accounting.expenses.*') ? 'active' : '' }}">
+                            <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            المصروفات
+                        </a>
+                        <a href="{{ route('employee.accounting.expense-types') }}" class="nav-link {{ request()->routeIs('employee.accounting.expense-types.*') ? 'active' : '' }}">
+                            <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            أنواع المصروفات
+                        </a>
+
+                        <!-- الإعدادات -->
+                        <div class="nav-section-title" style="margin-top: 1rem; font-size: 1.25rem; font-weight: 700; color: #111827; border-top: 1px solid #e5e7eb; padding-top: 1rem;">
+                            الإعدادات
+                        </div>
+                        <a href="{{ route('employee.accounting.materials') }}" class="nav-link {{ request()->routeIs('employee.accounting.materials.*') ? 'active' : '' }}">
+                            <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                            </svg>
+                            الخامات
+                        </a>
+                        <a href="{{ route('employee.accounting.additions') }}" class="nav-link {{ request()->routeIs('employee.accounting.additions.*') ? 'active' : '' }}">
+                            <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            الاضافات
+                        </a>
+                        <a href="{{ route('employee.accounting.payment-methods') }}" class="nav-link {{ request()->routeIs('employee.accounting.payment-methods.*') ? 'active' : '' }}">
+                            <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                            </svg>
+                            طرق السداد
+                        </a>
+                        <a href="{{ route('employee.accounting.suppliers') }}" class="nav-link {{ request()->routeIs('employee.accounting.suppliers.*') ? 'active' : '' }}">
+                            <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                            </svg>
+                            الموردين
+                        </a>
+                        <a href="{{ route('employee.accounting.wastes') }}" class="nav-link {{ request()->routeIs('employee.accounting.wastes.*') ? 'active' : '' }}">
+                            <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            الطباعة
                         </a>
                     @endif
 
