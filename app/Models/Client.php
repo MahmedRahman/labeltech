@@ -16,10 +16,12 @@ class Client extends Model
         'company',
         'notes',
         'opening_balance',
+        'is_representative',
     ];
 
     protected $casts = [
         'opening_balance' => 'decimal:2',
+        'is_representative' => 'boolean',
     ];
 
     /**

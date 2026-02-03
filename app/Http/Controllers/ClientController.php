@@ -41,6 +41,11 @@ class ClientController extends Controller
             $query->where('name', 'like', '%' . $request->search_name . '%');
         }
 
+        // فلتر: العملاء اللي شغالين كمندوب فقط
+        if ($request->boolean('representatives_only')) {
+            $query->where('is_representative', true);
+        }
+
         $clients = $query->with('salesTeams')->latest()->paginate(10)->withQueryString();
 
         // Get employee info for display
@@ -74,7 +79,9 @@ class ClientController extends Controller
             'company' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
             'opening_balance' => 'nullable|numeric|min:0',
+            'is_representative' => 'nullable|boolean',
         ]);
+        $validated['is_representative'] = (bool) ($request->input('is_representative', false));
 
         // Create the client
         $client = Client::create($validated);
@@ -147,7 +154,9 @@ class ClientController extends Controller
             'company' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
             'opening_balance' => 'nullable|numeric|min:0',
+            'is_representative' => 'nullable|boolean',
         ]);
+        $validated['is_representative'] = (bool) ($request->input('is_representative', false));
 
         $client->update($validated);
 

@@ -496,8 +496,12 @@ class WorkOrderController extends Controller
             abort(403);
         }
 
+        // عروض الأسعار الخاصة بالمندوبين: إما representative_id أو العميل مسجل كمندوب (is_representative)
         $query = WorkOrder::with('client', 'representative')
-            ->whereNotNull('representative_id')
+            ->where(function($q) {
+                $q->whereNotNull('representative_id')
+                  ->orWhereHas('client', fn($c) => $c->where('is_representative', true));
+            })
             ->where(function($q) {
                 $q->whereNull('production_status')
                   ->orWhere('production_status', 'بدون حالة')
@@ -557,7 +561,9 @@ class WorkOrderController extends Controller
         }
 
         $clients = Client::orderBy('name')->get();
-        $hasPendingQuote = WorkOrder::whereNotNull('representative_id')
+        $hasPendingQuote = WorkOrder::where(function($q) {
+                $q->whereNotNull('representative_id')->orWhereHas('client', fn($c) => $c->where('is_representative', true));
+            })
             ->where('sent_to_client', 'yes')
             ->where(function($q) {
                 $q->whereNull('client_response')->orWhere('client_response', '');
@@ -758,6 +764,7 @@ class WorkOrderController extends Controller
 
     /**
      * سير العمل لعروض الأسعار الخاصة بالمندوبين (حساب التشغيل).
+     * يشمل: عرض فيه representative_id أو العميل مسجل كمندوب (is_representative).
      */
     public function productionWorkflow(Request $request)
     {
@@ -766,10 +773,13 @@ class WorkOrderController extends Controller
             abort(403);
         }
 
-        $repFilter = fn($q) => $q->whereNotNull('representative_id');
+        $repOrClientRepFilter = function($q) {
+            $q->whereNotNull('representative_id')
+              ->orWhereHas('client', fn($c) => $c->where('is_representative', true));
+        };
 
-        $clients = Client::whereHas('workOrders', $repFilter)->orderBy('name')->get();
-        $orderNumbers = WorkOrder::whereNotNull('representative_id')
+        $clients = Client::whereHas('workOrders', $repOrClientRepFilter)->orderBy('name')->get();
+        $orderNumbers = WorkOrder::where($repOrClientRepFilter)
             ->whereNotNull('order_number')
             ->distinct()
             ->orderBy('order_number')
@@ -780,7 +790,7 @@ class WorkOrderController extends Controller
         $orderNumberFilter = $request->filled('order_number') ? $request->order_number : null;
 
         $priceQuotesQuery = WorkOrder::with('client', 'representative')
-            ->whereNotNull('representative_id')
+            ->where($repOrClientRepFilter)
             ->where('status', '!=', 'work_order')
             ->where('status', '!=', 'cancelled')
             ->where('status', '!=', 'in_progress')
@@ -792,7 +802,7 @@ class WorkOrderController extends Controller
         $sentQuotesCount = $priceQuotes->filter(fn($o) => ($o->sent_to_client ?? 'no') === 'yes')->count();
         $notSentQuotesCount = $priceQuotesCount - $sentQuotesCount;
 
-        $proofsQuery = WorkOrder::with('client', 'representative')->whereNotNull('representative_id')->where('status', 'work_order');
+        $proofsQuery = WorkOrder::with('client', 'representative')->where($repOrClientRepFilter)->where('status', 'work_order');
         if ($clientFilter) $proofsQuery->where('client_id', $clientFilter);
         if ($orderNumberFilter) $proofsQuery->where('order_number', 'like', '%' . $orderNumberFilter . '%');
         $proofs = $proofsQuery->latest()->get();
@@ -800,31 +810,31 @@ class WorkOrderController extends Controller
         $approvedProofsCount = $proofs->filter(fn($o) => ($o->client_design_approval ?? '') === 'موافق')->count();
         $notApprovedProofsCount = $proofsCount - $approvedProofsCount;
 
-        $sentToDesignerQuery = WorkOrder::with('client', 'representative')->whereNotNull('representative_id')->where('sent_to_designer', 'yes')->where('status', 'work_order');
+        $sentToDesignerQuery = WorkOrder::with('client', 'representative')->where($repOrClientRepFilter)->where('sent_to_designer', 'yes')->where('status', 'work_order');
         if ($clientFilter) $sentToDesignerQuery->where('client_id', $clientFilter);
         if ($orderNumberFilter) $sentToDesignerQuery->where('order_number', 'like', '%' . $orderNumberFilter . '%');
         $sentToDesigner = $sentToDesignerQuery->latest()->get();
         $sentToDesignerCount = $sentToDesigner->count();
 
-        $preparationsQuery = WorkOrder::with('client', 'representative')->whereNotNull('representative_id')->where('status', 'in_progress');
+        $preparationsQuery = WorkOrder::with('client', 'representative')->where($repOrClientRepFilter)->where('status', 'in_progress');
         if ($clientFilter) $preparationsQuery->where('client_id', $clientFilter);
         if ($orderNumberFilter) $preparationsQuery->where('order_number', 'like', '%' . $orderNumberFilter . '%');
         $preparations = $preparationsQuery->latest()->get();
         $preparationsCount = $preparations->count();
 
-        $productionQuery = WorkOrder::with('client', 'representative')->whereNotNull('representative_id')->where('status', 'completed');
+        $productionQuery = WorkOrder::with('client', 'representative')->where($repOrClientRepFilter)->where('status', 'completed');
         if ($clientFilter) $productionQuery->where('client_id', $clientFilter);
         if ($orderNumberFilter) $productionQuery->where('order_number', 'like', '%' . $orderNumberFilter . '%');
         $production = $productionQuery->latest()->get();
         $productionCount = $production->count();
 
-        $archiveQuery = WorkOrder::with('client', 'representative')->whereNotNull('representative_id')->where('status', 'cancelled');
+        $archiveQuery = WorkOrder::with('client', 'representative')->where($repOrClientRepFilter)->where('status', 'cancelled');
         if ($clientFilter) $archiveQuery->where('client_id', $clientFilter);
         if ($orderNumberFilter) $archiveQuery->where('order_number', 'like', '%' . $orderNumberFilter . '%');
         $archive = $archiveQuery->latest()->get();
         $archiveCount = $archive->count();
 
-        $allWorkOrdersQuery = WorkOrder::with('client', 'representative')->whereNotNull('representative_id');
+        $allWorkOrdersQuery = WorkOrder::with('client', 'representative')->where($repOrClientRepFilter);
         if ($clientFilter) $allWorkOrdersQuery->where('client_id', $clientFilter);
         if ($orderNumberFilter) $allWorkOrdersQuery->where('order_number', 'like', '%' . $orderNumberFilter . '%');
         $allWorkOrders = $allWorkOrdersQuery->latest()->get();
@@ -891,17 +901,20 @@ class WorkOrderController extends Controller
             }
         }
         
+        // لحساب التشغيل: قائمة العملاء = العملاء اللي شغالين كمندوب فقط
+        if ($isProductionEmployee) {
+            $query->where('is_representative', true);
+        }
         $clients = $query->orderBy('name')->get();
         $materials = Material::where('is_active', true)->orderBy('name')->get();
         $additions = \App\Models\Addition::orderBy('name')->get();
         $externalBreakingPrice = \App\Models\SystemSetting::getValue('external_breaking_price', 4);
         $wastes = \App\Models\Waste::orderBy('number_of_colors')->get();
-        $representatives = $isProductionEmployee ? \App\Models\Representative::orderBy('name')->get() : collect();
-        if ($isProductionEmployee && $representatives->isEmpty()) {
+        if ($isProductionEmployee && $clients->isEmpty()) {
             return redirect()->route('employee.production.quotes')
-                ->with('error', 'يجب إضافة مندوب واحد على الأقل من صفحة المندوبين قبل إضافة عرض سعر.');
+                ->with('error', 'لا يوجد عملاء مسجلين كـ «شغالين معانا كمندوب». أضف عميلاً وعلّمه كمندوب من صفحة العملاء أولاً.');
         }
-        return view('work-orders.create', compact('clients', 'materials', 'additions', 'externalBreakingPrice', 'wastes', 'representatives', 'isProductionEmployee'));
+        return view('work-orders.create', compact('clients', 'materials', 'additions', 'externalBreakingPrice', 'wastes', 'isProductionEmployee'));
     }
 
     /**
@@ -1001,9 +1014,6 @@ class WorkOrderController extends Controller
 
         $storeEmployee = auth('employee')->user();
         $isProductionEmployee = $storeEmployee && $storeEmployee->account_type === 'تشغيل';
-        if ($isProductionEmployee) {
-            $request->validate(['representative_id' => 'required|exists:representatives,id']);
-        }
 
         // Set default sent_to_client to 'no' if not provided
         if (!isset($validated['sent_to_client']) || empty($validated['sent_to_client'])) {
@@ -1035,10 +1045,10 @@ class WorkOrderController extends Controller
         // Get the current authenticated user (admin or employee)
         if (auth('employee')->check()) {
             $emp = auth('employee')->user();
-            if ($emp->account_type === 'تشغيل' && !empty($validated['representative_id'])) {
-                $representative = \App\Models\Representative::find($validated['representative_id']);
-                $validated['created_by'] = $representative ? $representative->name : $emp->name;
+            if ($emp->account_type === 'تشغيل') {
                 $validated['created_by_employee_id'] = $emp->id;
+                $client = \App\Models\Client::find($validated['client_id']);
+                $validated['created_by'] = ($client && $client->is_representative) ? $client->name : $emp->name;
             } else {
                 $validated['created_by'] = $emp->name;
             }

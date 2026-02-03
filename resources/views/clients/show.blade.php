@@ -71,6 +71,11 @@
             @endif
 
             <div>
+                <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">شغال معانا في الشركة كمندوب</dt>
+                <dd style="font-size: 0.875rem; color: #111827; margin: 0;">{{ $client->is_representative ? 'نعم' : 'لا' }}</dd>
+            </div>
+
+            <div>
                 <dt style="font-size: 0.875rem; font-weight: 500; color: #6b7280; margin-bottom: 0.5rem;">تاريخ الإضافة</dt>
                 <dd style="font-size: 0.875rem; color: #111827; margin: 0;">{{ $client->created_at->format('Y-m-d H:i') }}</dd>
             </div>

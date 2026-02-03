@@ -245,6 +245,21 @@
                     @enderror
                 </div>
 
+                <!-- يعمل معنا في الشركة كمندوب -->
+                <div class="form-group" style="display: flex; align-items: center; gap: 0.75rem;">
+                    <input type="hidden" name="is_representative" value="0">
+                    <input type="checkbox" 
+                           name="is_representative" 
+                           id="is_representative" 
+                           value="1" 
+                           {{ old('is_representative') ? 'checked' : '' }}
+                           style="width: 1.25rem; height: 1.25rem; accent-color: #2563eb;">
+                    <label for="is_representative" class="form-label" style="margin-bottom: 0; cursor: pointer;">العميل شغال معانا في الشركة كمندوب</label>
+                </div>
+                @error('is_representative')
+                    <p class="error-message">{{ $message }}</p>
+                @enderror
+
                 <!-- Form Actions -->
                 <div class="form-actions">
                     <a href="{{ route('clients.index') }}" class="btn btn-secondary">
