@@ -76,11 +76,7 @@
         </button>
     </form>
 
-    @php
-        $isProductionDomain = in_array(request()->getHost(), ['labeltech.site', 'www.labeltech.site']);
-    @endphp
-    @if (!$isProductionDomain)
-    <!-- Test Accounts Cards -->
+    <!-- Test Accounts Cards (تظهر في كل البيئات بما فيها الإنتاج) -->
     <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e5e7eb;">
         <h3 style="font-size: 1rem; font-weight: 600; color: #374151; margin-bottom: 1rem; text-align: center;">حسابات التجربة</h3>
         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 0.75rem;">
@@ -195,5 +191,4 @@
             });
         });
     </script>
-    @endif
 </x-guest-layout>
