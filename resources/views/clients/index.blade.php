@@ -90,6 +90,7 @@
                             <th>الهاتف</th>
                             <th>الشركة</th>
                             @if(!isset($employee) || !$employee || $employee->account_type !== 'مبيعات' || (isset($isAdmin) && $isAdmin))
+                            <th>شغال كمندوب</th>
                                 <th>الإجراءات</th>
                             @endif
                         </tr>
@@ -102,8 +103,11 @@
                                 <td style="color: #6b7280;">{{ $client->phone ?? '-' }}</td>
                                 <td style="color: #6b7280;">{{ $client->company ?? '-' }}</td>
                                 @if(!isset($employee) || !$employee || $employee->account_type !== 'مبيعات' || (isset($isAdmin) && $isAdmin))
+                                <td style="color: #6b7280;">{{ $client->is_representative ? 'نعم' : 'لا' }}</td>
+                                @endif
+                                @if(!isset($employee) || !$employee || $employee->account_type !== 'مبيعات' || (isset($isAdmin) && $isAdmin))
                                     <td>
-                                        <div style="display: flex; gap: 0.75rem;">
+                                        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
                                             <a href="{{ route('clients.show', $client) }}" style="color: #2563eb; text-decoration: none; font-size: 0.875rem;">عرض</a>
                                             <a href="{{ route('clients.edit', $client) }}" style="color: #10b981; text-decoration: none; font-size: 0.875rem;">تعديل</a>
                                             <form action="{{ route('clients.destroy', $client) }}" method="POST" style="display: inline;">
