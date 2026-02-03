@@ -1536,6 +1536,32 @@ class WorkOrderController extends Controller
     }
 
     /**
+     * Print operation sheet (طباعة التشغيل).
+     */
+    public function printOperation(WorkOrder $workOrder)
+    {
+        $workOrder->load('client', 'designKnife');
+
+        $calculations = $this->calculateAllValues($workOrder);
+        $printValues = $this->calculatePrintValues($workOrder);
+        $calculations = array_merge($calculations, $printValues);
+
+        // Pieces per roll
+        if ($workOrder->number_of_rolls && $workOrder->number_of_rolls > 0) {
+            $calculations['pieces_per_roll'] = ceil($workOrder->quantity / $workOrder->number_of_rolls);
+        } else {
+            $calculations['pieces_per_roll'] = $workOrder->quantity ?? 0;
+        }
+
+        // Net linear meter for display (المتر الطولي الصافي) - use from print values
+        if (!isset($calculations['net_linear_meter']) || $calculations['net_linear_meter'] === null) {
+            $calculations['net_linear_meter'] = $calculations['linear_meter'] ?? 0;
+        }
+
+        return view('work-orders.print-operation', compact('workOrder', 'calculations'));
+    }
+
+    /**
      * Calculate print values for work order.
      */
     private function calculatePrintValues(WorkOrder $workOrder)

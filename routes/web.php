@@ -51,6 +51,7 @@ Route::middleware('auth.any')->group(function () {
     // أوامر الشغل - متاح للمبيعات والادمن
     Route::get('work-orders/{workOrder}/print', [\App\Http\Controllers\WorkOrderController::class, 'print'])->name('work-orders.print');
     Route::get('work-orders/{workOrder}/print-price-quote', [\App\Http\Controllers\WorkOrderController::class, 'printPriceQuote'])->name('work-orders.print-price-quote');
+    Route::get('work-orders/{workOrder}/print-operation', [\App\Http\Controllers\WorkOrderController::class, 'printOperation'])->name('work-orders.print-operation');
     Route::get('work-orders/{workOrder}/design', [\App\Http\Controllers\WorkOrderController::class, 'showDesignForm'])->name('work-orders.design.show');
     Route::post('work-orders/{workOrder}/design', [\App\Http\Controllers\WorkOrderController::class, 'storeDesign'])->name('work-orders.design.store');
     Route::post('work-orders/{workOrder}/production-status', [\App\Http\Controllers\WorkOrderController::class, 'updateProductionStatus'])->name('work-orders.production-status.update');
