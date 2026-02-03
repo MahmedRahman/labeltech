@@ -306,6 +306,9 @@ Route::middleware(['auth:employee'])->prefix('employee')->name('employee.')->gro
         return view('employee.production-dashboard', compact('workOrdersCount', 'recentWorkOrders', 'knivesCount', 'recentKnives', 'representatives'));
     })->name('production.dashboard');
     
+    // Production Price Quotes (عروض الأسعار - تابع مندوب)
+    Route::get('/production/quotes', [\App\Http\Controllers\WorkOrderController::class, 'productionQuotesList'])->name('production.quotes');
+    
     // Production Representatives (المندوبين)
     Route::get('/production/representatives', [\App\Http\Controllers\RepresentativeController::class, 'index'])->name('production.representatives.index');
     Route::post('/production/representatives', [\App\Http\Controllers\RepresentativeController::class, 'store'])->name('production.representatives.store');

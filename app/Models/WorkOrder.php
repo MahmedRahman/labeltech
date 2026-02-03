@@ -12,6 +12,8 @@ class WorkOrder extends Model
         'order_number',
         'job_name',
         'created_by',
+        'representative_id',
+        'created_by_employee_id',
         'number_of_colors',
         'rows_count',
         'material',
@@ -120,5 +122,13 @@ class WorkOrder extends Model
     public function designKnife(): BelongsTo
     {
         return $this->belongsTo(\App\Models\Knife::class, 'design_knife_id');
+    }
+
+    /**
+     * Get the representative (when created by production employee).
+     */
+    public function representative(): BelongsTo
+    {
+        return $this->belongsTo(Representative::class);
     }
 }

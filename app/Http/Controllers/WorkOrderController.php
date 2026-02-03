@@ -486,6 +486,87 @@ class WorkOrderController extends Controller
     }
 
     /**
+     * Display price quotes list for production employees (عروض الأسعار - تابع مندوب).
+     */
+    public function productionQuotesList(Request $request)
+    {
+        $employee = auth('employee')->user();
+        if (!$employee || $employee->account_type !== 'تشغيل') {
+            abort(403);
+        }
+
+        $query = WorkOrder::with('client', 'representative')
+            ->where('created_by_employee_id', $employee->id)
+            ->where(function($q) {
+                $q->whereNull('production_status')
+                  ->orWhere('production_status', 'بدون حالة')
+                  ->orWhereIn('production_status', ['طباعة', 'قص', 'تقفيل']);
+            })
+            ->where(function($q) {
+                $q->where(function($subQ) {
+                    $subQ->where('status', '!=', 'work_order')
+                         ->where('status', '!=', 'cancelled');
+                })->orWhereNull('status');
+            });
+
+        if ($request->filled('client_id')) {
+            $query->where('client_id', $request->client_id);
+        }
+        if ($request->filled('order_number')) {
+            $query->where('order_number', 'like', '%' . $request->order_number . '%');
+        }
+
+        $workOrders = $query->latest()->limit(1000)->get();
+
+        $groupedOrders = [
+            'بدون حالة' => collect(),
+            'طباعة' => collect(),
+            'قص' => collect(),
+            'تقفيل' => collect(),
+        ];
+        $statusGroups = [
+            'draft' => collect(),
+            'pending' => collect(),
+            'client_approved' => collect(),
+            'client_rejected' => collect(),
+            'client_no_response' => collect(),
+            'work_order' => collect(),
+            'in_progress' => collect(),
+            'completed' => collect(),
+            'cancelled' => collect(),
+        ];
+        $sentCount = 0;
+        $notSentCount = 0;
+
+        foreach ($workOrders as $order) {
+            if (is_null($order->id)) continue;
+            $prodStatus = $order->production_status ?? 'بدون حالة';
+            if (isset($groupedOrders[$prodStatus])) {
+                $groupedOrders[$prodStatus]->push($order);
+            } elseif (is_null($order->production_status)) {
+                $groupedOrders['بدون حالة']->push($order);
+            }
+            $status = $order->status ?? 'draft';
+            if (isset($statusGroups[$status])) {
+                $statusGroups[$status]->push($order);
+            }
+            $sentToClient = $order->sent_to_client ?? 'no';
+            if ($sentToClient === 'yes') $sentCount++;
+            else $notSentCount++;
+        }
+
+        $clients = Client::orderBy('name')->get();
+        $hasPendingQuote = WorkOrder::where('sent_to_client', 'yes')
+            ->where('created_by_employee_id', $employee->id)
+            ->where(function($q) {
+                $q->whereNull('client_response')->orWhere('client_response', '');
+            })
+            ->exists();
+
+        return view('employee.production-quotes', compact('groupedOrders', 'workOrders', 'clients', 'statusGroups', 'sentCount', 'notSentCount', 'hasPendingQuote'));
+    }
+
+    /**
      * Display work orders sent to designer list.
      */
     public function sentToDesignerList(Request $request)
@@ -681,12 +762,13 @@ class WorkOrderController extends Controller
     {
         $query = Client::query();
         
-        // Check if logged in as employee with sales account type
+        // Check if logged in as employee with sales or production account type
         $employee = Auth::guard('employee')->user();
         $isAdmin = Auth::guard('web')->check();
         $isSalesEmployee = $employee && $employee->account_type === 'مبيعات' && !$isAdmin;
+        $isProductionEmployee = $employee && $employee->account_type === 'تشغيل' && !$isAdmin;
         
-        // Only apply the restriction for admin users, not for sales employees
+        // Only apply the restriction for admin users, not for sales/production employees
         // Sales employees can create multiple price quotes at the same time
         if ($isAdmin) {
             // Check if there's a pending price quote sent to client
@@ -725,7 +807,12 @@ class WorkOrderController extends Controller
         $additions = \App\Models\Addition::orderBy('name')->get();
         $externalBreakingPrice = \App\Models\SystemSetting::getValue('external_breaking_price', 4);
         $wastes = \App\Models\Waste::orderBy('number_of_colors')->get();
-        return view('work-orders.create', compact('clients', 'materials', 'additions', 'externalBreakingPrice', 'wastes'));
+        $representatives = $isProductionEmployee ? \App\Models\Representative::orderBy('name')->get() : collect();
+        if ($isProductionEmployee && $representatives->isEmpty()) {
+            return redirect()->route('employee.production.quotes')
+                ->with('error', 'يجب إضافة مندوب واحد على الأقل من صفحة المندوبين قبل إضافة عرض سعر.');
+        }
+        return view('work-orders.create', compact('clients', 'materials', 'additions', 'externalBreakingPrice', 'wastes', 'representatives', 'isProductionEmployee'));
     }
 
     /**
@@ -820,7 +907,14 @@ class WorkOrderController extends Controller
             'notes' => 'nullable|string',
             'status' => 'nullable|in:draft,pending,in_progress,completed,cancelled,client_approved,client_rejected,client_no_response,work_order',
             'sent_to_client' => 'nullable|in:yes,no',
+            'representative_id' => 'nullable|exists:representatives,id',
         ]);
+
+        $storeEmployee = auth('employee')->user();
+        $isProductionEmployee = $storeEmployee && $storeEmployee->account_type === 'تشغيل';
+        if ($isProductionEmployee) {
+            $request->validate(['representative_id' => 'required|exists:representatives,id']);
+        }
 
         // Set default sent_to_client to 'no' if not provided
         if (!isset($validated['sent_to_client']) || empty($validated['sent_to_client'])) {
@@ -851,13 +945,24 @@ class WorkOrderController extends Controller
 
         // Get the current authenticated user (admin or employee)
         if (auth('employee')->check()) {
-            $validated['created_by'] = auth('employee')->user()->name;
+            $emp = auth('employee')->user();
+            if ($emp->account_type === 'تشغيل' && !empty($validated['representative_id'])) {
+                $representative = \App\Models\Representative::find($validated['representative_id']);
+                $validated['created_by'] = $representative ? $representative->name : $emp->name;
+                $validated['created_by_employee_id'] = $emp->id;
+            } else {
+                $validated['created_by'] = $emp->name;
+            }
         } elseif (auth('web')->check()) {
             $validated['created_by'] = auth('web')->user()->name;
         }
 
         WorkOrder::create($validated);
 
+        if ($isProductionEmployee ?? false) {
+            return redirect()->route('employee.production.quotes')
+                ->with('success', 'تم إضافة عرض السعر بنجاح');
+        }
         return redirect()->route('work-orders.index')
             ->with('success', 'تم إضافة أمر الشغل بنجاح');
     }

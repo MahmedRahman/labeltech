@@ -374,6 +374,24 @@
                         @enderror
                     </div>
 
+                    @if(isset($isProductionEmployee) && $isProductionEmployee && isset($representatives) && $representatives->isNotEmpty())
+                    <!-- المندوب (لحساب التشغيل فقط - بدل موظف المبيعات) -->
+                    <div class="form-group">
+                        <label for="representative_id" class="form-label required">المندوب</label>
+                        <select name="representative_id" id="representative_id" required class="form-select">
+                            <option value="">اختر المندوب</option>
+                            @foreach($representatives as $rep)
+                                <option value="{{ $rep->id }}" {{ old('representative_id') == $rep->id ? 'selected' : '' }}>
+                                    {{ $rep->name }}{{ $rep->phone ? ' - ' . $rep->phone : '' }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('representative_id')
+                            <p class="error-message">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    @endif
+
                     <!-- Status (hidden) -->
                     <div class="form-group" style="display: none;">
                         <label for="status" class="form-label">الحالة</label>
