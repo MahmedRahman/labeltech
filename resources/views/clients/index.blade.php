@@ -27,11 +27,11 @@
         </a>
     </div>
 
-    <!-- Search Filter -->
+    <!-- Search Filter + عرض العملاء المندوبين -->
     @if(!isset($employee) || !$employee || $employee->account_type !== 'مبيعات' || (isset($isAdmin) && $isAdmin))
         <div style="background: white; border-radius: 0.75rem; border: 1px solid #e5e7eb; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);">
-            <form method="GET" action="{{ route('clients.index') }}" style="display: flex; gap: 1rem; align-items: end;">
-                <div style="flex: 1;">
+            <form method="GET" action="{{ route('clients.index') }}" style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: end;">
+                <div style="flex: 1; min-width: 200px;">
                     <label for="search_name" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.5rem;">البحث بالاسم</label>
                     <input type="text" 
                            name="search_name" 
@@ -40,16 +40,25 @@
                            placeholder="ابحث عن عميل بالاسم..."
                            style="width: 100%; padding: 0.625rem 0.875rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; color: #111827; background-color: #fff;">
                 </div>
-                <div style="display: flex; gap: 0.75rem;">
-                    <button type="submit" style="padding: 0.625rem 1.5rem; background-color: #2563eb; color: white; border: none; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background-color 0.15s;">
-                        <svg style="width: 18px; height: 18px; display: inline-block; vertical-align: middle; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                        </svg>
+                @if(request('representatives_only'))
+                    <input type="hidden" name="representatives_only" value="1">
+                @endif
+                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                    @if(request('representatives_only'))
+                        <a href="{{ route('clients.index', request()->only('search_name')) }}" style="padding: 0.625rem 1.25rem; background-color: #2563eb; color: white; text-decoration: none; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; display: inline-flex; align-items: center;">
+                            عرض الكل
+                        </a>
+                    @else
+                        <a href="{{ route('clients.index', array_merge(request()->only('search_name'), ['representatives_only' => 1])) }}" style="padding: 0.625rem 1.25rem; background-color: #f3f4f6; color: #374151; text-decoration: none; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; display: inline-flex; align-items: center;">
+                            العملاء اللي شغالين كمندوب
+                        </a>
+                    @endif
+                    <button type="submit" style="padding: 0.625rem 1.5rem; background-color: #2563eb; color: white; border: none; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; cursor: pointer;">
                         بحث
                     </button>
-                    @if(request()->has('search_name'))
-                        <a href="{{ route('clients.index') }}" style="padding: 0.625rem 1.5rem; background-color: #6b7280; color: white; text-decoration: none; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; text-align: center; display: flex; align-items: center; justify-content: center;">
-                            إلغاء
+                    @if(request()->has('search_name') || request('representatives_only'))
+                        <a href="{{ route('clients.index') }}" style="padding: 0.625rem 1.5rem; background-color: #6b7280; color: white; text-decoration: none; border-radius: 0.375rem; font-size: 0.875rem; font-weight: 500; display: inline-flex; align-items: center;">
+                            إلغاء الفلتر
                         </a>
                     @endif
                 </div>
