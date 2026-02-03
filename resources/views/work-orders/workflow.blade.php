@@ -550,14 +550,22 @@
     </style>
 
     <!-- Header -->
-    <div style="margin-bottom: 1.5rem;">
-        <h2 style="font-size: 1.75rem; font-weight: 700; color: #111827; margin: 0 0 0.25rem 0;">سير العمل</h2>
-        <p style="font-size: 1rem; color: #6b7280; margin: 0;">عرض جميع مراحل أوامر الشغل في مكان واحد</p>
+    <div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h2 style="font-size: 1.75rem; font-weight: 700; color: #111827; margin: 0 0 0.25rem 0;">سير العمل{{ isset($isProductionWorkflow) && $isProductionWorkflow ? ' (عروض المندوبين)' : '' }}</h2>
+            <p style="font-size: 1rem; color: #6b7280; margin: 0;">{{ isset($isProductionWorkflow) && $isProductionWorkflow ? 'متابعة كل خطوات سير العمل لعروض الأسعار الخاصة بالمندوبين' : 'عرض جميع مراحل أوامر الشغل في مكان واحد' }}</p>
+        </div>
+        @if(isset($isProductionWorkflow) && $isProductionWorkflow)
+        <a href="{{ route('employee.production.quotes') }}" style="display: inline-flex; align-items: center; padding: 0.625rem 1rem; background-color: #6b7280; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500;">
+            <svg style="width: 20px; height: 20px; margin-left: 0.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            العودة لعروض الأسعار
+        </a>
+        @endif
     </div>
 
     <!-- Filter Section -->
     <div class="filter-section">
-        <form method="GET" action="{{ route('work-orders.workflow') }}" class="filter-form" id="filterForm">
+        <form method="GET" action="{{ isset($isProductionWorkflow) && $isProductionWorkflow ? route('employee.production.workflow') : route('work-orders.workflow') }}" class="filter-form" id="filterForm">
             <div class="filter-group">
                 <label class="filter-label">العميل</label>
                 <select name="client_id" class="filter-select" id="clientFilter">
@@ -584,7 +592,7 @@
                 <button type="submit" style="padding: 0.75rem 1.5rem; background-color: #2563eb; color: white; border: none; border-radius: 0.375rem; font-weight: 500; cursor: pointer; font-size: 1rem;">
                     بحث
                 </button>
-                <a href="{{ route('work-orders.workflow') }}" style="padding: 0.75rem 1.5rem; background-color: #6b7280; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; display: inline-block; margin-right: 0.5rem; font-size: 1rem;">
+                <a href="{{ isset($isProductionWorkflow) && $isProductionWorkflow ? route('employee.production.workflow') : route('work-orders.workflow') }}" style="padding: 0.75rem 1.5rem; background-color: #6b7280; color: white; text-decoration: none; border-radius: 0.375rem; font-weight: 500; display: inline-block; margin-right: 0.5rem; font-size: 1rem;">
                     إعادة تعيين
                 </a>
             </div>

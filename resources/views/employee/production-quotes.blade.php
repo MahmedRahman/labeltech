@@ -119,6 +119,7 @@
                             <td><span class="status-badge" style="background-color: {{ $color }}20; color: {{ $color }};">{{ $label }}</span></td>
                             <td>
                                 <div class="table-actions">
+                                    <a href="{{ route('employee.production.workflow', ['order_number' => $workOrder->order_number]) }}" style="padding: 0.375rem 0.75rem; border-radius: 0.375rem; text-decoration: none; font-size: 0.75rem; font-weight: 500; background-color: #fef3c7; color: #d97706;">متابعة سير العمل</a>
                                     <a href="{{ route('work-orders.show', $workOrder->id) }}" class="btn-view">عرض</a>
                                     <a href="{{ route('work-orders.edit', $workOrder->id) }}" class="btn-edit">تعديل</a>
                                 </div>

@@ -486,7 +486,8 @@ class WorkOrderController extends Controller
     }
 
     /**
-     * Display price quotes list for production employees (عروض الأسعار - تابع مندوب).
+     * Display price quotes list for production employees (عروض الأسعار - كل العروض التي فيها مندوب).
+     * حساب التشغيل مسؤول عن كل عروض الأسعار الخاصة بالمندوبين.
      */
     public function productionQuotesList(Request $request)
     {
@@ -496,7 +497,7 @@ class WorkOrderController extends Controller
         }
 
         $query = WorkOrder::with('client', 'representative')
-            ->where('created_by_employee_id', $employee->id)
+            ->whereNotNull('representative_id')
             ->where(function($q) {
                 $q->whereNull('production_status')
                   ->orWhere('production_status', 'بدون حالة')
@@ -556,8 +557,8 @@ class WorkOrderController extends Controller
         }
 
         $clients = Client::orderBy('name')->get();
-        $hasPendingQuote = WorkOrder::where('sent_to_client', 'yes')
-            ->where('created_by_employee_id', $employee->id)
+        $hasPendingQuote = WorkOrder::whereNotNull('representative_id')
+            ->where('sent_to_client', 'yes')
             ->where(function($q) {
                 $q->whereNull('client_response')->orWhere('client_response', '');
             })
@@ -753,6 +754,94 @@ class WorkOrderController extends Controller
             'allWorkOrders', 'allWorkOrdersCount',
             'clientFilter', 'orderNumberFilter'
         ));
+    }
+
+    /**
+     * سير العمل لعروض الأسعار الخاصة بالمندوبين (حساب التشغيل).
+     */
+    public function productionWorkflow(Request $request)
+    {
+        $employee = auth('employee')->user();
+        if (!$employee || $employee->account_type !== 'تشغيل') {
+            abort(403);
+        }
+
+        $repFilter = fn($q) => $q->whereNotNull('representative_id');
+
+        $clients = Client::whereHas('workOrders', $repFilter)->orderBy('name')->get();
+        $orderNumbers = WorkOrder::whereNotNull('representative_id')
+            ->whereNotNull('order_number')
+            ->distinct()
+            ->orderBy('order_number')
+            ->pluck('order_number')
+            ->toArray();
+
+        $clientFilter = $request->filled('client_id') ? $request->client_id : null;
+        $orderNumberFilter = $request->filled('order_number') ? $request->order_number : null;
+
+        $priceQuotesQuery = WorkOrder::with('client', 'representative')
+            ->whereNotNull('representative_id')
+            ->where('status', '!=', 'work_order')
+            ->where('status', '!=', 'cancelled')
+            ->where('status', '!=', 'in_progress')
+            ->where('status', '!=', 'completed');
+        if ($clientFilter) $priceQuotesQuery->where('client_id', $clientFilter);
+        if ($orderNumberFilter) $priceQuotesQuery->where('order_number', 'like', '%' . $orderNumberFilter . '%');
+        $priceQuotes = $priceQuotesQuery->latest()->get();
+        $priceQuotesCount = $priceQuotes->count();
+        $sentQuotesCount = $priceQuotes->filter(fn($o) => ($o->sent_to_client ?? 'no') === 'yes')->count();
+        $notSentQuotesCount = $priceQuotesCount - $sentQuotesCount;
+
+        $proofsQuery = WorkOrder::with('client', 'representative')->whereNotNull('representative_id')->where('status', 'work_order');
+        if ($clientFilter) $proofsQuery->where('client_id', $clientFilter);
+        if ($orderNumberFilter) $proofsQuery->where('order_number', 'like', '%' . $orderNumberFilter . '%');
+        $proofs = $proofsQuery->latest()->get();
+        $proofsCount = $proofs->count();
+        $approvedProofsCount = $proofs->filter(fn($o) => ($o->client_design_approval ?? '') === 'موافق')->count();
+        $notApprovedProofsCount = $proofsCount - $approvedProofsCount;
+
+        $sentToDesignerQuery = WorkOrder::with('client', 'representative')->whereNotNull('representative_id')->where('sent_to_designer', 'yes')->where('status', 'work_order');
+        if ($clientFilter) $sentToDesignerQuery->where('client_id', $clientFilter);
+        if ($orderNumberFilter) $sentToDesignerQuery->where('order_number', 'like', '%' . $orderNumberFilter . '%');
+        $sentToDesigner = $sentToDesignerQuery->latest()->get();
+        $sentToDesignerCount = $sentToDesigner->count();
+
+        $preparationsQuery = WorkOrder::with('client', 'representative')->whereNotNull('representative_id')->where('status', 'in_progress');
+        if ($clientFilter) $preparationsQuery->where('client_id', $clientFilter);
+        if ($orderNumberFilter) $preparationsQuery->where('order_number', 'like', '%' . $orderNumberFilter . '%');
+        $preparations = $preparationsQuery->latest()->get();
+        $preparationsCount = $preparations->count();
+
+        $productionQuery = WorkOrder::with('client', 'representative')->whereNotNull('representative_id')->where('status', 'completed');
+        if ($clientFilter) $productionQuery->where('client_id', $clientFilter);
+        if ($orderNumberFilter) $productionQuery->where('order_number', 'like', '%' . $orderNumberFilter . '%');
+        $production = $productionQuery->latest()->get();
+        $productionCount = $production->count();
+
+        $archiveQuery = WorkOrder::with('client', 'representative')->whereNotNull('representative_id')->where('status', 'cancelled');
+        if ($clientFilter) $archiveQuery->where('client_id', $clientFilter);
+        if ($orderNumberFilter) $archiveQuery->where('order_number', 'like', '%' . $orderNumberFilter . '%');
+        $archive = $archiveQuery->latest()->get();
+        $archiveCount = $archive->count();
+
+        $allWorkOrdersQuery = WorkOrder::with('client', 'representative')->whereNotNull('representative_id');
+        if ($clientFilter) $allWorkOrdersQuery->where('client_id', $clientFilter);
+        if ($orderNumberFilter) $allWorkOrdersQuery->where('order_number', 'like', '%' . $orderNumberFilter . '%');
+        $allWorkOrders = $allWorkOrdersQuery->latest()->get();
+        $allWorkOrdersCount = $allWorkOrders->count();
+
+        return view('work-orders.workflow', compact(
+            'clients',
+            'orderNumbers',
+            'priceQuotes', 'priceQuotesCount', 'sentQuotesCount', 'notSentQuotesCount',
+            'proofs', 'proofsCount', 'approvedProofsCount', 'notApprovedProofsCount',
+            'sentToDesigner', 'sentToDesignerCount',
+            'preparations', 'preparationsCount',
+            'production', 'productionCount',
+            'archive', 'archiveCount',
+            'allWorkOrders', 'allWorkOrdersCount',
+            'clientFilter', 'orderNumberFilter'
+        ) + ['isProductionWorkflow' => true]);
     }
 
     /**

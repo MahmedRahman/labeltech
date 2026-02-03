@@ -514,6 +514,13 @@
                             عروض الأسعار
                         </a>
                         
+                        <a href="{{ route('employee.production.workflow') }}" class="nav-link {{ request()->routeIs('employee.production.workflow') ? 'active' : '' }}">
+                            <svg style="width: 20px; height: 20px; margin-left: 0.75rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4H7m0 0v4m0-4v4"></path>
+                            </svg>
+                            سير العمل
+                        </a>
+                        
                         @php
                             $isPreparationsRoute = $currentRoute === 'employee.production.preparations';
                             $preparationsRoute = route('employee.production.preparations');

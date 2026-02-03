@@ -308,6 +308,8 @@ Route::middleware(['auth:employee'])->prefix('employee')->name('employee.')->gro
     
     // Production Price Quotes (عروض الأسعار - تابع مندوب)
     Route::get('/production/quotes', [\App\Http\Controllers\WorkOrderController::class, 'productionQuotesList'])->name('production.quotes');
+    // Production Workflow (سير العمل لعروض المندوبين)
+    Route::get('/production/workflow', [\App\Http\Controllers\WorkOrderController::class, 'productionWorkflow'])->name('production.workflow');
     
     // Production Representatives (المندوبين)
     Route::get('/production/representatives', [\App\Http\Controllers\RepresentativeController::class, 'index'])->name('production.representatives.index');
