@@ -301,9 +301,15 @@ Route::middleware(['auth:employee'])->prefix('employee')->name('employee.')->gro
         
         $knivesCount = \App\Models\Knife::count();
         $recentKnives = \App\Models\Knife::latest()->take(5)->get();
+        $representatives = \App\Models\Representative::latest()->get();
         
-        return view('employee.production-dashboard', compact('workOrdersCount', 'recentWorkOrders', 'knivesCount', 'recentKnives'));
+        return view('employee.production-dashboard', compact('workOrdersCount', 'recentWorkOrders', 'knivesCount', 'recentKnives', 'representatives'));
     })->name('production.dashboard');
+    
+    // Production Representatives (المندوبين)
+    Route::get('/production/representatives', [\App\Http\Controllers\RepresentativeController::class, 'index'])->name('production.representatives.index');
+    Route::post('/production/representatives', [\App\Http\Controllers\RepresentativeController::class, 'store'])->name('production.representatives.store');
+    Route::delete('/production/representatives/{representative}', [\App\Http\Controllers\RepresentativeController::class, 'destroy'])->name('production.representatives.destroy');
     
     // Production Work Orders List
     Route::get('/production/work-orders', [\App\Http\Controllers\WorkOrderController::class, 'productionEmployeeList'])->name('production.work-orders');

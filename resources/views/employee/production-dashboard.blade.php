@@ -213,6 +213,12 @@
         }
     </style>
 
+    @if (session('success'))
+        <div style="margin-bottom: 1.5rem; padding: 0.75rem 1rem; background-color: #d1fae5; border: 1px solid #6ee7b7; color: #065f46; border-radius: 0.5rem; font-size: 0.875rem;">
+            {{ session('success') }}
+        </div>
+    @endif
+
     <!-- Welcome Section -->
     <div class="welcome-card">
         <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.75rem;">
@@ -372,6 +378,77 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
                     <p style="font-size: 0.9375rem; margin: 0;">لا توجد سكاكين حالياً</p>
+                </div>
+            @endif
+        </div>
+    </div>
+
+    <!-- المندوبين Section -->
+    <div class="section-card">
+        <div class="section-header">
+            <h3 class="section-title">
+                <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                المندوبين
+            </h3>
+        </div>
+        <div class="section-content">
+            <form action="{{ route('employee.production.representatives.store') }}" method="POST" style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 1rem; align-items: end; margin-bottom: 1.5rem;">
+                @csrf
+                <div>
+                    <label for="rep_name" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.375rem;">الاسم</label>
+                    <input type="text" name="name" id="rep_name" value="{{ old('name') }}" required maxlength="255" placeholder="اسم المندوب" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.9375rem;">
+                    @error('name')
+                        <div style="margin-top: 0.25rem; font-size: 0.8125rem; color: #dc2626;">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div>
+                    <label for="rep_phone" style="display: block; font-size: 0.875rem; font-weight: 500; color: #374151; margin-bottom: 0.375rem;">رقم التليفون</label>
+                    <input type="text" name="phone" id="rep_phone" value="{{ old('phone') }}" maxlength="50" placeholder="رقم التليفون" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.9375rem;">
+                    @error('phone')
+                        <div style="margin-top: 0.25rem; font-size: 0.8125rem; color: #dc2626;">{{ $message }}</div>
+                    @enderror
+                </div>
+                <button type="submit" style="padding: 0.5rem 1.25rem; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; border-radius: 0.375rem; font-weight: 500; font-size: 0.875rem; cursor: pointer; white-space: nowrap;">
+                    إضافة مندوب
+                </button>
+            </form>
+            @if($representatives->count() > 0)
+                <div style="overflow-x: auto;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>الاسم</th>
+                                <th>رقم التليفون</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($representatives as $rep)
+                                <tr>
+                                    <td style="font-weight: 500; color: #111827;">{{ $rep->name }}</td>
+                                    <td style="color: #6b7280;">{{ $rep->phone ?? '—' }}</td>
+                                    <td>
+                                        <form action="{{ route('employee.production.representatives.destroy', $rep) }}" method="POST" style="display: inline;" onsubmit="return confirm('هل تريد حذف هذا المندوب؟');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" style="padding: 0.25rem 0.5rem; background-color: #fef2f2; color: #dc2626; border: 1px solid #fecaca; border-radius: 0.375rem; font-size: 0.8125rem; cursor: pointer;">
+                                                حذف
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <div class="empty-state">
+                    <svg class="empty-state-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    <p style="font-size: 0.9375rem; margin: 0;">لا يوجد مندوبون. استخدم النموذج أعلاه لإضافة مندوب.</p>
                 </div>
             @endif
         </div>
