@@ -1,33 +1,3 @@
-# services:
-#   app:
-#     build:
-#       context: .
-#       dockerfile: Dockerfile
-#     container_name: labeltech_app
-#     restart: unless-stopped
-#     working_dir: /var/www/html
-#     volumes:
-#       - ./:/var/www/html
-#       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
-#     networks:
-#       - labeltech
-#     environment:
-#       # Database Configuration
-#       - DB_CONNECTION=sqlite
-#       - DB_DATABASE=/var/www/html/database/database.sqlite
-#       # Laravel Configuration
-#       - APP_ENV=local
-#       - APP_DEBUG=true
-#       - APP_URL=https://labeltech.site
-#       # Logging Configuration (logs will appear in Docker logs)
-#       - LOG_CHANNEL=stderr
-#       - LOG_LEVEL=debug
-#     ports:
-#       - "8000:8000"
-
-# networks:
-#   labeltech:
-#     driver: bridge
 services:
   app:
     build:
@@ -43,12 +13,16 @@ services:
       - labeltech
     expose:
       - "9000"
+    environment:
+      - APP_ENV=${APP_ENV:-production}
+      - APP_URL=${APP_URL:-https://labeltech.site}
 
   nginx:
     image: nginx:alpine
     container_name: labeltech_nginx
     restart: unless-stopped
     ports:
+      # Cloudflare Tunnel should point to http://localhost:8000
       - "8000:80"
     volumes:
       - ./:/var/www/html

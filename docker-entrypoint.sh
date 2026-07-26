@@ -178,18 +178,20 @@ fi
 echo "=========================================="
 print_success "All checks passed!"
 echo "=========================================="
-print_info "Starting Laravel development server on 0.0.0.0:8000..."
-print_info "Logs will be visible in Docker logs."
-print_info "To view logs, run: docker-compose logs -f app"
-print_info "Or: docker logs -f labeltech_app"
+print_info "Starting PHP-FPM for nginx (labeltech.site)..."
+print_info "Logs: docker-compose logs -f app"
 echo "=========================================="
 
-# Ensure Laravel logs go to stderr for Docker visibility
-export LOG_CHANNEL=${LOG_CHANNEL:-stderr}
-export LOG_LEVEL=${LOG_LEVEL:-debug}
+# Ensure storage link exists
+php artisan storage:link --force 2>/dev/null || true
 
-# Start Laravel's built-in server
-# The server will output all requests and errors to stdout/stderr
-# Using exec to replace shell process and ensure logs are visible
-exec php artisan serve --host=0.0.0.0 --port=8000
+# Cache config/routes/views when running in production
+if [ "${APP_ENV:-local}" = "production" ]; then
+    print_info "Caching Laravel for production..."
+    php artisan config:cache 2>/dev/null || print_warning "config:cache failed"
+    php artisan route:cache 2>/dev/null || print_warning "route:cache failed"
+    php artisan view:cache 2>/dev/null || print_warning "view:cache failed"
+fi
+
+exec php-fpm -F
 
