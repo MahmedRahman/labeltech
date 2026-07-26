@@ -25,7 +25,7 @@
         body {
             font-family: 'Tajawal', 'Tahoma', 'Arial', sans-serif;
             font-size: 16px;
-            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            background: linear-gradient(135deg, #065f46 0%, #10b981 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
