@@ -259,7 +259,7 @@
     
     <div class="print-container" id="quote-container">
         <div class="print-header">
-            <img src="{{ asset('images/logo.png') }}" alt="Label Tech Logo" class="logo">
+            <img src="{{ asset('images/logo.png') }}?v={{ @filemtime(public_path('images/logo.png')) }}" alt="Label Tech Logo" class="logo">
             <h1>عرض السعر</h1>
         </div>
         

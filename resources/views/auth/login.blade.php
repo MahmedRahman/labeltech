@@ -1,7 +1,7 @@
 <x-guest-layout>
     <!-- Logo -->
     <div style="text-align: center; margin-bottom: 1.5rem; display: flex; justify-content: center; align-items: center;">
-        <img src="{{ asset('images/logo.png') }}" alt="Label Tech Logo" style="max-width: 200px; width: 100%; height: auto; display: block; margin: 0 auto;">
+        <img src="{{ asset('images/logo.png') }}?v={{ @filemtime(public_path('images/logo.png')) }}" alt="Label Tech Logo" style="max-width: 200px; width: 100%; height: auto; display: block; margin: 0 auto;">
     </div>
 
     <!-- Session Status -->

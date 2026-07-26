@@ -284,7 +284,7 @@
                         }
                     @endphp
                     <a href="{{ $logoDashboardRoute }}" style="display: flex; align-items: center; text-decoration: none; flex-direction: column; gap: 0.5rem;">
-                        <img src="{{ asset('images/logo.png') }}" alt="Label Tech Logo" style="max-width: 120px; width: 100%; height: auto; display: block;">
+                        <img src="{{ asset('images/logo.png') }}?v={{ @filemtime(public_path('images/logo.png')) }}" alt="Label Tech Logo" style="max-width: 120px; width: 100%; height: auto; display: block;">
                         <p style="font-size: 0.875rem; color: #6b7280; margin: 0; font-weight: 500; text-align: center;">
                             @if($isEmployee)
                                 @php
