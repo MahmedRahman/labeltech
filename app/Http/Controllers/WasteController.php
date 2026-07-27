@@ -68,7 +68,6 @@ class WasteController extends Controller
         $validated = $request->validate([
             'number_of_colors' => 'required|integer|min:0|max:6|unique:wastes,number_of_colors,' . $waste->id,
             'waste_percentage' => 'required|numeric|min:0|max:100',
-            'waste_per_roll' => 'required|numeric|min:0',
             'price' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string',
         ]);

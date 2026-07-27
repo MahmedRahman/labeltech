@@ -149,6 +149,16 @@
                 @csrf
                 @method('PUT')
 
+                @if ($errors->any())
+                    <div style="margin-bottom: 1.5rem; padding: 0.875rem 1rem; background-color: #fef2f2; border: 1px solid #fecaca; border-radius: 0.375rem; color: #991b1b;">
+                        <ul style="margin: 0; padding-right: 1.25rem;">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="number_of_colors" class="form-label required">عدد الألوان</label>
